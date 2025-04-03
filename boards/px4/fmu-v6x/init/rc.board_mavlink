@@ -11,3 +11,5 @@ then
 	# Ensure nothing else starts on TEL2 (ttyS4)
 	set PRT_TEL2_ 1
 fi
+
+
