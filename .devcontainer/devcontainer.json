@@ -3,13 +3,17 @@
 {
 	"name": "px4-dev-nuttx",
 	"image": "px4io/px4-dev-nuttx-focal:2022-08-12",
+	"privileged": true,
 
-	"runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
+	"runArgs": ["--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
 	},
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "pip install pyserial",
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
@@ -38,6 +42,8 @@
 	"containerEnv": {
 		"LOCAL_USER_ID": "${localEnv:UID}"
 	},
+
+	"mounts": ["source=/dev,target=/dev,type=bind,consistency=cached"],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [14556],
