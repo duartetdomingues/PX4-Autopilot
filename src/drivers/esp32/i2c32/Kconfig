@@ -1,5 +1,0 @@
-menuconfig DRIVERS_ESP32_I2C32
-	bool "i2c32"
-	default n
-	---help---
-		Enable support for i2c32

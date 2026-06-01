@@ -1,0 +1,7 @@
+menuconfig DRIVERS_M113
+	bool "M113 direct CANopen actuator controller"
+	default n
+	depends on PLATFORM_NUTTX && !DRIVERS_UAVCAN
+	---help---
+		Control the M113 Thomson and MD80 actuators directly over classic CAN.
+		This replaces the external ESP32 I2C-to-CAN bridge.
