@@ -10,6 +10,7 @@
 # @board cuav_x7pro exclude
 # @board px4_fmu-v4pro exclude
 # @board px4_fmu-v5x exclude
+# @board auterion_fmu-v6x exclude
 # @board px4_fmu-v6x exclude
 #
 
@@ -46,8 +47,9 @@ param set-default EKF2_BCOEF_Y 25.5
 
 param set-default EKF2_DRAG_CTRL 1
 
-param set-default EKF2_GPS_DELAY 100
-param set-default EKF2_GPS_POS_X 0.06
+param set-default SENS_GPS0_DELAY 100
+param set-default SENS_GPS1_DELAY 100
+param set-default SENS_GPS0_OFFX 0.06
 param set-default EKF2_GPS_V_NOISE 0.5
 
 param set-default EKF2_IMU_POS_X 0.06

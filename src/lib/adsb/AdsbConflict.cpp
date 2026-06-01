@@ -77,7 +77,7 @@ void AdsbConflict::detect_traffic_conflict(double lat_now, double lon_now, float
 			&& (fabsf(_crosstrack_error.distance) < _conflict_detection_params.crosstrack_separation);
 
 	const bool _crosstrack_separation_check = (fabsf(alt_now - _transponder_report.altitude) <
-			_conflict_detection_params.crosstrack_separation);
+			_conflict_detection_params.vertical_separation);
 
 	bool collision_time_check = false;
 
@@ -95,9 +95,9 @@ void AdsbConflict::detect_traffic_conflict(double lat_now, double lon_now, float
 int AdsbConflict::find_icao_address_in_conflict_list(uint32_t icao_address)
 {
 
-	for (uint8_t i = 0; i < _traffic_buffer.icao_address.size(); i++) {
+	for (size_t i = 0; i < _traffic_buffer.icao_address.size(); i++) {
 		if (_traffic_buffer.icao_address[i] == icao_address) {
-			return i;
+			return static_cast<int>(i);
 		}
 	}
 
@@ -180,7 +180,7 @@ bool AdsbConflict::handle_traffic_conflict()
 
 	case TRAFFIC_STATE::ADD_CONFLICT:
 	case TRAFFIC_STATE::REMIND_CONFLICT: {
-			take_action = send_traffic_warning((int)(math::degrees(_transponder_report.heading) + 180.f),
+			take_action = send_traffic_warning((int)math::degrees(_transponder_report.heading),
 							   (int)fabsf(_crosstrack_error.distance), _transponder_report.flags,
 							   _transponder_report.callsign,
 							   _transponder_report.icao_address,

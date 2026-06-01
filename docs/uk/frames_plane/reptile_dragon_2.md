@@ -1,6 +1,6 @@
 # Reptile Dragon 2 (RD2) Збірка
 
-The Reptile Dragon 2 is a twin motor RC airplane specifically designed for efficient FPV [(first person view)](https://en.wikipedia.org/wiki/First-person_view_\(radio_control\)) flying.
+The Reptile Dragon 2 is a twin motor RC airplane specifically designed for efficient FPV [(first person view)](https://en.wikipedia.org/wiki/First-person_view_(radio_control)) flying.
 Будучи специфічним для FPV, RD2 оптимізований для легкого монтажу камер, сенсорів, логічної електроніки, великих батарей, антен та інших компонентів навантаження, які можуть бути знайдені на типовому літаку FPV.
 Цей акцент на корисне навантаження робить цей літак ідеальним кандидатом для установки PX4.
 
@@ -20,12 +20,12 @@ The Reptile Dragon 2 is a twin motor RC airplane specifically designed for effic
 - Видалення V-хвоста або варіанти звичайного хвоста включені
 - Різьбові вставки в крилах та верхній частині фюзеляжу для зовнішнього монтажу
 - Чимало кріплень-ознак
- - Отвір для верхньої антени
- - Верхнє покриття GPS
- - Кріплення антени біля гільзи "T"
- - Задній електронний лоток
- - Виріз "екшн камери" на передній панелі
- - Виріз для камери FPV спереду
+  - Отвір для верхньої антени
+  - Верхнє покриття GPS
+  - Кріплення антени біля гільзи "T"
+  - Задній електронний лоток
+  - Виріз "екшн камери" на передній панелі
+  - Виріз для камери FPV спереду
 - Знімні крила
 - Низька швидкість стійки
 - Лагідна обробка
@@ -56,25 +56,25 @@ The Reptile Dragon 2 is a twin motor RC airplane specifically designed for effic
 
 - Модуль диференційного тиску MS4525DO та пітот-трубка
 
-- [Caddx Vista FPV air unit](https://caddxfpv.com/products/caddx-vista-kit)
+- [Caddx Vista FPV air unit](https://www.caddxfpv.com/collections/vista-kit)
 
 - [Emax ES08MA ii](https://emaxmodel.com/products/emax-es08ma-ii-12g-mini-metal-gear-analog-servo-for-rc-model-robot-pwm-servo)
 
 - [DJI FPV Goggles](https://www.dji.com/fpv)
 
-- [ExpressLRS Matek Diversity RX](http://www.mateksys.com/?portfolio=elrs-r24)
+- [ExpressLRS Matek Diversity RX](https://www.mateksys.com/?portfolio=elrs-r24)
 
 - [5V BEC](https://www.readymaderc.com/products/details/rmrc-3a-power-regulator-5-to-6-volt-ubec)
 
-- [6s2p 18650 LiIon flight battery](https://www.upgradeenergytech.com/product-page/6s-22-2v-5600mah-30c-dark-lithium-liion-drone-battery) (select XT60 connector)
+- [6s2p 18650 LiIon flight battery](https://www.upgradeenergytech.com/products/red-6s1p-5000mah-molicel-p50b) (select XT60 connector)
 
-- [Custom designed 3D printed parts](https://github.com/PX4/PX4-user_guide/raw/main/assets/airframes/fw/reptile_dragon_2/rd2_3d_printed_parts.zip)
- - Монтаж платформи ARK6X
- - Кріплення для каркасу Holybro Pixhawk 5x
- - FPV модуль та кріплення камери
- - Адаптер "заглушка" статичного зонда Піто
+- [Custom designed 3D printed parts](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/airframes/fw/reptile_dragon_2/rd2_3d_printed_parts.zip)
+  - Монтаж платформи ARK6X
+  - Кріплення для каркасу Holybro Pixhawk 5x
+  - FPV модуль та кріплення камери
+  - Адаптер "заглушка" статичного зонда Піто
 
-- [Custom designed power distribution PCB](https://github.com/PX4/PX4-user_guide/raw/main/assets/airframes/fw/reptile_dragon_2/xt30_power_distro_pcb.zip)
+- [Custom designed power distribution PCB](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/airframes/fw/reptile_dragon_2/xt30_power_distro_pcb.zip)
 
 - Різноманітне кріплення: М3-фурнітура (розмітки, шайби, O-кільця, болти), підкладки та гвинти M2.5 з нейлону, роз'єми XT30, гарячий клей, термоусадка, роз'єми Molex Microfit
 
@@ -97,7 +97,7 @@ The Reptile Dragon 2 is a twin motor RC airplane specifically designed for effic
 Сервоприводи, крила та хвіст потрібно встановити.
 
 :::info
-Для цієї частини збірки інструкція, включена в комплект, повинна бути достатньою, але нижче наведено деякі корисні поради.
+For this portion of assembly, the instructions included with the kit should be sufficient, but some helpful tips are listed below.
 :::
 
 ### Наклейка піни
@@ -225,7 +225,7 @@ The RD2 comes with a wooden electronics mount baseplate preglued in the airframe
 
 Оператор встановлений у пластиковому кейсі.
 Хоча справа виглядає гарно, це додаткова вага, тому переноска була видалена з чохла.
-Після видалення з корпусу ARK6X був встановлений, а захисна кришка встановлена зверху.
+Once removed from the case, the ARK6X was installed, and a protective cover fitted on top.
 
 ![Flight computer carrier board](../../assets/airframes/fw/reptile_dragon_2/holybro_5x.jpg)
 
@@ -325,7 +325,7 @@ ELRS RX був прикріплений до бічної стінки корп�
 
 ## Збірка прошивки
 
-You can't use prebuilt PX4 release (or main) firmware for this vehicle, as it depends on PX4 modules [crsf_rc](../modules/modules_driver.md#crsf-rc) and [msp_osd](../modules/modules_driver.md#msp-osd) that are not included by default.
+You can't use prebuilt PX4 release (or main) firmware for this vehicle, as it depends on PX4 modules [crsf_rc](../modules/modules_driver_radio_control.md#crsf-rc) and [msp_osd](../modules/modules_driver.md#msp-osd) that are not included by default.
 
 Для їх використання потрібна деяка налаштування.
 
@@ -353,7 +353,7 @@ For more information see [TBS Crossfire (CRSF) Telemetry](../telemetry/crsf_tele
 
 ### `msp_osd` Module
 
-The `msp_osd` module steams MSP telemetry to a selected serial port.
+The `msp_osd` module streams MSP telemetry to a selected serial port.
 Пристрій Caddx Vista Air підтримує прослуховування телеметрії MSP і відображає отримані значення телеметрії на своєму OSD (екрані).
 
 1. In the PX4 board config tool, navigate to the `drivers` submenu, then scroll down to highlight `OSD`.
@@ -377,7 +377,7 @@ make ark_fmu-v6x_default upload
 Цей файл параметрів містить настроювану конфігурацію параметрів PX4 для цієї збірки, включаючи налаштування радіо, налаштування і датчиків.
 Load the file via QGC using the instructions at [Parameters> Tools](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/setup_view/parameters.html#tools) (QGC User Guide).
 
-- [Snapshot of PX4 airframe params](https://github.com/PX4/PX4-user_guide/raw/main/assets/airframes/fw/reptile_dragon_2/reptile_dragon_2_params.params)
+- [Snapshot of PX4 airframe params](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/airframes/fw/reptile_dragon_2/reptile_dragon_2_params.params)
 
 Можливо, вам доведеться змінити деякі параметри для вашої збірки, зокрема вам слід перевірити:
 
@@ -425,15 +425,15 @@ With the propellers removed, power the airplane up and use the [Actuator](../con
 Я рекомендую перевірити наступні елементи:
 
 - Калібрування датчиків (QGC)
- - Калібрування магнітів
- - Калібрування акселерометра
- - Калібрування швидкості повітря
- - Калібрування рівня горизонту
+  - Калібрування магнітів
+  - Калібрування акселерометра
+  - Калібрування швидкості повітря
+  - Калібрування рівня горизонту
 - Перевірка контролю над відхиленням поверхні
 - Right stick -> Right aileron goes up, left aileron goes down
 - Left stick -> Left aileron goes up, right aileron goes down
 - Stick back -> elevator goes up
- -Stick forward -> elevator goes down
+  -Stick forward -> elevator goes down
 - Left rudder -> Rudder goes left
 - Right rudder -> Rudder goes right
 - Check Px4 inputs (in `stabilized mode`)

@@ -5,7 +5,7 @@
 There are a number of reasons to use VSCode for PX4 development:
 
 - Getting setup _really_ only takes a few minutes.
-- A rich extension ecosystem that enables a huge range of tools needed for PX4 development: C/C++ (with solid _cmake_ integration), _Python_, _Jinja2_, ROS messages, and even DroneCAN dsdl.
+- A rich extension ecosystem that enables a huge range of tools needed for PX4 development: C/C++ (with solid _cmake_ integration), _Python_, _Jinja2_, ROS messages, and even DroneCAN DSDL.
 - Excellent Github integration.
 
 This topic explains how to setup the IDE and start developing.
@@ -23,9 +23,10 @@ You must already have installed the command line [PX4 developer environment](../
 
 1. [Download and install VSCode](https://code.visualstudio.com/) (you will be offered the correct version for your OS).
 1. Open VSCode and add the PX4 source code:
-
    - Select _Open folder ..._ option on the welcome page (or using the menu: **File > Open Folder**):
+
      ![Open Folder](../../assets/toolchain/vscode/welcome_open_folder.jpg)
+
    - A file selection dialog will appear.
      Select the **PX4-Autopilot** directory and then press **OK**.
 
@@ -43,7 +44,6 @@ You must already have installed the command line [PX4 developer environment](../
    :::tip
    If the prompts disappear, click the little "alarm" icon on the right of the bottom blue bar.
    :::
-
    - If prompted to install a new version of _cmake_:
      - Say **No** (the right version is installed with the [PX4 developer environment](../dev_setup/dev_env.md)).
    - If prompted to sign into _github.com_ and add your credentials:
@@ -57,7 +57,6 @@ You must already have installed the command line [PX4 developer environment](../
 To build:
 
 1. Select your build target ("cmake build config"):
-
    - The current _cmake build target_ is shown on the blue _config_ bar at the bottom (if this is already your desired target, skip to next step).
      ![Select Cmake build target](../../assets/toolchain/vscode/cmake_build_config.jpg)
 
@@ -125,10 +124,10 @@ Once that is done you don't need to do anything else; the toolchain will automat
 
 This section includes guidance on setup and build errors.
 
-### Ubuntu 18.04: "Visual Studio Code is unable to watch for file changes in this large workspace"
+### "Visual Studio Code is unable to watch for file changes in this large workspace"
 
 This error surfaces on startup.
-On some systems, there is an upper-limit of 8192 file handles imposed on applications, which means that VSCode might not be able to detect file modifications in `/PX4-Autopilot`.
+On some systems, there is an upper-limit on file handles imposed on applications, which means that VSCode might not be able to detect file modifications in `/PX4-Autopilot`.
 
 You can increase this limit to avoid the error, at the expense of memory consumption.
 Follow the [instructions here](https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc).

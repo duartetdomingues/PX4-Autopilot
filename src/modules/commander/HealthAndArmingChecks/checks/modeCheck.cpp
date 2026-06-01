@@ -36,7 +36,15 @@
 void ModeChecks::checkAndReport(const Context &context, Report &reporter)
 {
 	if (!context.isArmed()) {
-		checkArmingRequirement(context, reporter);
+		if (reporter.failsafeFlags().mode_req_prevent_arming & (1u << context.status().nav_state)) {
+			/* EVENT
+			* @description
+			* Switch to another mode first.
+			*/
+			reporter.armingCheckFailure((NavModes)reporter.failsafeFlags().mode_req_prevent_arming, health_component_t::system,
+						    events::ID("check_modes_cannot_takeoff"),
+						    events::Log::Info, "Mode not suitable for arming");
+		}
 	}
 
 	// Failing mode requirements generally also clear the can_run bits which prevents mode switching and
@@ -86,16 +94,27 @@ void ModeChecks::checkAndReport(const Context &context, Report &reporter)
 		reporter.clearCanRunBits(local_position_modes);
 	}
 
+	NavModes global_position_modes = NavModes::None;
+
 	if (reporter.failsafeFlags().global_position_invalid && reporter.failsafeFlags().mode_req_global_position != 0) {
+		global_position_modes = (NavModes)reporter.failsafeFlags().mode_req_global_position;
+	}
+
+	if (reporter.failsafeFlags().global_position_invalid_relaxed
+	    && reporter.failsafeFlags().mode_req_global_position_relaxed != 0) {
+		global_position_modes = global_position_modes | (NavModes)reporter.failsafeFlags().mode_req_global_position_relaxed;
+	}
+
+	if (global_position_modes != NavModes::None) {
 		/* EVENT
 		 * @description
 		 * The available positioning data is not sufficient to execute the selected mode.
 		 */
-		reporter.armingCheckFailure((NavModes)reporter.failsafeFlags().mode_req_global_position,
+		reporter.armingCheckFailure(global_position_modes,
 					    health_component_t::global_position_estimate,
 					    events::ID("check_modes_global_pos"),
 					    events::Log::Error, "Navigation error: No valid global position estimate");
-		reporter.clearCanRunBits((NavModes)reporter.failsafeFlags().mode_req_global_position);
+		reporter.clearCanRunBits(global_position_modes);
 	}
 
 	if (reporter.failsafeFlags().local_altitude_invalid && reporter.failsafeFlags().mode_req_local_alt != 0) {
@@ -128,17 +147,6 @@ void ModeChecks::checkAndReport(const Context &context, Report &reporter)
 					    events::ID("check_modes_mission"),
 					    events::Log::Info, "No valid mission available");
 		reporter.clearCanRunBits((NavModes)reporter.failsafeFlags().mode_req_mission);
-	}
-
-	if (reporter.failsafeFlags().offboard_control_signal_lost && reporter.failsafeFlags().mode_req_offboard_signal != 0) {
-		/* EVENT
-		 * @description
-		 * The offboard component is not sending setpoints or the required estimate (e.g. position) is missing.
-		 */
-		reporter.armingCheckFailure((NavModes)reporter.failsafeFlags().mode_req_offboard_signal, health_component_t::system,
-					    events::ID("check_modes_offboard_signal"),
-					    events::Log::Error, "No offboard signal");
-		reporter.clearCanRunBits((NavModes)reporter.failsafeFlags().mode_req_offboard_signal);
 	}
 
 	if (reporter.failsafeFlags().home_position_invalid && reporter.failsafeFlags().mode_req_home_position != 0) {
@@ -179,18 +187,5 @@ void ModeChecks::checkAndReport(const Context &context, Report &reporter)
 	    && reporter.failsafeFlags().mode_req_wind_and_flight_time_compliance != 0) {
 		// Already reported
 		reporter.clearCanRunBits((NavModes)reporter.failsafeFlags().mode_req_wind_and_flight_time_compliance);
-	}
-}
-
-void ModeChecks::checkArmingRequirement(const Context &context, Report &reporter)
-{
-	if (reporter.failsafeFlags().mode_req_prevent_arming & (1u << context.status().nav_state)) {
-		/* EVENT
-		 * @description
-		 * Switch to another mode first.
-		 */
-		reporter.armingCheckFailure((NavModes)reporter.failsafeFlags().mode_req_prevent_arming, health_component_t::system,
-					    events::ID("check_modes_cannot_takeoff"),
-					    events::Log::Info, "Mode not suitable for arming");
 	}
 }

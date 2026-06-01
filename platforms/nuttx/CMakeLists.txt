@@ -67,8 +67,15 @@ endif()
 
 set(nuttx_libs)
 set(SCRIPT_PREFIX)
-if("${PX4_BOARD_LABEL}" STREQUAL "bootloader")
-	set(SCRIPT_PREFIX ${PX4_BOARD_LABEL}_)
+# Match "bootloader" and any "bootloader_<variant>" label (e.g.
+# "bootloader_secureboot") so a board can ship a bootloader variant
+# with extra Kconfig (crypto, keystore, etc.) without duplicating
+# the bootloader build wiring.
+if("${PX4_BOARD_LABEL}" MATCHES "^bootloader")
+	# All bootloader variants share the same linker script
+	# (bootloader_script.ld); the label suffix only changes which
+	# Kconfig and which Tools/test_keys/*.pub are baked in.
+	set(SCRIPT_PREFIX bootloader_)
 	add_subdirectory(src/bootloader)
 	list(APPEND nuttx_libs
 		bootloader
@@ -242,6 +249,105 @@ if (NOT CONFIG_BUILD_FLAT)
 
 else()
 
+if(CONFIG_ARCH_CHIP_ESP32)
+
+	set(PX4_STARTUP_DIR ${PX4_SOURCE_DIR}/platforms/nuttx/NuttX/nuttx/arch/xtensa/src)
+	set(WIRELESS_LIB ${PX4_STARTUP_DIR}/esp32/esp-wireless-drivers-3rdparty/libs/esp32/)
+
+	set(NUTTX_STARTUP_OBJS
+	${PX4_STARTUP_DIR}/xtensa_vectors.o
+	${PX4_STARTUP_DIR}/xtensa_window_vector.o
+	${PX4_STARTUP_DIR}/xtensa_windowspill.o
+	${PX4_STARTUP_DIR}/xtensa_int_handlers.o
+	${PX4_STARTUP_DIR}/xtensa_user_handler.o
+	${PX4_STARTUP_DIR}/xtensa_initialize.o
+	${PX4_STARTUP_DIR}/xtensa_initialstate.o
+	${PX4_STARTUP_DIR}/esp32_start.o
+	${PX4_STARTUP_DIR}/esp32_wdt.o
+	)
+
+	set(NUTTX_NETWORK_LIB
+	libbtdm_app.a
+	libcoexist.a
+	libcore.a
+	libespnow.a
+	libnet80211.a
+	libphy.a
+	libpp.a
+	librtc.a
+	libsmartconfig.a
+	libwapi.a
+	libwpa_supplicant.a
+	)
+	execute_process(COMMAND touch ${NUTTX_STARTUP_OBJS}
+	WORKING_DIRECTORY ${PX4_SOURCE_DIR})
+	set_source_files_properties(
+		${NUTTX_STARTUP_OBJS}
+		PROPERTIES
+		EXTERNAL_OBJECT true
+		GENERATED true)
+
+	target_link_libraries(nuttx_c INTERFACE nuttx_sched) # nxsched_get_streams
+
+	target_link_libraries(nuttx_arch
+			INTERFACE
+			drivers_board
+			arch_hrt
+			arch_board_reset
+			-L${WIRELESS_LIB}
+			-Wl,--start-group
+			${NUTTX_NETWORK_LIB}
+			-Wl,--end-group
+	)
+
+	target_link_libraries(nuttx_c INTERFACE nuttx_drivers)
+	target_link_libraries(nuttx_drivers INTERFACE nuttx_c nuttx_fs)
+	target_link_libraries(nuttx_xx INTERFACE nuttx_c)
+	target_link_libraries(nuttx_fs INTERFACE nuttx_c nuttx_net)
+	target_link_libraries(nuttx_net INTERFACE nuttx_mm)
+	target_link_libraries(px4 PRIVATE
+		-nostartfiles
+		-nodefaultlibs
+		-nostdlib
+		-nostdinc++
+		-mlongcalls
+		-fno-exceptions
+		-fno-rtti
+		-Wl,--cref
+		-L${WIRELESS_LIB}
+
+		-Wl,-T${NUTTX_CONFIG_DIR_CYG}/scripts/${SCRIPT_PREFIX}esp32_out.ld
+		-T${NUTTX_CONFIG_DIR_CYG}/scripts/${SCRIPT_PREFIX}esp32.ld
+		-T${NUTTX_CONFIG_DIR_CYG}/scripts/${SCRIPT_PREFIX}esp32_rom.ld
+		-Wl,-Map=${PX4_CONFIG}.map
+		-Wl,--gc-sections
+
+		-Wl,--start-group
+			${nuttx_libs}
+			${NUTTX_STARTUP_OBJS}
+			${NUTTX_NETWORK_LIB}
+		-Wl,--end-group
+
+		m
+		gcc
+		)
+
+		if(NOT USE_LD_GOLD)
+			target_link_libraries(px4 PRIVATE -Wl,--print-memory-usage)
+		endif()
+
+		target_link_libraries(px4 PRIVATE ${module_libraries})
+		if(config_romfs_root)
+			add_subdirectory(${PX4_SOURCE_DIR}/ROMFS ${PX4_BINARY_DIR}/ROMFS)
+			target_link_libraries(px4 PRIVATE romfs)
+		endif()
+		add_custom_command(OUTPUT ${PX4_BINARY_OUTPUT}
+			COMMAND esptool --chip esp32 elf2image -o ${PX4_BINARY_OUTPUT} ${PX4_BINARY_DIR_REL}/${FW_NAME}
+			COMMAND du ${PX4_BINARY_OUTPUT} -h
+			DEPENDS px4
+		)
+else()
+
 	target_link_libraries(nuttx_c INTERFACE nuttx_sched) # nxsched_get_streams
 
 	target_link_libraries(nuttx_arch
@@ -294,6 +400,7 @@ else()
 		COMMAND ${CMAKE_OBJCOPY} -O binary ${PX4_BINARY_DIR_REL}/${FW_NAME} ${PX4_BINARY_OUTPUT}
 		DEPENDS px4
 	)
+endif()
 
 endif()
 
@@ -325,6 +432,49 @@ if (TARGET parameters_xml AND TARGET airframes_xml)
 
 	string(REPLACE ".elf" ".px4" fw_package ${PX4_BINARY_DIR}/${FW_NAME})
 
+	# Secure-boot variants sign the .bin with sign_firmware.py before
+	# wrapping it in the .px4 envelope, and tag the envelope so the
+	# uploader runs VERIFY_SIG against the matching bootloader. The
+	# resulting .px4 is the only one that will boot on a secure
+	# bootloader (the unsigned .bin still ships alongside, for users
+	# who want to sign with a different key out-of-tree).
+	set(_mkfw_image ${PX4_BINARY_DIR}/${PX4_CONFIG}.bin)
+	set(_mkfw_signed_flag)
+	set(_mkfw_extra_depends)
+
+	if(CONFIG_BOARD_SECUREBOOT)
+		# Allow an env var to override the Kconfig default so a release
+		# build can point at a private key that doesn't live in the
+		# repo without having to edit the .px4board. Relative paths
+		# from the .px4board are resolved against the repo root, to
+		# match how CONFIG_PUBLIC_KEYn paths are written.
+		if(DEFINED ENV{BOARD_SECUREBOOT_KEY})
+			set(_secureboot_key $ENV{BOARD_SECUREBOOT_KEY})
+		else()
+			set(_secureboot_key ${CONFIG_BOARD_SECUREBOOT_KEY})
+		endif()
+		if(NOT IS_ABSOLUTE ${_secureboot_key})
+			get_filename_component(_secureboot_key
+				${_secureboot_key} ABSOLUTE BASE_DIR ${PX4_SOURCE_DIR})
+		endif()
+
+		set(_signed_bin ${PX4_BINARY_DIR}/${PX4_CONFIG}_signed.bin)
+		add_custom_command(
+			OUTPUT ${_signed_bin}
+			COMMAND
+				${PYTHON_EXECUTABLE} ${PX4_SOURCE_DIR}/Tools/secure_bootloader/sign_firmware.py
+					--key ${_secureboot_key}
+					${PX4_BINARY_DIR}/${PX4_CONFIG}.bin
+					${_signed_bin}
+			DEPENDS ${PX4_BINARY_DIR}/${PX4_CONFIG}.bin
+			COMMENT "Signing ${PX4_CONFIG}.bin with ${_secureboot_key}"
+			WORKING_DIRECTORY ${PX4_BINARY_DIR}
+		)
+		set(_mkfw_image ${_signed_bin})
+		set(_mkfw_signed_flag --image_signed)
+		set(_mkfw_extra_depends ${_signed_bin})
+	endif()
+
 	add_custom_command(
 		OUTPUT ${fw_package}
 		COMMAND
@@ -333,9 +483,11 @@ if (TARGET parameters_xml AND TARGET airframes_xml)
 				--git_identity ${PX4_SOURCE_DIR}
 				--parameter_xml ${PX4_BINARY_DIR}/parameters.xml
 				--airframe_xml ${PX4_BINARY_DIR}/airframes.xml
-				--image ${PX4_BINARY_DIR}/${PX4_CONFIG}.bin > ${fw_package}
+				${_mkfw_signed_flag}
+				--image ${_mkfw_image} > ${fw_package}
 		DEPENDS
 			${PX4_BINARY_DIR}/${PX4_CONFIG}.bin
+			${_mkfw_extra_depends}
 			airframes_xml
 			parameters_xml
 		COMMENT "Creating ${fw_package}"
@@ -407,6 +559,9 @@ if(NOT NUTTX_DIR MATCHES "external")
 	if(CONFIG_ARCH_CHIP_MIMXRT1062DVL6A)
 		set(DEBUG_DEVICE "MIMXRT1062XXX6A")
 		set(DEBUG_SVD_FILE "MIMXRT1062.xml")
+	elseif(CONFIG_ARCH_CHIP_MIMXRT1064DVL6A)
+		set(DEBUG_DEVICE "MIMXRT1064XXX6A")
+		set(DEBUG_SVD_FILE "MIMXRT1064.xml")
 	elseif(CONFIG_ARCH_CHIP_MIMXRT1176DVMAA)
 		set(DEBUG_DEVICE "MIMXRT1176DVMAA")
 		set(DEBUG_SVD_FILE "MIMXRT1176_cm7.xml")
@@ -495,6 +650,7 @@ if(NOT NUTTX_DIR MATCHES "external")
 		add_custom_target(jlink-nuttx ALL
 			DEPENDS ${NUTTX_DIR}/tools/jlink-nuttx.so
 		)
+		add_dependencies(jlink-nuttx nuttx_context)
 
 		# JLINK_RTOS_PATH used by launch.json.in
 		set(JLINK_RTOS_PATH ${NUTTX_DIR}/tools/jlink-nuttx.so)

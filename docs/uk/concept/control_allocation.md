@@ -2,7 +2,7 @@
 
 :::info
 Розподіл керування замінює застарілий підхід змішування, який використовувався в PX4 v1.13 або раніше.
-Документацію по PX4 v1.13 дивіться в: [Змішування та приводи](https://docs.px4.io/v1.13/en/concept/mixing.html), [Файли геометрії](https://docs.px4.io/v1.13/en/concept/geometry_files.html) та [Додавання налаштувань нового планера](https://docs.px4.io/v1.13/en/dev_airframes/adding_a_new_frame.html).
+For PX4 v1.13 documentation see: [Mixing & Actuators](https://docs.px4.io/v1.13/en/concept/mixing), [Geometry Files](https://docs.px4.io/v1.13/en/concept/geometry_files) and [Adding a New Airframe Configuration](https://docs.px4.io/v1.13/en/dev_airframes/adding_a_new_frame).
 :::
 
 PX4 приймає бажані команди моменту та тяги від основних контролерів і перекладає їх у команди приводів, які керують двигунами чи сервоприводами.
@@ -31,7 +31,7 @@ PX4 відокремлює цю логіку перекладу, що назив
 
 ![Pipeline Overview](../../assets/concepts/control_allocation_pipeline.png)
 
-Примітки:
+Notes:
 
 - Регулятор швидкості видає задані значення моменту та тяги
 - модуль `control_allocator`:
@@ -42,11 +42,11 @@ PX4 відокремлює цю логіку перекладу, що назив
   - публікує корекції для сервоприводів окремо щоб їх можна було додати як відхилення при [перевірці приводів](../config/actuators.md#actuator-testing) (використовуючи тестувальні повзунки).
 - Драйвери виходу:
   - обробляють апаратну ініціалізацію та оновлення
-  - використовують поділювану бібліотеку [src/libs/mixer_module](https://github.com/PX4/PX4-Autopilot/blob/main/src/lib/mixer_module/).
+  - use a shared library [src/libs/mixer_module](https://github.com/PX4/PX4-Autopilot/tree/main/src/lib/mixer_module).
     Драйвер визначає префікс параметру, наприклад `PWM_MAIN`, який бібліотека використовує для налаштування.
     Її головне завдання зробити вибірку з вхідних дані та призначити правильні дані на виходи засновуючись на встановлених користувачем значеннях параметрів `<param_prefix>_FUNCx`.
     Наприклад, якщо `PWM_MAIN_FUNC3` встановлено у **Motor 2**, це означає що на 2-й двигун з `actuator_motors` встановлено 3-й вивід.
-  - функції виводу визначаються у [src/lib/mixer_module/output_functions.yaml](https://github.com/PX4/PX4-Autopilot/blob/main/src/lib/mixer_module/output_functions.yaml).
+  - output functions are defined under [src/lib/mixer_module/output_functions.yaml](https://github.com/PX4/PX4-Autopilot/blob/main/src/lib/mixer_module/output_functions.yaml).
 - якщо ви хочете керувати виводом з MAVLink, встановіть відповідну вихідну функцію в **Offboard Actuator Set x**, а потім відправте MAVLink команду [MAV_CMD_DO_SETUATOR](https://mavlink.io/en/messages/common.html#MAV_CMD_DO_SET_ACTUATOR).
 
 ## Додавання нової геометрії або функції виводу

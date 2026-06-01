@@ -8,10 +8,10 @@ See [Camera](../camera/index.md) for information about _using_ cameras.
 
 ## 综述
 
-PX4 integrates with three types of cameras:
+PX4 集成了三种类型的相机：
 
-- [MAVLink cameras](../camera/mavlink_v2_camera.md) that support the [Camera Protocol v2](https://mavlink.io/en/services/camera.html) (**RECOMMENDED**).
-- [Simple MAVLink cameras](../camera/mavlink_v1_camera.md) that support the older [Camera Protocol v1](https://mavlink.io/en/services/camera.html).
+- [MAVLink 相机](../camera/mavlink_v2_camera.md) 支持 [Camera Protocol v2](https://mavlink.io/en/services/camera.html) (**推荐**)。
+- [简单的 MAVLink 摄像头](../camera/mavlink_v1_camera.md) 支持旧的 [Camera Protocol v1](https://mavlink.io/en/services/camera.html)。
 - [Cameras attached to flight controller outputs](../camera/fc_connected_camera.md), which are controlled using the [Camera Protocol v1](https://mavlink.io/en/services/camera.html).
 
 All of these cameras need to respond to MAVLink commands received over MAVLink or found in missions (the specific protocol depends on the camera).
@@ -36,7 +36,7 @@ The `camera_trigger`, `camera_capture` and `camera_feedback` modules are not use
 This work is handled by three PX4 components: [`camera_trigger` driver](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/camera_trigger), [`camera_capture` driver](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/camera_capture), [`camera-feedback` module](../modules/modules_system.md#camera-feedback).
 
 `camera_trigger` subscribes to the [VehicleCommand](../msg_docs/VehicleCommand.md) topic and monitors for updates to its [supported commands](../camera/fc_connected_camera.md#mavlink-command-interface).
-Thes updates occur when either a command is received via MAVLink or when a [camera item is reached in a mission](#camera-commands-in-missions).
+These updates occur when either a command is received via MAVLink or when a [camera item is reached in a mission](#camera-commands-in-missions).
 
 The commands enable and disable triggering, and configure triggering at time and distance intervals.
 The driver tracks these intervals, and when needed triggers the outputs.
@@ -60,7 +60,7 @@ The driver tracks these intervals, but with the "MAVLink backend" does not need 
 When the camera would trigger the driver publishes a [CameraTrigger](../msg_docs/CameraTrigger.md) topic (with `feedback` field set to `false`) that causes a [CAMERA_TRIGGER](https://mavlink.io/en/messages/common.html#CAMERA_TRIGGER) MAVLink message to be emitted.
 The `camera_feedback` module should then log a corresponding `CameraCapture` topic.
 
-## Camera Commands in Missions
+## 任务中的相机命令
 
 PX4 re-emits camera items found in missions as MAVLink commands for all supported [Camera Protocol v2](https://mavlink.io/en/services/camera.html) and [Camera Protocol v1](https://mavlink.io/en/services/camera.html) commands.
 The system id of the emitted commands is the same as the ID of the autopilot.
@@ -88,9 +88,9 @@ Commands supported in missions, including camera commands, are shown in these me
   - Mission items are executed when set active.
   - `issue_command(_mission_item)` is called at the end of this to send the current non-waypoint command
     - [`MissionBlock::issue_command(const mission_item_s &item)`](https://github.com/PX4/PX4-Autopilot/blob/main/src/modules/navigator/mission_block.cpp#L543-L562)
-      - Creates a vehicle command for the mission item then calls `publish_vehicle_cmd` to publish it (`_navigator->publish_vehicle_cmd(&vcmd);`)
-        - [`void Navigator::publish_vehicle_cmd(vehicle_command_s *vcmd)`](https://github.com/PX4/PX4-Autopilot/blob/main/src/modules/navigator/navigator_main.cpp#L1358)
-          - For some camera commands it sets the component ID to the camera component id (`vcmd->target_component = 100; // MAV_COMP_ID_CAMERA`)
+      - Creates a vehicle command for the mission item then calls `publish_vehicle_command` to publish it (`_navigator->publish_vehicle_command(vehicle_command);`)
+        - [`void Navigator::publish_vehicle_command(vehicle_command_s &vehicle_command)`](https://github.com/PX4/PX4-Autopilot/blob/main/src/modules/navigator/navigator_main.cpp#L1395)
+          - For some camera commands it sets the component ID to the camera component id (`vehicle_command.target_component = 100; // MAV_COMP_ID_CAMERA`)
           - All others just get published to default component ID.
           - The `VehicleCommand` UORB topic is published.
 
@@ -107,7 +107,7 @@ The logged topic will depend on whether or not the camera capture pin is enabled
 
 Note that camera capture events are not logged when using the [MAVLink cameras that support Camera Protocol v2](../camera/mavlink_v2_camera.md), because the corresponding trigger events are not generated within PX4.
 
-## See Also
+## 另见
 
 - Camera trigger driver: [source code](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/camera_trigger) <!-- no module doc -->
 - Camera capture driver: [source code](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/camera_capture) <!-- no module doc -->

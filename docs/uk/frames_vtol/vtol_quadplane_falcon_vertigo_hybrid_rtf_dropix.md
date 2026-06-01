@@ -3,6 +3,7 @@
 :::warning
 Discontinued
 The Falcon Venturi FPV Wing frame on which this vehicle is based is no longer available.
+The Dropix FC used by this vehicle is discontinued.
 :::
 
 The _Falcon Vertigo Hybrid VTOL_ is a quadplane VTOL aircraft that has been designed to work with PX4 and the Dropix (Pixhawk compatible) flight controller. Він може нести невелику камеру GoPro.
@@ -13,7 +14,7 @@ The _Falcon Vertigo Hybrid VTOL_ is a quadplane VTOL aircraft that has been desi
 Основна Інформація:
 
 - **Frame:** Falcon Vertigo Hybrid VTOL
-- **Flight controller:** Dropix
+- **Flight controller:** Dropix (Discontineud)
 - **Wing span:** 1.3m
 
 ![Falcon Vertigo Hybrid VTOL RTF](../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_complete.jpg)
@@ -28,15 +29,15 @@ The _Falcon Vertigo Hybrid VTOL_ is a quadplane VTOL aircraft that has been desi
   - GPS u-blox M8N
   - Датник живлення
   - [Airspeed Sensor](https://store-drotek.com/793-digital-differential-airspeed-sensor-kit-.html)
-- Quad power set  [Tiger Motor MT-2216-11 900kv V2](https://www.getfpv.com/tiger-motor-mt-2216-11-900kv-v2.html) (discontinued)
+- Quad power set [Tiger Motor MT-2216-11 900kv V2](https://www.getfpv.com/tiger-motor-mt-2216-11-900kv-v2.html) (discontinued)
 - 4 x пропелер 10”x 5” (квадро-мотори)
-- 4 x [ESC 25A](http://www.getfpv.com/tiger-motor-flame-25a-esc.html)
+- 4 x [ESC 25A](https://www.getfpv.com/tiger-motor-flame-25a-esc.html)
 - 1 x пропелер 10” x 5” (двигун-штовхач)
 - 1 x ESC 30A
 - Система потужності двигуна-штовхача
 - Вуглецеві труби та кріплення
 - Кронштейни для мотора G10
-- 1 x [3700mah 4S 30C Lipo battery](https://www.overlander.co.uk/batteries/lipo-batteries/power-packs/3700mah-4s-14-8v-25c-lipo-battery-overlander-sport.html)
+- 1 x [3700mah 4S 30C Lipo battery](https://wheelspinmodels.co.uk/i/3700mah-4s-14.8v-25c-lipo-battery-overlander-262221/)
 - Плата розподілу живлення Dropix та кабель
 
 Набір не постачається з радіоприймачем або (опціональними) модулями телеметрії.
@@ -67,45 +68,45 @@ The _Falcon Vertigo Hybrid VTOL_ is a quadplane VTOL aircraft that has been desi
 
 1. Нанесіть клей Gorilla всередину кронштейнів крила, як показано.
 
-  ![Add glue on wing brackets](../../assets/airframes/vtol/falcon_vertigo/wing_brackets_glue.jpg)
+   ![Add glue on wing brackets](../../assets/airframes/vtol/falcon_vertigo/wing_brackets_glue.jpg)
 
 2. Вкріпіть карбонову трубку в держаки. Для вирівнювання піддона та трубки слід використовувати білу позначку (як показано на зображенні).
 
-  ::: info
-  This is very important because the white mark indicates the center of gravity.
+   ::: info
+   This is very important because the white mark indicates the center of gravity.
 
 :::
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/carbon_tube_in_brackets.jpg" title="Carbon tube in brackets" width="300px" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/carbon_tube_in_brackets.jpg" title="Carbon tube in brackets" width="300px" />
 
 3. Наступні зображення показують вирівнювання стержнів з інших точок зору:
 
-  ![quad motor frame rod alignment from bottom](../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_9_bottom_view_rod_alignment.jpg)
-  ![quad motor frame rod alignment schematic](../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_11_rod_alignment_schamatic.jpg)
+   ![quad motor frame rod alignment from bottom](../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_9_bottom_view_rod_alignment.jpg)
+   ![quad motor frame rod alignment schematic](../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_11_rod_alignment_schamatic.jpg)
 
 ### Крок 2: Прикріпіть крила
 
 1. Вставте обидві вуглецеві труби в фюзеляж.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_15_fuselage_tubes.jpg" width="500px" title="Fuselage carbon tubes" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_15_fuselage_tubes.jpg" width="500px" title="Fuselage carbon tubes" />
 
 2. Нанесіть клей gorilla між двома білими позначками на кожну трубку (вказано червоними стрілками). Білий знак по центру (синя стрілка) буде розміщений в центрі фюзеляжу, а інші знаки - по боках.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_13_rod_apply_glue.jpg" width="500px" title="Apply glue to rod" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_13_rod_apply_glue.jpg" width="500px" title="Apply glue to rod" />
 
 3. Після того, як вуглецеві трубки знаходяться всередині фюзеляжу, розподіліть клей gorilla на решту трубки та прикріпіть крила.
 
 4. Фюзеляж має два отвори для кабелів двигуна та сервоприводів. Пропустіть кабелі через отвори, а потім приєднайте крила до фюзеляжу.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_17_fuselage_holes_cables.jpg" width="500px" title="Fuselage holes for cables" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_17_fuselage_holes_cables.jpg" width="500px" title="Fuselage holes for cables" />
 
 5. Усередині фюзеляжу під'єднайте сигнальні кабелі, які ви щойно прокинули з крил до регулятора ESC, використовуючи надані роз'єми. Регулятори швидкості ESC вже підключені до двигунів і налаштовані на обертання в правильному порядку (вам потрібно буде підключити ESC PDB до модуля живлення на пізнішому етапі).
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_19_connect_esc_power_and_signal_cables.jpg" width="500px" title="Connect ESC power and signal cables" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_19_connect_esc_power_and_signal_cables.jpg" width="500px" title="Connect ESC power and signal cables" />
 
 6. Так само, як і з ESC, сервопристосування вже встановлені. Підключіть сигнальний кабель з крила (проходить через фюзеляж) до контролера польоту.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_21_connect_servo_cables.jpg" width="500px" title="Connect servo cables" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_21_connect_servo_cables.jpg" width="500px" title="Connect servo cables" />
 
 7. Повторіть ці кроки для іньшого крила.
 
@@ -115,177 +116,168 @@ The _Falcon Vertigo Hybrid VTOL_ is a quadplane VTOL aircraft that has been desi
 
 <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_23_dropix_and_other_electronics.jpg" width="500px" title="Falcon Vertigo Electronics" />
 
-:::info
-General information about connecting Dropix can be found in [Dropix Flight Controller](../flight_controller/dropix.md).
-:::
+#### Connect the ESC power connector and pass the signals cables to the flight controller
 
-#### Підключіть роз'єм живлення ESC та прокладіть кабелі сигналів до контролера польоту
+1. Connect the ESC to the power module using the XT60 connector
 
-1. Підключіть ЕСС до модуля живлення за допомогою роз'єму XT60
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_25_aileron_esc_connections.jpg" width="500px" title="" />
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_25_aileron_esc_connections.jpg" width="500px" title="" />
+2. Pass the signals cables through to the flight controller
 
-2. Передайте кабелі сигналів до контролера польоту
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_27_gps_esc_servo_connections.jpg" width="500px" title="GPS, ESC, Servo connections" />
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_27_gps_esc_servo_connections.jpg" width="500px" title="GPS, ESC, Servo connections" />
-
-#### Підключення двигуна
+#### Motor Wiring
 
 Motor and servo wiring is nearly entirely up to you, but should match the [Generic Standard VTOL](../airframes/airframe_reference.md#vtol_standard_vtol_generic_standard_vtol) configuration, as shown in the airframe reference.
 The geometry and output assignment can be configured in the [Actuators Configuration](../config/actuators.md#actuator-outputs)
 
-Наприклад, ви можете з’єднати його так, як у цьому прикладі (орієнтація як у "сидячи в літаку"):
+For example, you might wire it up like this example (orientation as if "sitting in the plane"):
 
-| Порт   | Підключення                |
-| ------ | -------------------------- |
-| MAIN 1 | Передній правий мотор, CCW |
-| MAIN 2 | Задній лівий мотор, CCW    |
-| MAIN 3 | Передній лівий мотор, CW   |
-| MAIN 4 | Задній правий мотор, CW    |
-| AUX  1 | Лівий елерон               |
-| AUX  2 | Правий елерон              |
-| AUX  3 | Elevator                   |
-| AUX  4 | Rudder                     |
-| AUX  5 | Тяга                       |
+| Порт   | Підключення            |
+| ------ | ---------------------- |
+| MAIN 1 | Front right motor, CCW |
+| MAIN 2 | Back left motor, CCW   |
+| MAIN 3 | Front left motor, CW   |
+| MAIN 4 | Back right motor, CW   |
+| AUX 1  | Left aileron           |
+| AUX 2  | Right aileron          |
+| AUX 3  | Elevator               |
+| AUX 4  | Rudder                 |
+| AUX 5  | Throttle               |
 
 <a id="dropix_back"></a>
 
-#### Підключення контролера польоту: Мотори, Сервомеханізми, Приймач RC, датчик струму
+#### Flight Controller Connections: Motors, Servos, RC receiver, current sensor
 
-Нижче показане зображення задньої плати керування польотом dropix, підкреслюючи вихідні контакти для підключення кабелів квадрокоптерних моторів, кабелів сигналу елерону, мотору, дросельного мотору, а також контактів поточного сенсора та введення радіоприймача (RC IN).
+The image below shows back of the dropix flight controller, highlighting the outputs pins to connect quad motors cables, aileron signal cables, throttle motor, and the current sensor and receiver (RC IN) input pins.
 
 <img id="dropix_outputs" src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_33_dropix_outputs.jpg" width="500px" title="Dropix motor/servo outputs" />
 
-1. Підключіть сигнальні кабелі квадро моторів.
+1. Connect quad motors signal cables.
 
-2. Підключіть кабелі елеронів та мотора керування ручкою газу в допоміжні виходи.
+2. Connect the aileron cables and throttle motor in the auxiliary outputs.
 
-3. Підключіть кабель сигналу двигуна дроселя від ESC до відповідного допоміжного порту контролера польоту. Підключіть ESC до регулятора газу.
+3. Connect the throttle motor signal cable from the ESC to the appropriate flight controller auxiliary port. Connect the ESC to the throttle motor.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_37_connect_throttle_motor.jpg" width="500px" title="Connect throttle motor" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_37_connect_throttle_motor.jpg" width="500px" title="Connect throttle motor" />
 
-4. Підключіть приймач (RC IN).
+4. Connect the receiver (RC IN).
 
 <a id="dropix_front"></a>
 
-#### Підключення контролера польоту: телеметрія, датчик швидкості повітря, GPS, сигналізація та перемикач безпеки
+#### Flight Controller Connections: Telemetry, Airspeed Sensor, GPS, Buzzer and Safety Switch
 
-Датчикові входи, телеметрія, сигналізація та безпечний вимикач розташовані з переднього боку керування польотом, як показано на схемі підключення нижче.
+The sensor inputs, telemetry, buzzer and safety switch are located in the front of the flight controller, as shown in the connection diagram below.
 
 <img src="../../assets/flight_controller/dropix/dropix_connectors_front.jpg" width="500px" alt="Dropix connectors front" title="Dropix connectors front" />
 
-1. Підключіть телеметрію, датчик швидкості, GPS, гудок та безпечний перемикач, як показано.
+1. Connect the telemetry, airspeed sensor, GPS, buzzer and safety switch as shown.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_39_connect_sensors.jpg" width="500px" title="Connect sensors" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_39_connect_sensors.jpg" width="500px" title="Connect sensors" />
 
-#### Контролер польоту: Підключіть модуль живлення та зовнішній USB
+#### Flight Controller: Connect power module and external USB
 
-Входи для порту USB, модуля живлення та зовнішнього USB розташовані на правому боці контролера польоту.
+The inputs for the USB port, power module and external USB are located on the right side of the flight controller.
 
-1. Підключіть живлення та USB, як показано
+1. Connect power and USB as shown
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_41_connect_power_module_usb.jpg" width="500px" title="Connect power module and USB" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_41_connect_power_module_usb.jpg" width="500px" title="Connect power module and USB" />
 
 :::tip
 The external USB is optional.
-Він повинен бути використано, якщо доступ до порту USB ускладнений після закріплення контролера польоту.
+It should be used if access to the USB port is difficult once the flight controller is mounted.
 :::
 
-#### Встановіть пітотрубку (датчик швидкості)
+#### Install the pitot tube (airspeed sensor)
 
-Труба пітота встановлена спереду літака й підключена до датчика швидкості через трубу.
+The pitot tube is installed on the front of the plane and connected to the airspeed sensor via a tube.
 
 :::warning
-It is important that nothing obstructs airflow to the Pitot tube. Це критично для фіксованих крил та для переходу від квадрокоптера до літака.
+It is important that nothing obstructs airflow to the Pitot tube. This is critical for fixed-wing flight and for transitioning from quad to plane.
 :::
 
-1. Встановіть трубку Піто у передній частині літака
+1. Install the Pitot tube in the front of the plane
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_43_airspeed_sensor_mounting.jpg" width="500px" title="Airspeed sensor mounting" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_43_airspeed_sensor_mounting.jpg" width="500px" title="Airspeed sensor mounting" />
 
-2. Зафіксуйте з'єднуючі трубки та переконайтеся, що вони не зігнуті / пом'яті.
+2. Secure the connecting tubing and ensure that it is not bent/kinked.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_45_airspeed_sensor_tubing.jpg" width="500px" title="Airspeed sensor mounting" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_45_airspeed_sensor_tubing.jpg" width="500px" title="Airspeed sensor mounting" />
 
-3. Підключіть трубки до датчика швидкості.
+3. Connect the tubes to the airspeed sensor.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_47_connect_airspeed_sensor_tubing.jpg" width="500px" title="Connect airspeed sensor and tubing" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_47_connect_airspeed_sensor_tubing.jpg" width="500px" title="Connect airspeed sensor and tubing" />
 
-#### Встановлення/підключення приймача та модуля телеметрії
+#### Install/connect receiver and telemetry module
 
-1. Вставте приймач та телеметричний модуль на зовнішню сторону рами транспортного засобу.
+1. Paste the receiver and telemetry module to the outside of the vehicle frame.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_49_receiver_mounting.jpg" width="500px" title="Paste receiver" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_49_receiver_mounting.jpg" width="500px" title="Paste receiver" />
 
 2. Connect the receiver to the RC IN port on the _back_ of the dropix, as shown above (also see the [flight controller instructions](#dropix_back)).
 
 3. Connect the telemetry module to the _front_ of the flight controller as shown below (see the [flight controller instructions](#dropix_front) for more detail on the pins).
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_51_telemetry_module_mounting.jpg" width="500px" title="Paste telemetry module" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_51_telemetry_module_mounting.jpg" width="500px" title="Paste telemetry module" />
 
 <a id="compass_gps"></a>
 
-#### Модуль GPS/Компас
+#### GPS/Compass module
 
-Модуль GPS/Компас вже встановлено на крило в типовому положенні. Вам не потрібно робити щось додаткове для цього!
+The GPS/Compass module is already mounted on the wing, in the default orientation. You don't need to have to do anything extra for this!
 
 <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_gps_compass.jpg" width="500px" title="GPS/Compass" />
 
 <a id="flight_controller_orientation"></a>
 
-#### Монтаж та орієнтація політного контролера
+#### Mount and orient the flight controller
 
-1. Встановіть орієнтацію вашого політ контролеру на 270 градусів.
+1. Set your flight controller orientation to 270 degrees.
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_53_flight_controller_orientation.jpg" width="500px" title="Flight controller orientation" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_53_flight_controller_orientation.jpg" width="500px" title="Flight controller orientation" />
 
-2. Закріпіть контролер на місці за допомогою піни для поглинання вібрації.
+2. Secure the controller in place using vibration damping foam.
 
-### Крок 4: Перевірка остаточної збірки
+### Step 4: Final Assembly Checks
 
-Останнім етапом збирання є перевірка стійкості дрона та правильності налаштування двигунів.
+The final assembly step is to check the vehicle is stable and that the motors have been set up correctly.
 
-1. Перевірте, що двигуни обертаються у правильних напрямках (як у діаграмі QuadX нижче).
+1. Check that the motors turn in the correct directions (as in the QuadX diagram below).
 
-  <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_35_quad_motor_directions.png" width="200px" title="Quad motor order/directions" />
+   <img src="../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_35_quad_motor_directions.png" width="200px" title="Quad motor order/directions" />
 
-  ::: info
-  If necessary the servo direction can be reversed using the `Rev Range (for servos)` checkbox associated with each servo output in the QGroundControl [Actuator Output](../config/actuators.md#actuator-outputs) configuration (for servos only) (this sets the [PWM_AUX_REV](../advanced_config/parameter_reference.md#PWM_AUX_REV) or [PWM_AUX_MAIN](../advanced_config/parameter_reference.md#PWM_MAIN_REV) parameter).
+   ::: info
+   If necessary the servo direction can be reversed using the `Rev Range (for servos)` checkbox associated with each servo output in the QGroundControl [Actuator Output](../config/actuators.md#actuator-outputs) configuration (for servos only) (this sets the [PWM_AUX_REV](../advanced_config/parameter_reference.md#PWM_AUX_REV) or [PWM_AUX_MAIN](../advanced_config/parameter_reference.md#PWM_MAIN_REV) parameter).
 
 :::
 
-2. Перевірте, чи транспортний засіб збалансований навколо очікуваного центру мас
+2. Check the vehicle is balanced around the expected centre of gravity
+   - Hold the vehicle with your fingers at the center of gravity and check that the vehicle remains stable.
 
-  - Утримуйте транспортний засіб пальцями у центрі ваги та переконайтеся, що транспортний засіб залишається стабільним.
+     ![Level Centre of Gravity](../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_57_level_centre_of_gravity.jpg)
 
-    ![Level Centre of Gravity](../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_57_level_centre_of_gravity.jpg)
+   - If the vehicle leans forward or backwards, move the motors to balance it.
 
-  - Якщо транспортний засіб нахиляється вперед або назад, перемістіть двигуни, щоб утримати рівновагу.
-
-    ![Level Motors](../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_55_level_motors.jpg)
+     ![Level Motors](../../assets/airframes/vtol/falcon_vertigo/falcon_vertigo_55_level_motors.jpg)
 
 ## Налаштування
 
 Perform the normal [Basic Configuration](../config/index.md).
 
-Примітки:
+Notes:
 
 1. For [Airframe](../config/airframe.md) select the vehicle group/type as _Standard VTOL_ and the specific vehicle as [Generic Standard VTOL](../airframes/airframe_reference.md#vtol_standard_vtol_generic_standard_vtol) as shown below.
 
-  ![QCG - Select Generic Standard VTOL](../../assets/qgc/setup/airframe/px4_frame_generic_standard_vtol.png)
+   ![QCG - Select Generic Standard VTOL](../../assets/qgc/setup/airframe/px4_frame_generic_standard_vtol.png)
 
 2. Set the [Autopilot Orientation](../config/flight_controller_orientation.md) to `ROTATION_YAW_270` as the autopilot is mounted [sideways](#flight_controller_orientation) with respect to the front of the vehicle. The compass is oriented forward, so you can leave that at the default (`ROTATION_NONE`).
 
 3. Configure the outputs and geometry following the instructions in [Actuators Configuration](../config/actuators.md)
 
-4. За замовчуванням параметри часто достатні для стабільного польоту. For more detailed tuning information see [Standard VTOL Wiring and Configuration](../config_vtol/vtol_quad_configuration.md).
+4. The default parameters are often sufficient for stable flight. For more detailed tuning information see [Standard VTOL Wiring and Configuration](../config_vtol/vtol_quad_configuration.md).
 
-Після завершення калібрування, VTOL готовий до польоту.
+After you finish calibration the VTOL is ready to fly.
 
 ## Відео
 
 <lite-youtube videoid="h7OHTigtU0s" title="PX4 Vtol test"/>
-
-## Підтримка
-
-If you have any questions regarding your VTOL conversion or configuration please visit <https://discuss.px4.io/c/px4/vtol>.

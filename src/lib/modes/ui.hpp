@@ -47,9 +47,11 @@ static inline uint32_t getValidNavStates()
 {
 	return (1u << vehicle_status_s::NAVIGATION_STATE_MANUAL) |
 	       (1u << vehicle_status_s::NAVIGATION_STATE_ALTCTL) |
+	       (1u << vehicle_status_s::NAVIGATION_STATE_ALTITUDE_CRUISE) |
 	       (1u << vehicle_status_s::NAVIGATION_STATE_POSCTL) |
 	       (1u << vehicle_status_s::NAVIGATION_STATE_AUTO_MISSION) |
 	       (1u << vehicle_status_s::NAVIGATION_STATE_AUTO_LOITER) |
+	       (1u << vehicle_status_s::NAVIGATION_STATE_GUIDED_COURSE) |
 	       (1u << vehicle_status_s::NAVIGATION_STATE_AUTO_RTL) |
 	       (1u << vehicle_status_s::NAVIGATION_STATE_POSITION_SLOW) |
 	       (1u << vehicle_status_s::NAVIGATION_STATE_ACRO) |
@@ -74,8 +76,8 @@ const char *const nav_state_names[vehicle_status_s::NAVIGATION_STATE_MAX] = {
 	"Hold",
 	"Return",
 	"Position Slow",
-	"7: unallocated",
-	"8: unallocated",
+	"Guided Course",
+	"Altitude Cruise",
 	"9: unallocated",
 	"Acro",
 	"11: UNUSED",

@@ -33,7 +33,7 @@ The boards support the [Pixhawk Autopilot Bus (PAB)](../flight_controller/pixhaw
 
 ## 机载计算机选项
 
-PX4 可以与计算机一起使用，可以配置为通过基于串口(或以太网端口) 的 MAVLink 或 microROS/uXRCE-DDS 进行通信。
+PX4 can be used with computers that can be configured to communicate via MAVLink or microROS/uXRCE-DDS over a serial port (or Ethernet port, if present).
 以下列出了一小部分可能的替代方案。
 
 高性能计算机：
@@ -42,7 +42,7 @@ PX4 可以与计算机一起使用，可以配置为通过基于串口(或以太
 - [NXP NavQPlus](https://nxp.gitbook.io/navqplus/user-contributed-content/ros2/microdds)
 - [Nvidia Jetson TX2](https://developer.nvidia.com/embedded/jetson-tx2)
 
-* [Intel NUC](https://www.intel.com/content/www/us/en/products/details/nuc.html)
+* [Intel NUC](https://www.asus.com/au/content/nuc-overview/)
 * [Gigabyte Brix](https://www.gigabyte.com/Mini-PcBarebone/BRIX)
 
 小型/低功耗设备如：
@@ -78,7 +78,7 @@ MAVSDK 通常更容易学习和使用，而 ROS 提供更多预先编写的软�
 
 如果您需要将 MAVLink 从载具桥接到地面站或 IP 网络，您将需要一个路由器。 或者如果您需要多个连接：
 
-- [MAVLink Router](https://github.com/intel/mavlink-router) (recommended)
+- [MAVLink Router](https://github.com/mavlink-router/mavlink-router) (recommended)
 - [MAVProxy](https://ardupilot.org/mavproxy/)
 
 ## 以太网设置

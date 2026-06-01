@@ -19,7 +19,7 @@ Holybro가 설계하고 개발하였습니다.
 - 내부 진동 차단 시스템.
 - 듀얼 고성능, 저잡음 IMU 온보드는 까다로운 안정화 애플리케이션을 위해 설계되었습니다.
 
-A summary of the key features, [assembly](../assembly/quick_start_durandal.md), and [purchase](#purchase) links can be found below.
+A summary of the key features, [assembly](../assembly/quick_start_durandal.md), and [purchase](#store) links can be found below.
 
 :::info
 This flight controller is [manufacturer supported](../flight_controller/autopilot_manufacturer_supported.md).
@@ -86,13 +86,9 @@ This flight controller is [manufacturer supported](../flight_controller/autopilo
 
 For more information see: [Durandal Technical Data Sheet](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Durandal_technical_data_sheet_90f8875d-8035-4632-a936-a0d178062077.pdf).
 
-<a id="purchase"></a>
+## Where to Buy {#store}
 
-## 구매처
-
-Order from [Holybro](https://holybro.com/collections/autopilot-flight-controllers/products/durandal).
-
-<a id="connections"></a>
+Order from [Holybro](https://holybro.com/products/durandal).
 
 ## 연결
 
@@ -164,7 +160,7 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make holybro_durandal-v1_default
 ```
 
@@ -182,9 +178,7 @@ make holybro_durandal-v1_default
 
 <!-- Note: Got ports using https://github.com/PX4/PX4-user_guide/pull/672#issuecomment-598198434 -->
 
-<a id="debug_port"></a>
-
-## 디버그 포트
+## Debug Port {#debug_port}
 
 The [PX4 System Console](../debug/system_console.md) and [SWD interface](../debug/swd_debug.md) run on the _Debug Port_.
 
@@ -211,7 +205,7 @@ The complete set of supported configurations can be seen in the [Airframes Refer
 ## 핀배열
 
 _Durandal_ pinouts are listed below.
-These can also be downloaded from [here](https://holybro.com/collections/autopilot-flight-controllers/products/Durandal-Pinouts).
+These can also be downloaded from [here](https://cdn.shopifycdn.net/s/files/1/0604/5905/7341/files/Durandal_Pinouts_v1.0.pdf?v=1693983344).
 
 ### 상단 핀배열
 
@@ -422,4 +416,4 @@ These can also be downloaded from [here](https://holybro.com/collections/autopil
 
 - [Durandal Wiring QuickStart](../assembly/quick_start_durandal.md)
 - [Durandal Technical Data Sheet](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Durandal_technical_data_sheet_90f8875d-8035-4632-a936-a0d178062077.pdf)
-- [Durandal Pinouts](https://holybro.com/collections/autopilot-flight-controllers/products/Durandal-Pinouts) (Holybro)
+- [Durandal Pinouts](https://cdn.shopifycdn.net/s/files/1/0604/5905/7341/files/Durandal_Pinouts_v1.0.pdf?v=1693983344) (Holybro)

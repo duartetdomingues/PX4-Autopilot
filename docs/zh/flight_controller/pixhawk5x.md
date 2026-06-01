@@ -38,7 +38,7 @@ The Pixhawk® 5X is perfect for developers at corporate research labs, startups,
 
 - Modular flight controller
   - separated IMU, FMU, and Base system connected by a 100-pin & a 50-pin Pixhawk® Autopilot Bus connector, designed for flexible and customizable systems
-- Redundancy
+- 冗余
   - 3x IMU sensors & 2x Barometer sensors on separate buses, allowing parallel and continuous operation even in the event of a hardware failure
 - Triple redundancy domains
   - Completely isolated sensor domains with separate buses and separate power control
@@ -62,7 +62,6 @@ The Pixhawk® 5X is perfect for developers at corporate research labs, startups,
   - 32 位 Arm® Cortex®-M3，24MHz，8KB SRAM
 
 - On-board Sensors:
-
   - Accel/Gyro: ICM-20649
   - Accel/Gyro: ICM-42688P
   - 加速度计 / 陀螺仪：ICM-20602
@@ -70,7 +69,6 @@ The Pixhawk® 5X is perfect for developers at corporate research labs, startups,
   - Barometer: 2x BMP388
 
 - 接口
-
   - 16- PWM servo outputs
   - R/C input for Spektrum / DSM
   - Dedicated R/C input for PPM and S.Bus input
@@ -100,25 +98,22 @@ The Pixhawk® 5X is perfect for developers at corporate research labs, startups,
     - 2 Dedicated debug and GPIO lines
 
 - 额定电压
-
   - Max input voltage: 6V
   - USB 电源输入：4.75~5.25V
   - 伺服导轨输入电压：0~36V
 
 - 尺寸
-
   - Flight Controller Module: 38.8 x 31.8 x 14.6mm
   - Standard Baseboard: 52.4 x 103.4 x 16.7mm
 
 - 重量
-
   - Flight Controller Module: 23g
   - Standard Baseboard: 51g
 
 - 其它特性:
   - Operating & storage temperature: -40 ~ 85°c
 
-## 购买渠道
+## Where to Buy {#store}
 
 Order from [Holybro](https://holybro.com/products/pixhawk-5x).
 
@@ -136,10 +131,10 @@ The [Pixhawk 5X Wiring Quick Start](../assembly/quick_start_pixhawk5x.md) provid
 
 :::info
 Connector pin assignments are left to right (i.e. Pin 1 is the left-most pin).
-::: infos:
+:::
 
 - The [camera capture pin](../camera/fc_connected_camera.md#camera-capture-configuration) (`PI0`) is pin 2 on the AD&IO port, marked above as `FMU_CAP1`.
-- _Pixhawk 5X_ pinouts can be downloaded in PDF from from [here](https://github.com/PX4/PX4-user_guide/blob/main/assets/flight_controller/pixhawk5x/pixhawk5x_pinout.pdf) or [here](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Holybro_Pixhawk5X_Pinout.pdf).
+- _Pixhawk 5X_ pinouts can be downloaded in PDF from [here](https://github.com/PX4/PX4-user_guide/blob/main/assets/flight_controller/pixhawk5x/pixhawk5x_pinout.pdf) or [here](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Holybro_Pixhawk5X_Pinout.pdf).
 
 ## 串口映射
 
@@ -147,7 +142,7 @@ Connector pin assignments are left to right (i.e. Pin 1 is the left-most pin).
 | ------ | ---------- | ------------------------------- |
 | USART1 | /dev/ttyS0 | GPS                             |
 | USART2 | /dev/ttyS1 | TELEM3                          |
-| USART3 | /dev/ttyS2 | Debug Console                   |
+| USART3 | /dev/ttyS2 | 调试控制台                           |
 | UART4  | /dev/ttyS3 | UART4 & I2C |
 | UART5  | /dev/ttyS4 | TELEM2                          |
 | USART6 | /dev/ttyS5 | PX4IO/RC                        |
@@ -161,7 +156,7 @@ Connector pin assignments are left to right (i.e. Pin 1 is the left-most pin).
 ## 额定电压
 
 _Pixhawk 5X_ can be triple-redundant on the power supply if three power sources are supplied. The three power rails are: **POWER1**, **POWER2** and **USB**.
-The **POWER1** & **POWER2** ports on the Pixhawk 5X uses the 6 circuit [2.00mm Pitch CLIK-Mate Wire-to-Board PCB Receptacle](https://www.molex.com/molex/products/part-detail/pcb_receptacles/5024430670).
+The **POWER1** & **POWER2** ports on the Pixhawk 5X uses the 6 circuit [2.00mm Pitch CLIK-Mate Wire-to-Board PCB Receptacle](https://www.molex.com/en-us/products/part-detail/5024430670).
 
 **Normal Operation Maximum Ratings**
 
@@ -182,7 +177,7 @@ Under these conditions the system will not draw any power (will not be operation
 
 Digital I2C battery monitoring is enabled by default (see [Quickstart > Power](../assembly/quick_start_pixhawk5x.md#power)).
 
-::: info
+:::info
 Analog battery monitoring via an ADC is not supported on this particular board, but may be supported in variations of this flight controller with a different baseboard.
 :::
 
@@ -195,13 +190,11 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make px4_fmu-v5x_default
 ```
 
-<a id="debug_port"></a>
-
-## 调试接口
+## Debug Port {#debug_port}
 
 The [PX4 System Console](../debug/system_console.md) and [SWD interface](../debug/swd_debug.md) run on the **FMU Debug** port.
 
@@ -227,7 +220,7 @@ For information about using this port see:
 
 ## 外部设备
 
-- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor)
+- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor-ms4525do)
 - [Telemetry Radio Modules](https://holybro.com/collections/telemetry-radios?orderby=date)
 - [Rangefinders/Distance sensors](../sensor/rangefinders.md)
 

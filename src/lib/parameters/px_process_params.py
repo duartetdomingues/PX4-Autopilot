@@ -47,7 +47,7 @@ from __future__ import print_function
 import sys
 import os
 import argparse
-from px4params import srcscanner, srcparser, injectxmlparams, xmlout, markdownout, jsonout
+from px4params import srcscanner, srcparser, injectxmlparams, xmlout, markdownout, jsonout, readonly_config
 
 import lzma #to create .xz file
 import json
@@ -75,12 +75,6 @@ def main():
                         metavar="FILENAME",
                         help="Create XML file"
                              " (default FILENAME: parameters.xml)")
-    parser.add_argument("-i", "--inject-xml",
-                        nargs='?',
-                        const="parameters_injected.xml",
-                        metavar="FILENAME",
-                        help="Inject additional param XML file"
-                             " (default FILENAME: parameters_injected.xml)")
     parser.add_argument("-b", "--board",
                         nargs='?',
                         const="",
@@ -108,6 +102,10 @@ def main():
                         default="{}",
                         metavar="OVERRIDES",
                         help="a dict of overrides in the form of a json string")
+    parser.add_argument("--readonly-config",
+                        default=None,
+                        metavar="FILENAME",
+                        help="path to readonly_params.yaml")
 
     args = parser.parse_args()
 
@@ -138,8 +136,6 @@ def main():
 
     #inject parameters at front of set
     cur_dir = os.path.dirname(os.path.realpath(__file__))
-    groups_to_inject = injectxmlparams.XMLInject(os.path.join(cur_dir, args.inject_xml)).injected()
-    param_groups=groups_to_inject+param_groups
 
     override_dict = json.loads(args.overrides)
     if len(override_dict.keys()) > 0:
@@ -150,6 +146,18 @@ def main():
                     val = str(override_dict[param.GetName()])
                     param.default = val
                     print("OVERRIDING {:s} to {:s}!!!!!".format(name, val))
+
+    # Mark readonly parameters
+    if args.readonly_config:
+        all_param_names = set()
+        for group in param_groups:
+            for param in group.GetParams():
+                all_param_names.add(param.GetName())
+        readonly_params = readonly_config.load_readonly_params(args.readonly_config, all_param_names)
+        for group in param_groups:
+            for param in group.GetParams():
+                if param.GetName() in readonly_params:
+                    param.SetReadonly()
 
     output_files = []
 
@@ -174,8 +182,7 @@ def main():
         if args.verbose:
             print("Creating Json file " + args.json)
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        out = jsonout.JsonOutput(param_groups, args.board,
-                               os.path.join(cur_dir, args.inject_xml))
+        out = jsonout.JsonOutput(param_groups, args.board)
         out.Save(args.json)
         output_files.append(args.json)
 
@@ -184,7 +191,7 @@ def main():
             if args.verbose:
                 print("Compressing file " + f)
             save_compressed(f)
-            
+
 
 if __name__ == "__main__":
     main()

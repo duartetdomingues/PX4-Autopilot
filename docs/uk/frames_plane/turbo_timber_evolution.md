@@ -32,7 +32,7 @@ This model is designed to excel at [STOL](https://en.wikipedia.org/wiki/STOL) fl
 
 - Легкий доступ до USB-порту Pixhawk та роз'єму для налагодження
 
-- [First Person View (FPV)](https://en.wikipedia.org/wiki/First-person_view_\(radio_control\)) with camera pan mount
+- [First Person View (FPV)](https://en.wikipedia.org/wiki/First-person_view_(radio_control)) with camera pan mount
 
 - Аеродинамічні дані надаються крилом, яке має навісний пітот-статичний модуль
 
@@ -50,13 +50,13 @@ This model is designed to excel at [STOL](https://en.wikipedia.org/wiki/STOL) fl
 
 - Модуль диференційного тиску MS4525DO та пітот-трубка
 
-- [Caddx Vista FPV air unit](https://caddxfpv.com/products/caddx-vista-kit)
+- [Caddx Vista FPV air unit](https://www.caddxfpv.com/collections/vista-kit)
 
 - [DJI FPV Goggles](https://www.dji.com/fpv)
 
-- [ExpressLRS Matek Diversity RX](http://www.mateksys.com/?portfolio=elrs-r24)
+- [ExpressLRS Matek Diversity RX](https://www.mateksys.com/?portfolio=elrs-r24)
 
-- [Custom designed 3D printed parts](https://github.com/PX4/PX4-user_guide/raw/main/assets/airframes/fw/turbo_timber_evolution/3d_printed_parts.zip)
+- [Custom designed 3D printed parts](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/airframes/fw/turbo_timber_evolution/3d_printed_parts.zip)
   - Кріплення для Pixhawk 4 Mini та верхнє кріплення для GPS
   - FPV модуль та кріплення камери
   - Пітот-статичний модуль та кріплення на крило
@@ -74,7 +74,7 @@ This model is designed to excel at [STOL](https://en.wikipedia.org/wiki/STOL) fl
 Для цієї частини збирання просто дотримуйтеся інструкції.
 
 :::info
-[Some reports](https://www.rcgroups.com/forums/showthread.php?3904021-NEW-E-flite-Turbo-Timber-Evolution-1-5m-%C2%96-Smartest-Most-Capable-Durable-Timber-Yet/page50) have indicated that the stock ESC bundled with the airplane has an issue with overheating.
+[Some reports](https://www.rcgroups.com/forums/showthread.php?3904021-NEW-E-flite-Turbo-Timber-Evolution-1-5m/page50) have indicated that the stock ESC bundled with the airplane has an issue with overheating.
 
 Оскільки ця збірка буде особливо важкою, і, отже, ймовірно, потребуватиме більшого середнього потужності від регулятора швидкості, стандартний регулятор швидкості на 60 А був замінений на 80-амперний регулятор швидкості Turnigy PLUSH-32 під час тестування.
 The stock motor was also replaced with a [higher power motor](https://hobbyking.com/en_us/turnigy-aerodrive-sk3-3548-840kv-brushless-outrunner-motor.html).
@@ -90,7 +90,7 @@ FPV підставка була закріплена зверху кришки �
 
 ![Window and front fuselage (hatch) with FPV Pod mounted on top](../../assets/airframes/fw/turbo_timber_evolution/fpv_pod_hatch.jpg)
 
-![Underside of hatch showing the FPV pod attachement screws and wires pulled through](../../assets/airframes/fw/turbo_timber_evolution/hatch_underside.jpg)
+![Underside of hatch showing the FPV pod attachment screws and wires pulled through](../../assets/airframes/fw/turbo_timber_evolution/hatch_underside.jpg)
 
 ## Підвіс для динамічного тиску
 
@@ -117,7 +117,7 @@ An [airspeed sensor](../sensor/airspeed.md) is highly recommended for use on fix
 
 ## Встановлення польотного комп'ютера
 
-A custom mount for the PX4 Mini was designed and 3d printed (see [3D printed parts](https://github.com/PX4/PX4-user_guide/raw/main/assets/airframes/fw/turbo_timber_evolution/3d_printed_parts.zip) for all parts).
+A custom mount for the PX4 Mini was designed and 3d printed (see [3D printed parts](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/airframes/fw/turbo_timber_evolution/3d_printed_parts.zip) for all parts).
 Це кріплення було ретельно розроблено з використанням внутрішніх пінопластових формоспеціфікацій стандартної конструкції корпусу TTE, щоб бути надійно закріпленим та добре вирівняним.
 Кріплення складається з двох частин у конфігурації подвійного ярусу, які з'єднані болтами з різьбленими стійками М3.
 Нижня підставка несе Pixhawk та прикріплюється до корпусу, а верхня підставка несе GPS та приймач ExpressLRS.
@@ -150,7 +150,7 @@ A custom mount for the PX4 Mini was designed and 3d printed (see [3D printed par
 
 ТЕ дуже гнучкий щодо варіантів акумуляторів.
 Я використовую як акумулятор Turnigy 3,6 Аг 4S, так і акумулятор Upgrade Energy 4s2p liion.
-Хоча LiPo 3,6 Аг є недорогим, з акумулятором Upgrade Energy Liion можна досягти майже вдвічі більшого часу польоту (24 хвилини проти 12 хвилин).
+While the 3.6Ah LiPo is inexpensive, nearly twice the flight time (24 minutes vs 12 minutes) can be achieved with the Upgrade Energy Liion pack.
 
 ![Image of batteries used for the build](../../assets/airframes/fw/turbo_timber_evolution/batteries.jpg)
 
@@ -177,10 +177,10 @@ USB-A кінець цього кабелю залишено висіти в ба
 
 #### Приймач радіокерування
 
-A custom cable was made to connect the ExpressLRS RX ([RC Reciever](../getting_started/rc_transmitter_receiver.md)) to the Pixhawk 4 Mini.
+A custom cable was made to connect the ExpressLRS RX ([RC Receiver](../getting_started/rc_transmitter_receiver.md)) to the Pixhawk 4 Mini.
 
 Оскільки у Pixhawk 4 Mini обмежена кількість UART, RX був підключений до входу RC, який не має піна TX.
-Це означає, що RX буде відправляти дані керування до FCU, але телеметрія не може бути відправлена до RX з FCU.
+This means that the RX will only send control data to the FCU but telemetry cannot be sent to the RX from the FCU.
 Термоусадка була використана для закріплення роз'єму Dupont кабелю таким чином, що він не може випадково вийти з заголовків приймача ExpressLRS RX.
 
 #### FPV Pod & Airspeed Cable
@@ -189,7 +189,7 @@ Another custom cable was made to connect the Caddx Vista FPV transmitter to the 
 Біля Vista було додано роз'єм Molex Microfit, щоб його можна було легко від'єднати без необхідності доступу до Pixhawk.
 As the name implies, the `UART/I2C B` port provides both a UART and I2C interface.
 Цей порт розділено за допомогою спеціального кабелю, і одна сторона надає живлення та дані для I2C датчика швидкості повітря, тоді як інша сторона надає живлення та UART TX/RX для Caddx Vista.
-Від порту UART/I2C B, 5V, GND та I2C SCL/SDA підключені до датчика швидкості повітря по I2C, тоді як лише серійний RX та TX підключені до Caddx Vista (заземлення надається окремими лініями живлення/землі для Vista)
+From the UART/I2C B port, 5V, GND, and I2C SCL/SDA, are connected to the I2C airspeed sensor, while just serial RX and TX are connected to the Caddx Vista (Ground is provided the separate battery power/gnd leads for the Vista)
 
 The [msp_osd](../modules/modules_driver.md#msp-osd) module is used to stream telemetry to the Caddx Vista which can be seen on the DJI Goggles with the "custom OSD" feature enabled.
 
@@ -204,7 +204,7 @@ The [msp_osd](../modules/modules_driver.md#msp-osd) module is used to stream tel
 
 Загалом, ця збірка була успішною.
 
-Навіть з додатковою вагою встановлення Pixhawk 4 Mini літак добре балансується і має достатньо потужності, щоб зберегти свої оригінальні характеристики STOL.
+Even with the added weight of the Pixhawk 4 Mini installation, the airplane balances well and has plenty of power to retain its original STOL characteristics.
 PX4 is easily capable of stabilizing the airplane and fine tuning of the rate loops were accomplished using [fixed-wing autotuning](../config/autotune_fw.md).
 The results of tuning can be found in the [parameter file linked below](#parameter-file).
 
@@ -238,7 +238,7 @@ The results of tuning can be found in the [parameter file linked below](#paramet
 
 ### Огляд параметрів
 
-[Snapshot of PX4 airframe params](https://github.com/PX4/PX4-user_guide/raw/main/assets/airframes/fw/turbo_timber_evolution/tteparams.params)
+[Snapshot of PX4 airframe params](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/airframes/fw/turbo_timber_evolution/tteparams.params)
 
 Цей файл param містить налаштування PX4 для цієї збірки, включаючи налаштування радіо, настройку та конфігурацію датчиків.
 The param file can be loaded via QGC using the instructions at [Parameters> Tools ](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/setup_view/parameters.html#tools) (QGC User Guide).

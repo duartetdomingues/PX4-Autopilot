@@ -20,8 +20,8 @@ Operating in the 2.4GHz frequency band, it allows unrestricted global use withou
 
 - **Frequency Band:** 2.4GHz
 - **Speed:** Up to 11 Mbps (adjustable)
-- **Range:** Up to 500 meters (varies upon environments)
-- **Payload Capacity:** Up to 1400 bytes
+- **Range:** Up to 1000 meters (varies upon environments)
+- **Payload Capacity:** Up to 1024 bytes
 
 ### Network Schemes
 
@@ -94,7 +94,7 @@ If you want to change the baud rate:
 ### One-to-many (1:N) Setups
 
 For one-to-many (1:N) setups a higher baud rate is _highly recommended_ to ensure stable data reception.
-All J.Fi devices should be set to the same baud rate (although communication may work even when when devices use different baud rates).
+All J.Fi devices should be set to the same baud rate (although communication may work even when devices use different baud rates).
 This should be changed in both PX4 and the J.Fi modules as explained in the previous section.
 
 You will also need to make sure that all vehicles on the MAVLink network are assigned a unique **System ID** ([MAV_SYS_ID](../advanced_config/parameter_reference.md#MAV_SYS_ID)).
@@ -124,7 +124,7 @@ However if you change the baud rate from 57600 you will need to create and use a
 - **Smart device:** Connect to Wi-Fi network named `J.Fi-xxxxxx` (x: alphanumeric characters)
 - **Browser:** Go to `192.168.4.1` to open the **configuration page**.
 - **Configuration page:** Adjust settings as needed, then click **Save**
-  - _LED 1_ blinks once upon saving
+  - _LED 2_ blinks once upon saving
 
 ![J.Fi Wireless Telemetry Broadcast Communication](../../assets/hardware/telemetry/jmarple/jfi_telemetry_config.jpg)
 

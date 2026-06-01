@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2022 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2022-2026 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -53,16 +53,12 @@ protected:
 private:
 	void updateArmingState(const hrt_abstime &time_us, bool armed, const failsafe_flags_s &status_flags);
 
-	enum class ManualControlLossExceptionBits : int32_t {
+	enum class LinkLossExceptionBits : int32_t {
 		Mission = (1 << 0),
-		Hold = (1 << 1),
-		Offboard = (1 << 2)
-	};
-
-	enum class DatalinkLossExceptionBits : int32_t {
-		Mission = (1 << 0),
-		Hold = (1 << 1),
-		Offboard = (1 << 2)
+		AutoModes = (1 << 1),
+		Offboard = (1 << 2),
+		ExternalMode = (1 << 3),
+		AltitudeCruise = (1 << 4)
 	};
 
 	// COM_LOW_BAT_ACT parameter values
@@ -84,24 +80,12 @@ private:
 		Disarm = 7,
 	};
 
-	enum class position_control_navigation_loss_response : int32_t {
-		Altitude_Manual = 0,
-		Land_Descend = 1,
-	};
-
 	enum class actuator_failure_failsafe_mode : int32_t {
 		Warning_only = 0,
 		Hold_mode = 1,
 		Land_mode = 2,
 		Return_mode = 3,
 		Terminate = 4,
-	};
-
-	enum class imbalanced_propeller_failsafe_mode : int32_t {
-		Disabled = -1,
-		Warning = 0,
-		Return = 1,
-		Land = 2,
 	};
 
 	enum class geofence_violation_action : int32_t {
@@ -131,11 +115,15 @@ private:
 
 	// COM_RC_IN_MODE parameter values
 	enum class RcInMode : int32_t {
-		RcTransmitterOnly = 0, 		// RC Transmitter only
-		JoystickOnly = 1,		// Joystick only
-		RcAndJoystickWithFallback = 2,	// RC And Joystick with fallback
-		RcOrJoystickKeepFirst = 3,	// RC or Joystick keep first
-		StickInputDisabled = 4		// input disabled
+		RcOnly = 0,
+		MavLinkOnly = 1,
+		RcOrMavlinkWithFallback = 2,
+		RcOrMavlinkKeepFirst = 3,
+		DisableManualControl = 4,
+		PriorityRcThenMavlinkAscending = 5,
+		PriorityMavlinkAscendingThenRc = 6,
+		PriorityRcThenMavlinkDescending = 7,
+		PriorityMavlinkDescendingThenRc = 8
 	};
 
 	enum class command_after_high_wind_failsafe : int32_t {
@@ -162,10 +150,32 @@ private:
 		Return_mode = 3
 	};
 
+	enum class open_drone_id_failsafe_mode : int32_t {
+		None = 0,
+		Warning = 1,
+		Error = 2,
+		Return_mode = 3,
+		Land_mode = 4,
+		Terminate = 5,
+	};
+
+	enum class parachute_unhealthy_failsafe_mode : int32_t {
+		Disabled = 0,
+		Warning = 1,
+		Return = 2,
+		Land = 3,
+	};
+
+	enum class gps_redundancy_failsafe_mode : int32_t {
+		Warning = 0,
+		Return_mode = 1,
+		Land_mode = 2,
+		Terminate = 3,
+	};
+
 	static ActionOptions fromNavDllOrRclActParam(int param_value);
 
 	static ActionOptions fromGfActParam(int param_value);
-	static ActionOptions fromImbalancedPropActParam(int param_value);
 	static ActionOptions fromActuatorFailureActParam(int param_value);
 	static ActionOptions fromBatteryWarningActParam(int param_value, uint8_t battery_warning);
 	static ActionOptions fromQuadchuteActParam(int param_value);
@@ -173,6 +183,11 @@ private:
 	static ActionOptions fromHighWindLimitActParam(int param_value);
 	static ActionOptions fromPosLowActParam(int param_value);
 	static ActionOptions fromRemainingFlightTimeLowActParam(int param_value);
+	static ActionOptions fromOdidFailActParam(int param_value);
+	static ActionOptions fromParachuteActParam(int param_value);
+	static ActionOptions fromGnssLossActParam(int param_value);
+
+	static bool isFailsafeIgnored(uint8_t user_intended_mode, int32_t exception_mask_parameter);
 
 	const int _caller_id_mode_fallback{genCallerId()};
 	bool _last_state_mode_fallback{false};
@@ -201,11 +216,8 @@ private:
 					(ParamInt<px4::params::COM_RCL_EXCEPT>) _param_com_rcl_except,
 					(ParamInt<px4::params::COM_DLL_EXCEPT>) _param_com_dll_except,
 					(ParamInt<px4::params::COM_RC_IN_MODE>) _param_com_rc_in_mode,
-					(ParamInt<px4::params::COM_POSCTL_NAVL>) _param_com_posctl_navl,
 					(ParamInt<px4::params::GF_ACTION>)  	_param_gf_action,
 					(ParamFloat<px4::params::COM_SPOOLUP_TIME>) _param_com_spoolup_time,
-					(ParamInt<px4::params::COM_IMB_PROP_ACT>) _param_com_imb_prop_act,
-					(ParamFloat<px4::params::COM_LKDOWN_TKO>) _param_com_lkdown_tko,
 					(ParamInt<px4::params::CBRK_FLIGHTTERM>) _param_cbrk_flightterm,
 					(ParamInt<px4::params::COM_ACT_FAIL_ACT>) _param_com_actuator_failure_act,
 					(ParamInt<px4::params::COM_LOW_BAT_ACT>) _param_com_low_bat_act,
@@ -213,7 +225,10 @@ private:
 					(ParamInt<px4::params::COM_QC_ACT>) _param_com_qc_act,
 					(ParamInt<px4::params::COM_WIND_MAX_ACT>) _param_com_wind_max_act,
 					(ParamInt<px4::params::COM_FLTT_LOW_ACT>) _param_com_fltt_low_act,
-					(ParamInt<px4::params::COM_POS_LOW_ACT>) _param_com_pos_low_act
+					(ParamInt<px4::params::COM_POS_LOW_ACT>) _param_com_pos_low_act,
+					(ParamInt<px4::params::COM_ARM_ODID>) _param_com_arm_odid,
+					(ParamInt<px4::params::COM_PARACHUTE>) _param_com_parachute,
+					(ParamInt<px4::params::COM_GNSSLOSS_ACT>) _param_com_gnssloss_act
 				       );
 
 };

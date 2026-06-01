@@ -8,13 +8,13 @@
 - [beta](https://github.com/PX4/PX4-Autopilot/tree/beta) has been thoroughly tested. Він призначений для тестерів на польоти.
 - [stable](https://github.com/PX4/PX4-Autopilot/tree/stable) points to the last release.
 
-We try to retain a [linear history through rebases](https://www.atlassian.com/git/tutorials/rewriting-history) and avoid the [Github flow](https://docs.github.com/en/get-started/quickstart/github-flow).
+We try to retain a [linear history through rebases](https://www.atlassian.com/git/tutorials/rewriting-history) and avoid the [Github flow](https://docs.github.com/en/get-started/using-github/github-flow).
 Однак через глобальну команду і швидкий розвиток ми можемо одночасно вдаватися до збоїв.
 
-To contribute new functionality, [sign up for Github](https://docs.github.com/en/get-started/signing-up-for-github/signing-up-for-a-new-github-account), then [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the repository, [create a new branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository), add your [changes as commits](#commits-and-commit-messages), and finally [send a pull request](#pull-requests).
+To contribute new functionality, [sign up for Github](https://docs.github.com/en/get-started/using-github/github-flow), then [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) the repository, [create a new branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository), add your [changes as commits](#commits-and-commit-messages), and finally [send a pull request](#pull-requests).
 Changes will be merged when they pass our [continuous integration](https://en.wikipedia.org/wiki/Continuous_integration) tests.
 
-All code contributions have to be under the permissive [BSD 3-clause license](https://opensource.org/licenses/BSD-3-Clause) and all code must not impose any further constraints on the use.
+All code contributions have to be under the permissive [BSD 3-clause license](https://opensource.org/license/BSD-3-Clause) and all code must not impose any further constraints on the use.
 
 ## Стиль Коду
 
@@ -34,7 +34,7 @@ Not all PX4 source code matches the style guide, but any _new code_ that you wri
 
 ### Довжина рядка
 
-- Максимальна довжина рядка становить 120 символів.
+- Maximum line length is 140 characters.
 
 ### Розширення файлів
 
@@ -114,7 +114,7 @@ PX4 розробників заохочують до створення відп
   - Не додавати документацію, яку тривіально можна вивести з імен об'єктів С++.
   - ЗАВЖДИ вказуйте одиниці змінних, констант і параметрів введення/повернення там, де вони визначені.
   - ЗАВЖДИ вказуйте одиниці змінних, постійних і параметрів введення/повернення там, де вони визначені.
-  - [Doxgyen](http://www.doxygen.nl/) tags should be used if documentation is needed: `@class`, `@file`, `@param`, `@return`, `@brief`, `@var`, `@see`, `@note`.
+  - [Doxgyen](https://www.doxygen.nl/) tags should be used if documentation is needed: `@class`, `@file`, `@param`, `@return`, `@brief`, `@var`, `@see`, `@note`.
     A good example of usage is [src/modules/events/send_event.h](https://github.com/PX4/PX4-Autopilot/blob/main/src/modules/events/send_event.h).
 
 Будь ласка, уникайте "магічних чисел", наприклад, звідки прийшло це число? А як щодо множника при введенні ручки повороту?
@@ -151,36 +151,35 @@ else {
 
 ## Коміти та повідомлення комітів
 
-Використовуйте описові повідомлення з кількома абзацами для всіх нетривіальних змін.
-Добре структуруйте їх, щоб вони мали сенс у підсумку в один рядок, але також надавали повну деталізацію.
+PX4 uses [conventional commits](https://www.conventionalcommits.org/) for all commit messages and PR titles.
 
-```plain
-Component: Explain the change in one sentence. Fixes #1234
+### Format
 
-Prepend the software component to the start of the summary
-line, either by the module name or a description of it.
-(e.g. "mc_att_ctrl" or "multicopter attitude controller").
-
-If the issue number is appended as <Fixes #1234>, Github
-will automatically close the issue when the commit is
-merged to the master branch.
-
-The body of the message can contain several paragraphs.
-Describe in detail what you changed. Link issues and flight
-logs either related to this fix or to the testing results
-of this commit.
-
-Describe the change and why you changed it, avoid to
-paraphrase the code change (Good: "Adds an additional
-safety check for vehicles with low quality GPS reception".
-Bad: "Add gps_reception_check() function").
-
-Reported-by: Name <email@px4.io>
+```
+type(scope): short description of the change
 ```
 
-**Use **`git commit -s`** to sign off on all of your commits.** This will add `signed-off-by:` with your name and email as the last line.
+Where **type** is the category of change (`feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `style`, `chore`, `revert`) and **scope** is the module or area affected (e.g. `ekf2`, `mavlink`, `navigator`). See the full [types and scopes tables](https://github.com/PX4/PX4-Autopilot/blob/main/CONTRIBUTING.md#commit-message-convention) in CONTRIBUTING.md.
 
-This commit guide is based on best practices for the Linux Kernel and other [projects maintained](https://github.com/torvalds/subsurface-for-dirk/blob/a48494d2fbed58c751e9b7e8fbff88582f9b2d02/README#L88-L115) by Linus Torvalds.
+Append `!` before the colon to mark a breaking change: `feat(ekf2)!: remove deprecated API`.
+
+### Приклади
+
+```
+feat(ekf2): add height fusion timeout. Fixes #1234
+
+The previous implementation did not handle the case where
+height fusion data stops arriving mid-flight. This adds a
+configurable timeout that falls back to barometric height.
+
+Tested in SITL with simulated sensor dropout.
+
+Signed-off-by: Your Name <your@email.com>
+```
+
+The body of the message can contain several paragraphs. Describe in detail what you changed and why. Link related issues and flight logs. Describe the change and why you made it, rather than paraphrasing the code change.
+
+**Use `git commit -s` to sign off on all of your commits.** This adds `Signed-off-by:` with your name and email as the last line.
 
 ## Запити на злиття
 

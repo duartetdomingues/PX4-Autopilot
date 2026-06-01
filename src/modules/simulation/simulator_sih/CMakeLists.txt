@@ -40,6 +40,8 @@ px4_add_module(
 		aero.hpp
 		sih.cpp
 		sih.hpp
+	MODULE_CONFIG
+		sih_params.yaml
 	DEPENDS
 		mathlib
 		drivers_accelerometer
@@ -54,6 +56,8 @@ if(PX4_PLATFORM MATCHES "posix")
 		quadx
 		xvert
 		standard_vtol
+		hex
+		rover_ackermann
 	)
 
 	# find corresponding airframes

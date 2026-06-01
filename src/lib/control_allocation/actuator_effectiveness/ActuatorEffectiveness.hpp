@@ -62,10 +62,9 @@ enum class ActuatorType {
 
 enum class EffectivenessUpdateReason {
 	NO_EXTERNAL_UPDATE = 0,
-	CONFIGURATION_UPDATE = 1,
-	MOTOR_ACTIVATION_UPDATE = 2,
+	CONFIGURATION_UPDATE = 1, ///< config changes (parameter)
+	MOTOR_ACTIVATION_UPDATE = 2, ///< motor failure detected or certain redundant motors are switched off to save energy
 };
-
 
 class ActuatorEffectiveness
 {
@@ -89,6 +88,10 @@ public:
 
 	using EffectivenessMatrix = matrix::Matrix<float, NUM_AXES, NUM_ACTUATORS>;
 	using ActuatorVector = matrix::Vector<float, NUM_ACTUATORS>;
+	using ActuatorBitmask = uint32_t;
+
+	static_assert(NUM_ACTUATORS <= 8 * sizeof(ActuatorBitmask),
+		      "NUM_ACTUATORS exceeds the number of bits available in the mask type.");
 
 	enum class FlightPhase {
 		HOVER_FLIGHT = 0,
@@ -196,14 +199,13 @@ public:
 	 * It is called after the matrix multiplication and before final clipping.
 	 * @param actuator_sp input & output setpoint
 	 */
-	virtual void updateSetpoint(const matrix::Vector<float, NUM_AXES> &control_sp,
-				    int matrix_index, ActuatorVector &actuator_sp, const matrix::Vector<float, NUM_ACTUATORS> &actuator_min,
-				    const matrix::Vector<float, NUM_ACTUATORS> &actuator_max) {}
+	virtual void updateSetpoint(const matrix::Vector<float, NUM_AXES> &control_sp, int matrix_index,
+				    ActuatorVector &actuator_sp, const ActuatorVector &actuator_min, const ActuatorVector &actuator_max) {}
 
 	/**
 	 * Get a bitmask of motors to be stopped
 	 */
-	virtual uint32_t getStoppedMotors() const { return _stopped_motors_mask; }
+	virtual ActuatorBitmask getStoppedMotors() const { return _stopped_motors_mask; }
 
 	/**
 	 * Fill in the unallocated torque and thrust, customized by effectiveness type.
@@ -217,9 +219,18 @@ public:
 	 * @param stoppable_motors_mask mask of motors that should be stopped if there's no thrust demand
 	 * @param actuator_sp outcome of the allocation to determine if the motor should be stopped
 	 */
-	virtual void stopMaskedMotorsWithZeroThrust(uint32_t stoppable_motors_mask, ActuatorVector &actuator_sp);
+	virtual void stopMaskedMotorsWithZeroThrust(ActuatorBitmask stoppable_motors_mask, ActuatorVector &actuator_sp);
+
+	/**
+	 * Override the collective tilt setpoint that would normally come from
+	 * tiltrotor_extra_controls. Base implementation is a no-op.
+	 *
+	 * @param do_override When true, use @p collective_tilt instead of the uORB value.
+	 * @param collective_tilt Normalised setpoint in [0, 1]. 0: vertical, 1: horizontal.
+	 */
+	virtual void overrideCollectiveTilt(bool /*do_override*/, float /*collective_tilt*/) {}
 
 protected:
 	FlightPhase _flight_phase{FlightPhase::HOVER_FLIGHT};
-	uint32_t _stopped_motors_mask{0};
+	ActuatorBitmask _stopped_motors_mask{0};
 };

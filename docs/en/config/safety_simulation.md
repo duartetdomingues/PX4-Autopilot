@@ -1,3 +1,7 @@
+---
+aside: false
+---
+
 # Failsafe State Machine Simulation
 
 <Badge type="tip" text="PX4 v1.14" />
@@ -30,4 +34,3 @@ make run_failsafe_web_server
 <script setup>
 import { withBase } from 'vitepress';
 </script>
-

@@ -10,7 +10,7 @@ The [Cube Orange](https://www.cubepilot.com/#/cube/features) flight controller i
 ![Cube Orange](../../assets/flight_controller/cube/orange/cube_orange_hero.jpg)
 
 배선을 줄이고 신뢰성을 높이며 조립을 쉽게하기 위해 도메인별 캐리어 보드와 함께 사용하도록 설계되었습니다.
-예를 들어, 상용 검사 기체 캐리어보드에는 보조 컴퓨터용 연결이 포함될 수 있는 반면, 레이서 용 캐리어보드는 기체 프레임을 형성하는 ESC를 포함할 수 있습니다.
+For example, a carrier board for a commercial inspection vehicle might include connections for a companion computer, while a carrier board for a racer could include ESCs for the frame of the vehicle.
 
 The ADS-B carrier board includes a customized 1090MHz ADSB-In receiver from uAvionix.
 This provides attitude and location of commercial manned aircraft within the range of Cube.
@@ -19,7 +19,11 @@ This is automatically configured and enabled in the default PX4 firmware.
 Cube에는 2 개의 IMU에 진동 차단이 포함되어 있으며, 세 번째 고정 IMU는 참조 백업용으로 사용됩니다.
 
 :::tip
-The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/the-cube-module-overview) contain detailed information, including an overview of the [Differences between Cube Colours](https://docs.cubepilot.org/user-guides/autopilot/the-cube-module-overview#differences-between-cube-colours).
+The manufacturer [Cube User Guide](https://docs.cubepilot.org/user-guides/autopilot/the-cube) contains detailed information, including an overview of the [Differences between Cube Colours](https://docs.cubepilot.org/user-guides/autopilot/the-cube/introduction/specifications).
+:::
+
+:::info
+This flight controller is [manufacturer supported](../flight_controller/autopilot_manufacturer_supported.md).
 :::
 
 ## 주요 특징
@@ -36,9 +40,7 @@ The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/th
 - 고전력 멀티톤 피에조 오디오 표시기
 - 장기간 고속 로깅용 microSD 카드
 
-<a id="stores"></a>
-
-## 구매처
+## Where to Buy {#store}
 
 - [Reseller list](https://www.cubepilot.com/#/reseller/list)
 
@@ -53,7 +55,7 @@ The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/th
   - 400 MHz
   - 1 MB RAM
   - 2MB 플래시 \(완전 액세스 가능\)
-- **Failsafe co-processor:** <!-- inconsistent info on failsafe processor: 32 bit STM32F103 failsafe co-processor http://www.proficnc.com/all-products/191-pixhawk2-suite.html -->
+- **Failsafe co-processor:** <!-- inconsistent info on failsafe processor: 32 bit STM32F103 failsafe co-processor -->
   - STM32F103 (32bit _ARM Cortex-M3_)
   - 24 MHz
   - 8 KB SRAM
@@ -232,7 +234,7 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target, open up the terminal and enter:
 
-```
+```sh
 make cubepilot_cubeorange
 ```
 
@@ -244,6 +246,5 @@ Board schematics and other documentation can be found here: [The Cube Project](h
 
 - [Cube Wiring Quickstart](../assembly/quick_start_cube.md)
 - Cube 문서 (제조사) :
-  - [Cube Module Overview](https://docs.cubepilot.org/user-guides/autopilot/the-cube-module-overview)
-  - [Cube User Manual](https://docs.cubepilot.org/user-guides/autopilot/the-cube-user-manual)
+  - [Cube User Guide](https://docs.cubepilot.org/user-guides/autopilot/the-cube)
   - [Mini Carrier Board](https://docs.cubepilot.org/user-guides/carrier-boards/mini-carrier-board)

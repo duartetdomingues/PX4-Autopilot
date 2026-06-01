@@ -61,12 +61,12 @@ For example the [VelocityLimits](../msg_docs/VelocityLimits.md) message definiti
 ```text
 # Velocity and yaw rate limits for a multicopter position slow mode only
 
-uint64 timestamp # time since system start (microseconds)
+uint64 timestamp # [us] Time since system start.
 
 # absolute speeds, NAN means use default limit
-float32 horizontal_velocity # [m/s]
-float32 vertical_velocity # [m/s]
-float32 yaw_rate # [rad/s]
+float32 horizontal_velocity # [m/s] Horizontal velocity.
+float32 vertical_velocity # [m/s] Vertical velocity.
+float32 yaw_rate # [rad/s] Yaw rate.
 ```
 
 By default this message definition will be compiled to a single topic with an id `velocity_limits`, a direct conversion from the CamelCase name to a snake_case version.
@@ -92,14 +92,33 @@ To nest a message, simply include the nested message type in the parent message 
 
 ```text
 # Global position setpoint triplet in WGS84 coordinates.
+#
 # This are the three next waypoints (or just the next two or one).
 
-uint64 timestamp		# time since system start (microseconds)
+uint64 timestamp # [us] Time since system start.
 
 PositionSetpoint previous
 PositionSetpoint current
 PositionSetpoint next
 ```
+
+### uORB Buffer Length (ORB_QUEUE_LENGTH)
+
+uORB messages have a single-message buffer by default, which may be overwritten if the message publication rate is too high.
+In most cases this does not matter: either we are only interested in the latest sample of a topic, such as a sensor value or a setpoint, or losing a few samples is not a particular problem.
+For relatively few cases, such as vehicle commands, it is important that we don't drop topics.
+
+In order to reduce the chance that messages will be dropped we can use named constant `ORB_QUEUE_LENGTH` to create a buffer of the specified length.
+For example, to create a four-message queue, add the following line to your message definition:
+
+```sh
+uint8 ORB_QUEUE_LENGTH = 4
+```
+
+As long as subscribers are able to read messages out of the buffer quickly enough than it isn't ever fully filled to the queue length (by publishers), they will be able to get all messages that are sent.
+Messages will still be lost they are published when the queue is filled.
+
+Note that the queue length value must be a power of 2 (so 2, 4, 8, ...).
 
 ### Message/Field Deprecation {#deprecation}
 
@@ -116,9 +135,9 @@ As there are external tools using uORB messages from log files, such as [Flight 
 
 ## Message Versioning
 
-<Badge type="tip" text="main (planned for: PX4 v1.16+)" />
+<Badge type="tip" text="PX4 v1.16" />
 
-Optional message versioning was introduced in the `main` branch (planned for PX4 v1.16+) to make it easier to maintain compatibility between PX4 and ROS 2 versions compiled against different message definitions.
+Optional message versioning was introduced PX4 v1.16 to make it easier to maintain compatibility between PX4 and ROS 2 versions compiled against different message definitions.
 Versioned messages are designed to remain more stable over time compared to their non-versioned counterparts, as they are intended to be used across multiple releases of PX4 and external systems, ensuring greater compatibility over longer periods.
 
 Versioned messages include an additional field `uint32 MESSAGE_VERSION = x`, where `x` corresponds to the current version of the message.
@@ -126,8 +145,8 @@ Versioned messages include an additional field `uint32 MESSAGE_VERSION = x`, whe
 Versioned and non-versioned messages are separated in the file system:
 
 - Non-versioned topic message files and [server service](../ros2/user_guide.md#px4-ros-2-service-servers) message files remain in the [`msg/`](https://github.com/PX4/PX4-Autopilot/tree/main/msg) and [`srv/`](https://github.com/PX4/PX4-Autopilot/tree/main/srv) directories, respectively.
-- The current (highest) version of message files are located in the `versioned` subfolders ([`msg/versioned`](https://github.com/PX4/PX4-Autopilot/tree/main/msg/versioned) and [`srv/versioned`](https://github.com/PX4/PX4-Autopilot/tree/main/srv/versioned)).
-- Older versions of messages are stored in nested `msg/px4_msgs_old/` subfolders ([`msg/px4_msgs_old/msg/`](https://github.com/PX4/PX4-Autopilot/tree/main/msg/px4_msgs_old/msg) and [`msg/px4_msgs_old/srv/`](https://github.com/PX4/PX4-Autopilot/tree/main/msg/px4_msgs_old/srv)).
+- The current (highest) version of message files are located in the `versioned` subfolders ([`msg/versioned`](https://github.com/PX4/PX4-Autopilot/tree/main/msg/versioned) and [`srv/versioned`](https://github.com/PX4/PX4-Autopilot/tree/main/msg/versioned)).
+- Older versions of messages are stored in nested `msg/px4_msgs_old/` subfolders ([`msg/px4_msgs_old/msg/`](https://github.com/PX4/PX4-Autopilot/tree/main/msg/px4_msgs_old/msg) and [`msg/px4_msgs_old/srv/`](https://github.com/PX4/PX4-Autopilot/tree/main/msg/px4_msgs_old)).
   The files are also renamed with a suffix to indicate their version number.
 
 :::tip
@@ -144,7 +163,7 @@ For the full list of versioned and non-versioned messages see: [uORB Message Ref
 For more on PX4 and ROS 2 communication, see [PX4-ROS 2 Bridge](../ros/ros2_comm.md).
 
 :::info
-ROS 2 plans to natively support message versioning in the future, but this is not implememented yet.
+ROS 2 plans to natively support message versioning in the future, but this is not implemented yet.
 See the related ROS Enhancement Proposal ([REP 2011](https://github.com/ros-infrastructure/rep/pull/358)).
 See also this [Foxglove post](https://foxglove.dev/blog/sending-ros2-message-types-over-the-wire) on message hashing and type fetching.
 :::
@@ -260,6 +279,8 @@ For more information see: [Plotting uORB Topic Data in Real Time using PlotJuggl
 <video src="../../assets/debug/realtime_debugging/realtime_debugging.mp4" width="720" controls></video>
 
 ## Дивіться також
+
+- [uORB Documentation Standard](../uorb/uorb_documentation.md)
 
 - _PX4 uORB Explained_ Blog series
   - [Part 1](https://px4.io/px4-uorb-explained-part-1/)

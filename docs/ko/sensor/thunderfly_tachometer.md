@@ -31,7 +31,7 @@ TFRPM01A 전자 장치에는 프로브가 연결 여부를 표시하는 LED가 �
 홀 효과 센서 (자기 적으로 작동)는 먼지, 먼지 및 물이 감지된 로터에 접촉할 수있는 열악한 환경에 이상적입니다.
 
 다양한 홀 효과 센서가 시판중입니다.
-For example, a 55100 Miniature Flange Mounting Proximity Sensor is a good choice.
+For example, a [55100 Miniature Flange Mounting Proximity Sensor](https://www.littelfuse.com/assetdocs/littelfuse-hall-effect-sensors-55100-datasheet?assetguid=6d69d457-770e-46ba-9998-012c5e0aedd7) is a good choice.
 
 ![Example of Hall effect probe](../../assets/hardware/sensors/tfrpm/hall_probe.jpg)
 
@@ -90,7 +90,7 @@ pcf8583 status
 ```
 
 드라이버가 실행중인 경우 I²C 포트가 실행중인 인스턴스의 다른 기본 매개변수와 함께 인쇄됩니다.
-드라이버가 실행 중이 아니면, 위에서 설명한 절차를 사용하여 시작할 수 있습니다.
+If the driver is not running it can be started using theprocedure described above.
 
 The [listener](../modules/modules_command.md#listener) command allows you to monitor RPM UORB messages from the running driver.
 

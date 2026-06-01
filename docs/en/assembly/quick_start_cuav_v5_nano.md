@@ -33,7 +33,7 @@ We'll go through each of these in detail in the following sections.
 | DSM/SBUS/RSSI  | Includes DSM, SBUS, RSSI signal input interface, DSM interface can be connected to DSM satellite receiver, SBUS interface to SBUS remote control receiver, RSSI for signal strength return module. |
 
 ::: info
-For more interface information, please read [V5 nano Manual](http://manual.cuav.net/V5-nano.pdf).
+For more interface information, please read [V5 nano Manual](https://manual.cuav.net/V5-nano.pdf).
 :::
 
 ![quickstart](../../assets/flight_controller/cuav_v5_nano/connection/v5_nano_quickstart_03.png)
@@ -110,9 +110,7 @@ The other radio is connected to your ground station computer or mobile device (u
 
 ![quickstart](../../assets/flight_controller/cuav_v5_nano/connection/v5_nano_quickstart_07.png)
 
-<a id="sd_card"></a>
-
-## SD Card (Optional)
+## SD Card (Optional) {#sd_card}
 
 An [SD card](../getting_started/px4_basic_concepts.md#sd-cards-removable-memory) is inserted in the factory (you do not need to do anything).
 
@@ -130,6 +128,6 @@ Motors/servos are connected to the MAIN ports in the order specified for your ve
 
 - [Airframe buildlog using CUAV v5 nano on a DJI FlameWheel450](../frames_multicopter/dji_f450_cuav_5nano.md)
 - [CUAV V5 nano](../flight_controller/cuav_v5_nano.md)
-- [V5 nano manual](http://manual.cuav.net/V5-nano.pdf) (CUAV)
+- [V5 nano manual](https://manual.cuav.net/V5-nano.pdf) (CUAV)
 - [FMUv5 reference design pinout](https://docs.google.com/spreadsheets/d/1-n0__BYDedQrc_2NHqBenG1DNepAgnHpSGglke-QQwY/edit#gid=912976165) (CUAV)
 - [CUAV Github](https://github.com/cuav) (CUAV)

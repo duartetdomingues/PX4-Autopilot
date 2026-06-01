@@ -57,7 +57,6 @@
 #include <uORB/uORB.h>
 #include <uORB/topics/mission.h>
 #include <uORB/topics/mission_result.h>
-#include <drivers/drv_hrt.h>
 #include <px4_platform_common/events.h>
 
 using namespace time_literals;
@@ -100,7 +99,7 @@ Mission::set_current_mission_index(uint16_t index)
 	}
 
 	if (_navigator->get_mission_result()->valid && (index < _mission.count)) {
-		if (goToItem(index, true) != PX4_OK) {
+		if (goToItem(index, MissionTraversalType::FollowMissionControlFlow) != PX4_OK) {
 			// Keep the old mission index (it was not updated by the interface) and report back.
 			return false;
 		}
@@ -131,7 +130,7 @@ Mission::set_current_mission_index(uint16_t index)
 
 bool Mission::setNextMissionItem()
 {
-	return (goToNextItem(true) == PX4_OK);
+	return (goToNextItem() == PX4_OK);
 }
 
 bool
@@ -262,6 +261,10 @@ void Mission::setActiveMissionItems()
 		} else {
 			pos_sp_triplet->next.valid = false;
 		}
+
+	} else if (_mission_item.nav_cmd == NAV_CMD_DELAY) {
+		// Invalidate next waypoint to ensure vehicle holds position and doesn't try to track ahead
+		pos_sp_triplet->next.valid = false;
 
 	} else {
 		handleVtolTransition(new_work_item_type, next_mission_items, num_found_items);

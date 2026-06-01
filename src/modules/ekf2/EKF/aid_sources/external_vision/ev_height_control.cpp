@@ -57,7 +57,7 @@ void Ekf::controlEvHeightFusion(const imuSample &imu_sample, const extVisionSamp
 	Matrix3f pos_cov{matrix::diag(ev_sample.position_var)};
 
 	// rotate EV to the EKF reference frame unless we're operating entirely in vision frame
-	if (!(_control_status.flags.ev_yaw && _control_status.flags.ev_pos)) {
+	if (!(_control_status.flags.ev_yaw && _control_status.flags.ev_pos) && ev_sample.pos_frame == PositionFrame::LOCAL_FRAME_FRD) {
 
 		const Quatf q_error(_ev_q_error_filt.getState());
 
@@ -67,21 +67,20 @@ void Ekf::controlEvHeightFusion(const imuSample &imu_sample, const extVisionSamp
 			pos = R_ev_to_ekf * ev_sample.pos;
 			pos_cov = R_ev_to_ekf * matrix::diag(ev_sample.position_var) * R_ev_to_ekf.transpose();
 
-			// increase minimum variance to include EV orientation variance
-			// TODO: do this properly
-			const float orientation_var_max = math::max(ev_sample.orientation_var(0), ev_sample.orientation_var(1));
-			pos_cov(2, 2) = math::max(pos_cov(2, 2), orientation_var_max);
+			// Position variance contribution from orientation uncertainty: δp_z = δθ_roll·py - δθ_pitch·px
+			pos_cov(2, 2) += sq(ev_sample.pos(1)) * ev_sample.orientation_var(0)   // roll
+					 + sq(ev_sample.pos(0)) * ev_sample.orientation_var(1);   // pitch
 		}
 	}
 
 	const float measurement = pos(2) - pos_offset_earth(2);
-	float measurement_var = math::max(pos_cov(2, 2), sq(_params.ev_pos_noise), sq(0.01f));
+	float measurement_var = math::max(pos_cov(2, 2), sq(_params.ekf2_evp_noise), sq(0.01f));
 
 #if defined(CONFIG_EKF2_GNSS)
 
 	// increase minimum variance if GPS active
 	if (_control_status.flags.gps_hgt) {
-		measurement_var = math::max(measurement_var, sq(_params.gps_pos_noise));
+		measurement_var = math::max(measurement_var, sq(_params.ekf2_gps_p_noise));
 	}
 
 #endif // CONFIG_EKF2_GNSS
@@ -92,7 +91,7 @@ void Ekf::controlEvHeightFusion(const imuSample &imu_sample, const extVisionSamp
 					ev_sample.time_us,
 					measurement - bias_est.getBias(),           // observation
 					measurement_var + bias_est.getBiasVar(),    // observation variance
-					math::max(_params.ev_pos_innov_gate, 1.f)); // innovation gate
+					math::max(_params.ekf2_evp_gate, 1.f)); // innovation gate
 
 	// update the bias estimator before updating the main filter but after
 	// using its current state to compute the vertical position innovation
@@ -102,7 +101,7 @@ void Ekf::controlEvHeightFusion(const imuSample &imu_sample, const extVisionSamp
 		bias_est.fuseBias(measurement + _gpos.altitude(), measurement_var + P(State::pos.idx + 2, State::pos.idx + 2));
 	}
 
-	const bool continuing_conditions_passing = (_params.ev_ctrl & static_cast<int32_t>(EvCtrl::VPOS))
+	const bool continuing_conditions_passing = _fc.ev.enabled && (_params.ekf2_ev_ctrl & static_cast<int32_t>(EvCtrl::VPOS))
 			&& measurement_valid;
 
 	const bool starting_conditions_passing = common_starting_conditions_passing
@@ -167,7 +166,7 @@ void Ekf::controlEvHeightFusion(const imuSample &imu_sample, const extVisionSamp
 	} else {
 		if (starting_conditions_passing) {
 			// activate fusion, only reset if necessary
-			if (_params.height_sensor_ref == static_cast<int32_t>(HeightSensor::EV)) {
+			if (_params.ekf2_hgt_ref == static_cast<int32_t>(HeightSensor::EV)) {
 				ECL_INFO("starting %s fusion, resetting state", AID_SRC_NAME);
 				_information_events.flags.reset_hgt_to_ev = true;
 				resetAltitudeTo(-measurement, measurement_var);

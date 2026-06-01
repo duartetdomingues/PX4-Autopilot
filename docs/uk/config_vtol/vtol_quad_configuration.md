@@ -11,7 +11,7 @@ For airframe specific documentation and build instructions see [VTOL Framebuilds
 2. Flash the firmware for your current release or master (PX4 `main` branch build).
 3. In the [Frame setup](../config/airframe.md) section select the appropriate VTOL airframe.
 
-  If your airframe is not listed select the [Generic Standard VTOL](../airframes/airframe_reference.md#vtol_standard_vtol_generic_standard_vtol) frame.
+   If your airframe is not listed select the [Generic Standard VTOL](../airframes/airframe_reference.md#vtol_standard_vtol_generic_standard_vtol) frame.
 
 ### Перемикач режимів польоту / переходу
 
@@ -96,7 +96,7 @@ It should be set to a value which ensures that the vehicle reaches a high enough
 [VT_TRANS_TIMEOUT](../advanced_config/parameter_reference.md#VT_TRANS_TIMEOUT)
 
 This specifies the upper limit for the duration of the front transition. If the vehicle has not reached the transition airspeed after this time, then the transition will be aborted and a [Quadchute](../config/safety.md#quad-chute-failsafe) event will be triggered.
-:::note
+::: info
 Additionally, if an airspeed sensor is present, the transition will also be aborted if the airspeed has not reached [VT_ARSP_BLEND](../advanced_config/parameter_reference.md#VT_ARSP_BLEND) after the openloop transition time [VT_F_TR_OL_TM](../advanced_config/parameter_reference.md#VT_F_TR_OL_TM) has elapsed. This checks is used to avoid a scenario where the vehicle gains excessive speed when the airspeed sensor is faulty.
 :::
 
@@ -156,7 +156,3 @@ When transitioning from **multirotor to fixed-wing** (transition switch is on/fi
 When transitioning from **fixed-wing to multirotor** for this type of VTOL the switch is immediate so there isn’t really a backing out option here, unlike for tilt rotor VTOLs.
 Якщо ви хочете, щоб він повернувся у режим фіксованих крил, вам потрібно буде пройти повний перехід.
 Якщо він все ще рухається швидко, це має відбутися швидко.
-
-### Підтримка
-
-If you have any questions regarding your VTOL conversion or configuration please see [discuss.px4.io/c/px4/vtol](https://discuss.px4.io/c/px4/vtol).

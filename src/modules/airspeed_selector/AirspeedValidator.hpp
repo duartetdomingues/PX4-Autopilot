@@ -68,7 +68,7 @@ struct airspeed_validator_update_data {
 	float vel_test_ratio;
 	float hdg_test_ratio;
 	bool in_fixed_wing_flight;
-	float fixed_wing_tecs_throttle;
+	float fixed_wing_throttle_filtered;
 	float fixed_wing_tecs_throttle_trim;
 	uint64_t tecs_timestamp;
 };
@@ -89,27 +89,18 @@ public:
 	bool get_airspeed_valid() { return _airspeed_valid; }
 	float get_CAS_scale_validated() {return _CAS_scale_validated;}
 	float get_airspeed_derivative() { return _IAS_derivative.getState(); }
-	float get_throttle_filtered() { return _throttle_filtered.getState(); }
 	float get_pitch_filtered() { return _pitch_filtered.getState(); }
 
 	airspeed_wind_s get_wind_estimator_states(uint64_t timestamp);
 
 	// setters wind estimator parameters
 	void set_wind_estimator_wind_process_noise_spectral_density(float wind_nsd) { _wind_estimator.set_wind_process_noise_spectral_density(wind_nsd); }
-	void set_wind_estimator_tas_scale_process_noise_spectral_density(float tas_scale_nsd) { _wind_estimator.set_tas_scale_process_noise_spectral_density(tas_scale_nsd); }
+	void set_wind_estimator_tas_noise(float tas_sigma) { _wind_estimator.set_tas_noise(tas_sigma); }
+
 	void set_wind_estimator_tas_scale_init(float tas_scale_init)
 	{
 		_tas_scale_init = tas_scale_init;
 	}
-
-	void set_wind_estimator_tas_noise(float tas_sigma) { _wind_estimator.set_tas_noise(tas_sigma); }
-	void set_wind_estimator_beta_noise(float beta_var) { _wind_estimator.set_beta_noise(beta_var); }
-	void set_wind_estimator_tas_gate(uint8_t gate_size)
-	{
-		_wind_estimator.set_tas_gate(gate_size);
-	}
-
-	void set_wind_estimator_beta_gate(uint8_t gate_size) { _wind_estimator.set_beta_gate(gate_size); }
 
 	// setters for failure detection tuning parameters
 	void set_tas_innov_threshold(float tas_innov_threshold) { _tas_innov_threshold = tas_innov_threshold; }
@@ -122,6 +113,7 @@ public:
 	void set_tas_scale_apply(int tas_scale_apply) { _tas_scale_apply = tas_scale_apply; }
 	void set_CAS_scale_validated(float scale) { _CAS_scale_validated = scale; }
 	void set_scale_init(float scale) { _wind_estimator.set_scale_init(scale); }
+	void reset_scale_estimator() { _wind_estimator.reset_scale_to_init(); }
 
 	void set_enable_data_stuck_check(bool enable) { _data_stuck_check_enabled = enable; }
 	void set_enable_innovation_check(bool enable) { _innovation_check_enabled = enable; }
@@ -181,7 +173,6 @@ private:
 	bool _first_principle_check_failed{false}; ///< first principle check has detected failure
 	float _aspd_fp_t_window{0.f}; ///< time window for first principle check
 	FilteredDerivative<float> _IAS_derivative; ///< indicated airspeed derivative for first principle check
-	AlphaFilter<float> _throttle_filtered; ///< filtered throttle for first principle check
 	AlphaFilter<float> _pitch_filtered; ///< filtered pitch for first principle check
 	hrt_abstime _time_last_first_principle_check{0}; ///< time airspeed first principle was last checked (uSec)
 	hrt_abstime _time_last_first_principle_check_passing{0}; ///< time airspeed first principle was last passing (uSec)

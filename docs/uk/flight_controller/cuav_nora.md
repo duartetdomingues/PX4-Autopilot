@@ -5,7 +5,7 @@ PX4 не розробляє цей (або будь-який інший) авт�
 Contact the [manufacturer](https://www.cuav.net) for hardware support or compliance issues.
 :::
 
-The [Nora](https://doc.cuav.net/flight-controller/x7/en/nora.html)<sup>&reg;</sup> flight controller is a high-performance autopilot.
+The [Nora](https://doc.cuav.net/controller/x7/en/nora-plus.html)<sup>&reg;</sup> flight controller is a high-performance autopilot.
 Це ідеальний вибір для промислових дронів і великомасштабних важких дронів.
 В основному постачається комерційним виробникам.
 
@@ -31,7 +31,7 @@ This flight controller is [manufacturer supported](../flight_controller/autopilo
 - Високопродуктивний процесор
 
 :::tip
-The manufacturer [CUAV Docs](https://doc.cuav.net/flight-controller/x7/en/nora.html) are the canonical reference for Nora.
+The manufacturer [CUAV Docs](https://doc.cuav.net/controller/x7/en/nora-plus.html) are the canonical reference for Nora.
 Вони повинні використовуватися за перевагою, оскільки вони містять найбільш повну та актуальну інформацію.
 :::
 
@@ -40,7 +40,6 @@ The manufacturer [CUAV Docs](https://doc.cuav.net/flight-controller/x7/en/nora.h
 - Головний FMU процесор: STM32H743
 
 - Бортові сенсори:
-
   - Акселерометр/Гіроскоп: ICM-20689
   - Прискорювач/гіроскоп: ICM-20649
   - Акселерометр/Гіроскоп: BMI088
@@ -77,14 +76,14 @@ When it runs PX4 firmware, only 8 PWM outputs work.
 Решта 6 ШІМ-портів все ще адаптуються (тому на момент написання статті вони не сумісні з VOLT).
 :::
 
-## Де купити
+## Where to Buy {#store}
 
 - [CUAV Store](https://store.cuav.net)<\br>
 - [CUAV Aliexpress](https://www.aliexpress.com/item/4001042501927.html?gps-id=8041884&scm=1007.14677.110221.0&scm_id=1007.14677.110221.0&scm-url=1007.14677.110221.0&pvid=3dc0a3ba-fa82-43d2-b0b3-6280e4329cef&spm=a2g0o.store_home.promoteRecommendProducts_7913969.58)
 
 ## З'єднання (Проводка)
 
-[CUAV nora Wiring Quickstart](https://doc.cuav.net/flight-controller/x7/en/quick-start/quick-start-nora.html)
+[CUAV nora Wiring Quickstart](https://doc.cuav.net/controller/x7/en/quick-start/quick-start-nora.html)
 
 ## Розмір та роз'єми
 
@@ -121,7 +120,7 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make cuav_nora_default
 ```
 
@@ -141,7 +140,7 @@ The system's serial console and SWD interface operate on the **DSU7** port.
 
 The [PX4 System Console](../debug/system_console.md) and [SWD interface](../debug/swd_debug.md) operate on the **FMU Debug** port (`DSU7`).
 
-The debug port (`DSU7`) uses a [JST BM06B](https://www.digikey.com.au/product-detail/en/jst-sales-america-inc/BM06B-GHS-TBT-LF-SN-N/455-1582-1-ND/807850) connector and has the following pinout:
+The debug port (`DSU7`) uses a [JST BM06B](https://www.digikey.com.au/en/products/detail/jst-sales-america-inc/BM06B-GHS-TBT-LF-SN-N/807850) connector and has the following pinout:
 
 | Pin                        | Сигнал                            | Вольтаж               |
 | -------------------------- | --------------------------------- | --------------------- |
@@ -172,6 +171,6 @@ The complete set of supported configurations can be seen in the [Airframes Refer
 
 ## Подальша інформація
 
-- [Quick start](https://doc.cuav.net/flight-controller/x7/en/quick-start/quick-start-nora.html)
-- [CUAV docs](http://doc.cuav.net)
+- [Quick start](https://doc.cuav.net/controller/x7/en/quick-start/quick-start-nora.html)
+- [CUAV docs](https://doc.cuav.net/)
 - [nora schematic](https://github.com/cuav/hardware/tree/master/X7_Autopilot)

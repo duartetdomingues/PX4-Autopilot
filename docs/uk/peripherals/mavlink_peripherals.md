@@ -1,6 +1,6 @@
-# Пристрої MAVLink (GCS/OSD/Супутник)
+# MAVLink Peripherals (GCS/OSD/Gimbal/Camera/Companion)
 
-Станції земного контролю (GCS), екрани на екрані (OSD), супутні комп'ютери, отримувачі ADS-B та інші периферійні пристрої MAVLink взаємодіють з PX4 за допомогою окремих потоків MAVLink, які надсилаються через різні послідовні порти.
+Ground Control Stations (GCS), [MAVLink On-Screen Displays (OSD)](../peripherals/osd.md#mavlink-osd), MAVLink [Cameras](../camera/mavlink_v2_camera.md) and [Gimbals](../advanced/gimbal_control.md), [Remote IDs](../peripherals/remote_id.md), Companion Computers, [ADS-B receivers](../peripherals/adsb_flarm.md), and other MAVLink peripherals interact with PX4 using separate MAVLink streams, sent via different serial ports.
 
 In order to configure that a particular serial port is used for MAVLink traffic with a particular peripheral, we use [Serial Port Configuration](../peripherals/serial_configuration.md), assigning one of the abstract "MAVLink instance" configuration parameters to the desired port.
 Потім ми встановлюємо інші властивості каналу MAVLink, використовуючи параметри, пов'язані з обраним екземпляром MAVLink, щоб вони відповідали вимогам нашого конкретного периферійного пристрою.
@@ -26,36 +26,12 @@ MAVLink instances are an abstract concept for a particular MAVLink configuration
 - <a id="MAV_X_CONFIG"></a>[MAV_X_CONFIG](../advanced_config/parameter_reference.md#MAV_0_CONFIG) - Set the serial port (UART) for this instance "X", where X is 0, 1, 2.
   It can be any unused port, e.g.: `TELEM2`, `TELEM3`, `GPS2` etc.
   For more information see [Serial Port Configuration](../peripherals/serial_configuration.md).
-
-- <a id="MAV_X_MODE"></a>[MAV_X_MODE](../advanced_config/parameter_reference.md#MAV_0_MODE) - Specify the telemetry mode/target (the set of messages to stream for the current instance and their rate).
-  Значення за замовчуванням:
-
-  - _Normal_: Standard set of messages for a GCS.
-  - _Custom_ or _Magic_: Nothing (in the default PX4 implementation).
-    Режими можуть бути використані для тестування при розробці нового режиму.
-  - _Onboard_: Standard set of messages for a companion computer.
-  - _OSD_: Standard set of messages for an OSD system.
-  - _Config_: Standard set of messages and rate configuration for a fast link (e.g. USB).
-  - _Minimal_: Minimal set of messages for use with a GCS connected on a high latency link.
-  - _ExtVision_ or _ExtVisionMin_: Messages for offboard vision systems (ExtVision needed for VIO).
-  - _Iridium_: Messages for an [Iridium satellite communication system](../advanced_features/satcom_roadblock.md).
-
-  ::: info
-  If you need to find the specific set of message for each mode search for `MAVLINK_MODE_` in [/src/modules/mavlink/mavlink_main.cpp](https://github.com/PX4/PX4-Autopilot/blob/main/src/modules/mavlink/mavlink_main.cpp).
-
-:::
-
-  :::tip
-  The mode defines the _default_ messages and rates.
-  A connected MAVLink system can still request the streams/rates that it wants using [MAV_CMD_SET_MESSAGE_INTERVAL](https://mavlink.io/en/messages/common.html#MAV_CMD_SET_MESSAGE_INTERVAL).
-
-:::
-
+- <a id="MAV_X_MODE"></a>[MAV_X_MODE](../advanced_config/parameter_reference.md#MAV_0_MODE) - Specify the [MAVLink profile](../mavlink/mavlink_profiles.md) for the instance, such as _Normal_ or _OSD_.
+  Profiles define a particular set of streamed messages and their rates — you should choose a profile that is appropriate for your channel and the peripheral.
 - <a id="MAV_X_RATE"></a>[MAV_X_RATE](../advanced_config/parameter_reference.md#MAV_0_MODE) - Set the maximum _data rate_ for this instance (bytes/second).
   - Це комбінована ставка для всіх потоків окремого повідомлення (ставки для окремих повідомлень зменшуються, якщо загальна ставка перевищує це значення).
   - За замовчуванням налаштування, як правило, буде прийнятним, але може бути зменшено, якщо телеметричний зв'язок стає насиченим і занадто багато повідомлень втрачається.
   - Значення 0 встановлює швидкість передачі даних вдвічі менше теоретичного значення.
-
 - <a id="MAV_X_FORWARD"></a>[MAV_X_FORWARD](../advanced_config/parameter_reference.md#MAV_0_FORWARD) - Enable forwarding of MAVLink packets received by the current instance onto other interfaces.
   Це може бути використано, наприклад, для передачі повідомлень між GCS та супутнім комп'ютером, щоб GCS міг спілкуватися з камерою, підключеною до супутнього комп'ютера, яка підтримує MAVLink.
 
@@ -68,9 +44,7 @@ You will need to reboot PX4 to make the parameter available (i.e. in QGroundCont
 The parameter used will depend on the [assigned serial port](../advanced_config/parameter_reference.md#serial) - for example: `SER_GPS1_BAUD`, `SER_TEL2_BAUD`, etc.
 Значення, яке ви використовуєте, буде залежати від типу підключення та можливостей підключеного периферійного пристрою MAVLink.
 
-<a id="default_ports"></a>
-
-## Порти MAVLink за замовчуванням
+## Default MAVLink Ports {#default_ports}
 
 ### TELEM1
 
@@ -112,8 +86,16 @@ On this hardware, there is a [default serial port mapping](../peripherals/serial
 
 For more information see: [PX4 Ethernet Setup](../advanced_config/ethernet_setup.md)
 
+## Налаштування пристрою
+
+Links to setup instructions for specific MAVLink components:
+
+- [MAVLink Cameras (Camera Protocol v2) > PX4 Configuration](../camera/mavlink_v2_camera.md#px4-configuration)
+- [Gimbal Configuration > MAVLink Gimbal (MNT_MODE_OUT=MAVLINK)](../advanced/gimbal_control.md#mavlink-gimbal-mnt-mode-out-mavlink)
+
 ## Дивіться також
 
+- [MAVLink Profiles](../mavlink/mavlink_profiles.md)
 - [Serial Port Configuration](../peripherals/serial_configuration.md)
 - [PX4 Ethernet Setup > PX4 MAVLink Serial Port Configuration](../advanced_config/ethernet_setup.md#px4-mavlink-serial-port-configuration)
 - [Serial Port Mapping](../hardware/serial_port_mapping.md)

@@ -62,7 +62,6 @@ The Pixhawk® 5X is perfect for developers at corporate research labs, startups,
   - 32 비트 Arm® Cortex®-M3, 24MHz, 8KB SRAM
 
 - On-board Sensors:
-
   - Accel/Gyro: ICM-20649
   - Accel/Gyro: ICM-42688P
   - 가속도/자이로: ICM-20602
@@ -70,7 +69,6 @@ The Pixhawk® 5X is perfect for developers at corporate research labs, startups,
   - Barometer: 2x BMP388
 
 - 인터페이스
-
   - 16- PWM servo outputs
   - R/C input for Spektrum / DSM
   - Dedicated R/C input for PPM and S.Bus input
@@ -100,25 +98,22 @@ The Pixhawk® 5X is perfect for developers at corporate research labs, startups,
     - 2 Dedicated debug and GPIO lines
 
 - 정격 전압
-
   - 최대 입력 전압: 6V
   - USB 전원 입력: 4.75~5.25V
   - 서보 레일 입력: 0~36V
 
 - 크기
-
   - Flight Controller Module: 38.8 x 31.8 x 14.6mm
   - Standard Baseboard: 52.4 x 103.4 x 16.7mm
 
 - 중량
-
   - Flight Controller Module: 23g
   - Standard Baseboard: 51g
 
 - 기타 특성:
   - Operating & storage temperature: -40 ~ 85°c
 
-## 구매처
+## Where to Buy {#store}
 
 Order from [Holybro](https://holybro.com/products/pixhawk-5x).
 
@@ -136,10 +131,10 @@ The [Pixhawk 5X Wiring Quick Start](../assembly/quick_start_pixhawk5x.md) provid
 
 :::info
 Connector pin assignments are left to right (i.e. Pin 1 is the left-most pin).
-::: infos:
+:::
 
 - The [camera capture pin](../camera/fc_connected_camera.md#camera-capture-configuration) (`PI0`) is pin 2 on the AD&IO port, marked above as `FMU_CAP1`.
-- _Pixhawk 5X_ pinouts can be downloaded in PDF from from [here](https://github.com/PX4/PX4-user_guide/blob/main/assets/flight_controller/pixhawk5x/pixhawk5x_pinout.pdf) or [here](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Holybro_Pixhawk5X_Pinout.pdf).
+- _Pixhawk 5X_ pinouts can be downloaded in PDF from [here](https://github.com/PX4/PX4-user_guide/blob/main/assets/flight_controller/pixhawk5x/pixhawk5x_pinout.pdf) or [here](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Holybro_Pixhawk5X_Pinout.pdf).
 
 ## 시리얼 포트 매핑
 
@@ -161,7 +156,7 @@ Connector pin assignments are left to right (i.e. Pin 1 is the left-most pin).
 ## 정격 전압
 
 _Pixhawk 5X_ can be triple-redundant on the power supply if three power sources are supplied. The three power rails are: **POWER1**, **POWER2** and **USB**.
-The **POWER1** & **POWER2** ports on the Pixhawk 5X uses the 6 circuit [2.00mm Pitch CLIK-Mate Wire-to-Board PCB Receptacle](https://www.molex.com/molex/products/part-detail/pcb_receptacles/5024430670).
+The **POWER1** & **POWER2** ports on the Pixhawk 5X uses the 6 circuit [2.00mm Pitch CLIK-Mate Wire-to-Board PCB Receptacle](https://www.molex.com/en-us/products/part-detail/5024430670).
 
 **Normal Operation Maximum Ratings**
 
@@ -182,7 +177,7 @@ The **POWER1** & **POWER2** ports on the Pixhawk 5X uses the 6 circuit [2.00mm P
 
 Digital I2C battery monitoring is enabled by default (see [Quickstart > Power](../assembly/quick_start_pixhawk5x.md#power)).
 
-::: info
+:::info
 Analog battery monitoring via an ADC is not supported on this particular board, but may be supported in variations of this flight controller with a different baseboard.
 :::
 
@@ -195,13 +190,11 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make px4_fmu-v5x_default
 ```
 
-<a id="debug_port"></a>
-
-## 디버그 포트
+## Debug Port {#debug_port}
 
 The [PX4 System Console](../debug/system_console.md) and [SWD interface](../debug/swd_debug.md) run on the **FMU Debug** port.
 
@@ -227,7 +220,7 @@ For information about using this port see:
 
 ## 주변 장치
 
-- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor)
+- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor-ms4525do)
 - [Telemetry Radio Modules](https://holybro.com/collections/telemetry-radios?orderby=date)
 - [Rangefinders/Distance sensors](../sensor/rangefinders.md)
 

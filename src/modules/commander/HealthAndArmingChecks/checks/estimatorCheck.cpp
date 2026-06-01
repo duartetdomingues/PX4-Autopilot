@@ -109,14 +109,16 @@ void EstimatorChecks::checkAndReport(const Context &context, Report &reporter)
 	}
 
 	if (missing_data && (param_ekf2_en == 1)) {
-		/* EVENT
-		 */
-		reporter.armingCheckFailure(required_groups, health_component_t::local_position_estimate,
-					    events::ID("check_estimator_missing_data"),
-					    events::Log::Info, "Waiting for estimator to initialize");
+		if (_estimator_status_sub.advertised()) {
+			/* EVENT
+			 */
+			reporter.armingCheckFailure(required_groups, health_component_t::local_position_estimate,
+						    events::ID("check_estimator_missing_data"),
+						    events::Log::Info, "Waiting for estimator to initialize");
 
-		if (reporter.mavlink_log_pub()) {
-			mavlink_log_critical(reporter.mavlink_log_pub(), "Preflight Fail: ekf2 missing data");
+			if (reporter.mavlink_log_pub()) {
+				mavlink_log_critical(reporter.mavlink_log_pub(), "Preflight Fail: ekf2 missing data");
+			}
 		}
 
 	} else {
@@ -136,15 +138,23 @@ void EstimatorChecks::checkAndReport(const Context &context, Report &reporter)
 void EstimatorChecks::checkEstimatorStatus(const Context &context, Report &reporter,
 		const estimator_status_s &estimator_status, NavModes required_groups)
 {
+	// Heading is required to arm for all modes that need any form of local position, plus FW AUTO_TAKEOFF
+	const NavModes heading_required_groups = (NavModes)(
+				reporter.failsafeFlags().mode_req_local_position |
+				reporter.failsafeFlags().mode_req_local_position_relaxed |
+				(1u << vehicle_status_s::NAVIGATION_STATE_AUTO_TAKEOFF));
+
 	if (!context.isArmed() && estimator_status.pre_flt_fail_innov_heading) {
 		/* EVENT
+		 * @description
+		 * Recalibrate compass or perform manual heading reset.
 		 */
-		reporter.armingCheckFailure(required_groups, health_component_t::local_position_estimate,
+		reporter.armingCheckFailure(heading_required_groups, health_component_t::local_position_estimate,
 					    events::ID("check_estimator_heading_not_stable"),
-					    events::Log::Error, "Heading estimate not stable");
+					    events::Log::Error, "Heading estimate invalid");
 
 		if (reporter.mavlink_log_pub()) {
-			mavlink_log_critical(reporter.mavlink_log_pub(), "Preflight Fail: heading estimate not stable");
+			mavlink_log_critical(reporter.mavlink_log_pub(), "Preflight Fail: heading estimate invalid");
 		}
 
 	} else if (!context.isArmed() && estimator_status.pre_flt_fail_innov_vel_horiz) {
@@ -270,6 +280,22 @@ void EstimatorChecks::checkEstimatorStatus(const Context &context, Report &repor
 
 		} else {
 			_gnss_spoofed = false;
+		}
+
+		if (estimator_status.gps_check_fail_flags & (1 << estimator_status_s::GPS_CHECK_FAIL_JAMMED)) {
+			if (!_gnss_jammed) {
+				_gnss_jammed = true;
+
+				if (reporter.mavlink_log_pub()) {
+					mavlink_log_critical(reporter.mavlink_log_pub(), "GNSS signal jammed\t");
+				}
+
+				events::send(events::ID("check_estimator_gnss_warning_jamming"), {events::Log::Alert, events::LogInternal::Info},
+					     "GNSS signal jammed");
+			}
+
+		} else {
+			_gnss_jammed = false;
 		}
 
 		if (!context.isArmed() && ekf_gps_check_fail) {
@@ -435,6 +461,18 @@ void EstimatorChecks::checkEstimatorStatus(const Context &context, Report &repor
 							    events::ID("check_estimator_gps_spoofed"),
 							    log_level, "GPS signal spoofed");
 
+			} else if (estimator_status.gps_check_fail_flags & (1 << estimator_status_s::GPS_CHECK_FAIL_JAMMED)) {
+				message = "Preflight%s: GPS signal jammed";
+				/* EVENT
+				 * @description
+				 * <profile name="dev">
+				 * Can be configured with <param>EKF2_GPS_CHECK</param> and <param>COM_ARM_WO_GPS</param>.
+				 * </profile>
+				 */
+				reporter.armingCheckFailure(required_modes, health_component_t::gps,
+							    events::ID("check_estimator_gps_jammed"),
+							    log_level, "GPS signal jammed");
+
 			} else {
 				if (!ekf_gps_fusion) {
 					// Likely cause unknown
@@ -589,43 +627,44 @@ void EstimatorChecks::checkEstimatorStatusFlags(const Context &context, Report &
 				mavlink_log_critical(reporter.mavlink_log_pub(), "GNSS heading not reliable - Land now!\t");
 			}
 		}
+
+		// Only require a heading reference when a global origin is set (i.e. global ops are intended)
+		if (!context.isArmed()
+		    && (hrt_absolute_time() - estimator_status_flags.timestamp < 5_s)
+		    && !estimator_status_flags.cs_yaw_align
+		    && lpos.xy_global) {
+
+			const NavModes heading_required_groups = (NavModes)(
+						reporter.failsafeFlags().mode_req_local_position |
+						reporter.failsafeFlags().mode_req_local_position_relaxed |
+						(1u << vehicle_status_s::NAVIGATION_STATE_AUTO_TAKEOFF));
+
+			/* EVENT
+			 * @description
+			 * No heading source has aligned the EKF yaw
+			 */
+			reporter.armingCheckFailure(heading_required_groups, health_component_t::local_position_estimate,
+						    events::ID("check_estimator_heading_no_source"),
+						    events::Log::Error, "No heading reference");
+
+			if (reporter.mavlink_log_pub()) {
+				mavlink_log_critical(reporter.mavlink_log_pub(), "Preflight Fail: no heading reference");
+			}
+		}
 	}
 }
 
 void EstimatorChecks::checkGps(const Context &context, Report &reporter, const sensor_gps_s &vehicle_gps_position) const
 {
-	if (vehicle_gps_position.jamming_state == sensor_gps_s::JAMMING_STATE_CRITICAL) {
+	if (vehicle_gps_position.jamming_state == sensor_gps_s::JAMMING_STATE_DETECTED) {
 		/* EVENT
 		 */
 		reporter.armingCheckFailure(NavModes::None, health_component_t::gps,
 					    events::ID("check_estimator_gps_jamming_critical"),
-					    events::Log::Critical, "GPS reports critical jamming state");
+					    events::Log::Warning, "GPS jamming detected");
 
 		if (reporter.mavlink_log_pub()) {
-			mavlink_log_critical(reporter.mavlink_log_pub(), "GPS reports critical jamming state\t");
-		}
-	}
-
-	if (vehicle_gps_position.spoofing_state == sensor_gps_s::SPOOFING_STATE_INDICATED) {
-		/* EVENT
-		 */
-		reporter.armingCheckFailure(NavModes::None, health_component_t::gps,
-					    events::ID("check_estimator_gps_spoofing_indicated"),
-					    events::Log::Critical, "GPS reports spoofing indicated");
-
-		if (reporter.mavlink_log_pub()) {
-			mavlink_log_critical(reporter.mavlink_log_pub(), "GPS reports spoofing indicated\t");
-		}
-
-	} else if (vehicle_gps_position.spoofing_state == sensor_gps_s::SPOOFING_STATE_MULTIPLE) {
-		/* EVENT
-		 */
-		reporter.armingCheckFailure(NavModes::None, health_component_t::gps,
-					    events::ID("check_estimator_gps_multiple_spoofing_indicated"),
-					    events::Log::Critical, "GPS reports multiple spoofing indicated");
-
-		if (reporter.mavlink_log_pub()) {
-			mavlink_log_critical(reporter.mavlink_log_pub(), "GPS reports multiple spoofing indicated\t");
+			mavlink_log_warning(reporter.mavlink_log_pub(), "GPS jamming detected\t");
 		}
 	}
 }
@@ -633,11 +672,18 @@ void EstimatorChecks::checkGps(const Context &context, Report &reporter, const s
 void EstimatorChecks::lowPositionAccuracy(const Context &context, Report &reporter,
 		const vehicle_local_position_s &lpos) const
 {
-	const bool local_position_valid_but_low_accuracy = !reporter.failsafeFlags().local_position_invalid
-			&& (_param_com_low_eph.get() > FLT_EPSILON && lpos.eph > _param_com_low_eph.get());
 
-	if (!reporter.failsafeFlags().local_position_accuracy_low && local_position_valid_but_low_accuracy
-	    && _param_com_pos_low_act.get()) {
+	bool position_valid_but_low_accuracy = false;
+
+	if ((reporter.failsafeFlags().mode_req_global_position && !reporter.failsafeFlags().global_position_invalid) ||
+	    (reporter.failsafeFlags().mode_req_global_position_relaxed
+	     && !reporter.failsafeFlags().global_position_invalid_relaxed) ||
+	    (reporter.failsafeFlags().mode_req_local_position && !reporter.failsafeFlags().local_position_invalid)) {
+
+		position_valid_but_low_accuracy = (_param_com_low_eph.get() > FLT_EPSILON && lpos.eph > _param_com_low_eph.get());
+	}
+
+	if (position_valid_but_low_accuracy && _param_com_pos_low_act.get()) {
 
 		// only report if armed
 		if (context.isArmed()) {
@@ -658,7 +704,7 @@ void EstimatorChecks::lowPositionAccuracy(const Context &context, Report &report
 		}
 	}
 
-	reporter.failsafeFlags().local_position_accuracy_low = local_position_valid_but_low_accuracy;
+	reporter.failsafeFlags().position_accuracy_low = position_valid_but_low_accuracy;
 }
 
 void EstimatorChecks::setModeRequirementFlags(const Context &context, bool pre_flt_fail_innov_heading,
@@ -683,7 +729,7 @@ void EstimatorChecks::setModeRequirementFlags(const Context &context, bool pre_f
 	bool v_xy_valid = lpos.v_xy_valid;
 
 	if (!context.isArmed()) {
-		if (pre_flt_fail_innov_heading || pre_flt_fail_innov_pos_horiz) {
+		if (pre_flt_fail_innov_pos_horiz) {
 			xy_valid = false;
 		}
 
@@ -697,6 +743,12 @@ void EstimatorChecks::setModeRequirementFlags(const Context &context, bool pre_f
 	failsafe_flags.global_position_invalid =
 		!checkPosVelValidity(now, global_pos_valid, gpos.eph, lpos_eph_threshold, gpos.timestamp,
 				     _last_gpos_fail_time_us, !failsafe_flags.global_position_invalid);
+
+	// for relaxed global condition we don't have any accuracy requirement
+	const float pos_eph_relaxed_treshold = INFINITY;
+	failsafe_flags.global_position_invalid_relaxed = !checkPosVelValidity(now, global_pos_valid, gpos.eph,
+			pos_eph_relaxed_treshold, gpos.timestamp, _last_gpos_relaxed_fail_time_us,
+			!failsafe_flags.global_position_invalid_relaxed);
 
 	// Additional warning if the system is about to enter position-loss failsafe after dead-reckoning period
 	const float eph_critical = 2.5f * lpos_eph_threshold; // threshold used to trigger the navigation failsafe
@@ -712,6 +764,7 @@ void EstimatorChecks::setModeRequirementFlags(const Context &context, bool pre_f
 						    || estimator_status_flags.cs_wind_dead_reckoning;
 
 			if (!failsafe_flags.global_position_invalid
+			    && failsafe_flags.mode_req_global_position
 			    && !_nav_failure_imminent_warned
 			    && gpos.eph > gpos_critical_warning_thrld
 			    && dead_reckoning) {

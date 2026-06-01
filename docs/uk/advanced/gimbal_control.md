@@ -20,7 +20,7 @@ PX4 приймає вхідний сигнал і маршрутизує/пер�
 Після вибору режиму введення перезавантажте транспортний засіб, щоб запустити драйвер кріплення.
 
 Ви повинні встановити `MNT_MODE_IN` одним із наступних: `RC (1)`, `Протокол гімбала MAVLink v2 (4)` або `Авто (0)` (інші варіанти застарілі).
-Якщо ви виберете `Авто (0)`, гімбал автоматично вибере вхід RC або MAVLink відповідно до останнього введення.
+If you select `Auto (0)`, the gimbal will automatically select either RC or MAVLink input based on the latest input.
 Зверніть увагу, що для автоматичного перемикання з MAVLink на RC потрібен великий рух ручкою!
 
 Вихід налаштовується за допомогою параметра [MNT_MODE_OUT](../advanced_config/parameter_reference.md#MNT_MODE_OUT).
@@ -43,7 +43,9 @@ PX4 може бути налаштований як менеджер гімба�
 Наприклад, якщо порт `TELEM2` на контролері польоту не використовується, ви можете підключити його до гімбала і встановити наступні параметри PX4:
 
 - [MAV_1_CONFIG](../advanced_config/parameter_reference.md#MAV_1_CONFIG) на **TELEM2** (якщо `MAV_1_CONFIG` вже використовується для компаньйонного комп'ютера (скажімо), використовуйте `MAV_2_CONFIG`).
-- [MAV_1_MODE](../advanced_config/parameter_reference.md#MAV_1_MODE) до **NORMAL**
+- [MAV_1_MODE](../advanced_config/parameter_reference.md#MAV_1_MODE) to **Gimbal**
+- [MAV_1_FLOW_CTRL](../advanced_config/parameter_reference.md#MAV_1_FLOW_CTRL) to **Off (0)** (very few gimbals will have RST/CST wires connected).
+- [MAV_1_FORWARD](../advanced_config/parameter_reference.md#MAV_1_FORWARD) to **Enabled** (Note strictly necessary as forwarding is enabled when `MAV_1_MODE` is set to Gimbal).
 - [SER_TEL2_BAUD](../advanced_config/parameter_reference.md#SER_TEL2_BAUD) на рекомендовану виробником швидкість передачі даних.
 
 ### Підтримка декількох Gimbal
@@ -72,7 +74,7 @@ Gimbal також можна контролювати шляхом підклю�
 
 ![Gimbal Actuator config](../../assets/config/actuators/qgc_actuators_gimbal.png)
 
-PWM значення для використання при відблокованому, максимальному та мінімальному значеннях можна визначити так само, як і для інших сервоприводів, використовуючи [повзунки тесту приводу](../config/actuators.md#actuator-testing), щоб підтвердити, що кожний повзунок переміщує відповідну вісь, і змінюючи значення так, щоб гімбал знаходився у відповідному положенні при відблокованому стані, низькому і високому положенні повзунка.
+The PWM values to use for the disarmed, maximum, center and minimum values can be determined in the same way as other servo, using the [Actuator Test sliders](../config/actuators.md#actuator-testing) to confirm that each slider moves the appropriate axis, and changing the values so that the gimbal is in the appropriate position at the disarmed, low, center and high position in the slider.
 Значення також можуть бути наведені у документації гімбала.
 
 ## Gimbal Control in Missions
@@ -129,7 +131,7 @@ The on-screen gimbal control can be used to move/test a connected MAVLink camera
 
 2. Open QGroundControl and enable the on-screen camera control (Application settings).
 
-  ![Quadrotor(x500) with gimbal (Front-facing) in Gazebo](../../assets/qgc/fly/gimbal_control_x500gz.png)
+   ![Quadrotor(x500) with gimbal (Front-facing) in Gazebo](../../assets/qgc/fly/gimbal_control_x500gz.png)
 
 3. Make sure the vehicle is armed and flying, e.g. by entering with `commander takeoff`.
 

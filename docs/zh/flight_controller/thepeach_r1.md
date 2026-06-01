@@ -11,24 +11,24 @@ It is based on the **Pixhawk-project FMUv3** open hardware design and runs **PX4
 
 ![ThePeach_R1](../../assets/flight_controller/thepeach_r1/main.png)
 
+:::info
+This flight controller is [manufacturer supported](../flight_controller/autopilot_manufacturer_supported.md).
+:::
+
 ## 产品规格
 
 - Main Processor: STM32F427VIT6
-
   - 32bit ARM Cortex-M4, 168 MHz 256 KB RAM 2 MB Flash memory
 
 - IO Processor: STM32F100C8T6
-
   - ARM Cortex-M3, 32bit ARM Cortex-M3, 24 MHz, 8KB SRAM
 
 - On-board sensors
-
   - 加速度计 / 陀螺仪：ICM-20602
   - Accel/Gyro/Mag: MPU-9250
   - 气压计：MS5611
 
 - 接口
-
   - 8+6 PWM output (8 from IO, 6 from FMU)
   - Spektrum DSM / DSM2 / DSM-X Satellite compatible input
   - Futaba S.BUS compatible input and output
@@ -42,7 +42,6 @@ It is based on the **Pixhawk-project FMUv3** open hardware design and runs **PX4
   - Analog inputs for voltage / Current of 1 battery
 
 - Interfaces For Raspberry Pi CM3+
-
   - VBUS
   - DDR2 Connector: Raspberry Pi CM3+
   - 1x UART
@@ -62,7 +61,7 @@ It is based on the **Pixhawk-project FMUv3** open hardware design and runs **PX4
 | UART   | 设备         | Port                                          |
 | ------ | ---------- | --------------------------------------------- |
 | USART1 | /dev/ttyS0 | IO Processor Debug                            |
-| USART2 | /dev/ttyS1 | TELEM1 (flow control)      |
+| USART2 | /dev/ttyS1 | TELEM1 (流控)                |
 | USART3 | /dev/ttyS2 | TELEM2 (Raspberry pi cm3+) |
 | UART4  | /dev/ttyS3 | GPS1                                          |
 | USART6 | /dev/ttyS4 | PX4IO                                         |
@@ -103,4 +102,4 @@ make thepeach_r1_default
 
 ## Where to buy
 
-Order from [ThePeach](http://thepeach.shop/)
+Order from [ThePeach](https://thepeach.shop/)

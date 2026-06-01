@@ -38,27 +38,39 @@ PX4 підтримує точне приземлення для _Multicopters_ �
 Режим Точної посадки має три етапи:
 
 1. **Горизонтальний підхід:** Транспортний засіб підходить до цілі горизонтально, утримуючи свою поточну висоту.
-  Як тільки положення цілі відносно транспортного засобу опускається нижче порогового значення ([PLD_HACC_RAD](../advanced_config/parameter_reference.md#PLD_HACC_RAD)), відбувається вхід до наступної фази.
-  Якщо ціль втрачається під час цієї фази (не видно довше, ніж [PLD_BTOUT](../advanced_config/parameter_reference.md#PLD_BTOUT)), ініціюється процедура пошуку (під час необхідної точної посадки) або транспортний засіб робить звичайну посадку (під час можливої точної посадки).
+   Як тільки положення цілі відносно транспортного засобу опускається нижче порогового значення ([PLD_HACC_RAD](../advanced_config/parameter_reference.md#PLD_HACC_RAD)), відбувається вхід до наступної фази.
+   Якщо ціль втрачається під час цієї фази (не видно довше, ніж [PLD_BTOUT](../advanced_config/parameter_reference.md#PLD_BTOUT)), ініціюється процедура пошуку (під час необхідної точної посадки) або транспортний засіб робить звичайну посадку (під час можливої точної посадки).
 
 2. **Спуск над ціль:** Транспортний засіб спускається, залишаючись при цьому над ціллю.
-  Якщо ціль втрачається під час цієї фази (не видно довше, ніж `PLD_BTOUT`), ініціюється процедура пошуку (під час необхідної точної посадки) або транспортний засіб робить звичайну посадку (під час можливої точної посадки).
+   Якщо ціль втрачається під час цієї фази (не видно довше, ніж `PLD_BTOUT`), ініціюється процедура пошуку (під час необхідної точної посадки) або транспортний засіб робить звичайну посадку (під час можливої точної посадки).
 
 3. **Останній підхід:** Коли транспортний засіб знаходиться близько до землі (ближче, ніж [PLD_FAPPR_ALT](../advanced_config/parameter_reference.md#PLD_FAPPR_ALT)), він спускається, залишаючись при цьому над ціллю.
-  Якщо ціль втрачається під час цієї фази, спуск продовжується незалежно від виду точної посадки.
+   Якщо ціль втрачається під час цієї фази, спуск продовжується незалежно від виду точної посадки.
 
 Процедури пошуку ініціюються на перших і других етапах і виконуються не більше [PLD_MAX_SRCH разів](../advanced_config/parameter_reference.md#PLD_MAX_SRCH).
 Діаграма потоку фаз посадки
 
-Діаграма потоку, що показує фази, може бути знайдена на [діаграмі потоку фаз посадки](#landing-phases-flow-diagram) нижче.
+A flow diagram showing the phases can be found in [landing phases flow diagram](#landing-phases-flow-diagram) below.
+
+### Yaw Alignment
+
+Precision landing can optionally align the multicopter's yaw to match the detected target orientation while the vehicle is approaching or descending above the pad.
+Enable this behaviour with [PLD_YAW_EN](#PLD_YAW_EN).
+
+When enabled, PX4 uses the [`vte_orientation`](../msg_docs/VteOrientation.md) topic (published by the [Vision Target Estimator](../advanced_features/vision_target_estimator.md)) to command the yaw setpoint as long as the orientation data remains valid.
+If the orientation feed times out (see [PLD_BTOUT](../advanced_config/parameter_reference.md#PLD_BTOUT)) or the parameter is disabled, yaw control falls back to the default mission behaviour.
+
+:::warning
+Yaw alignment depends on the [Vision Target Estimator](../advanced_features/vision_target_estimator.md), which is not in the default board configurations.
+To use this feature you must [build a firmware that includes the module](../advanced_features/vision_target_estimator.md#building-the-module) and enable it at runtime with [VTE_EN](../advanced_config/parameter_reference.md#VTE_EN)=1 and [VTE_YAW_EN](../advanced_config/parameter_reference.md#VTE_YAW_EN)=1.
+Without this, `vte_orientation` is never published and [PLD_YAW_EN](#PLD_YAW_EN) has no effect.
+:::
 
 ## Початок точної посадки
 
 Точне приземлення можна використовувати у місіях, під час фази посадки у режимі _Повернення_, або ввійшовши в режим _Точна посадка_.
 
-<a id="mission"></a>
-
-### Місія Точна посадка
+### Mission Precision Landing {#mission}
 
 Точне приземлення може бути запущено як частина [місії](../flying/missions.md), використовуючи [MAV_CMD_NAV_LAND](https://mavlink.io/en/messages/common.html#MAV_CMD_NAV_LAND) з відповідно встановленим `param2`:
 
@@ -103,10 +115,10 @@ commander mode auto:precland
 
 ### Налаштування IR Сенсора/Бікона
 
-Рішення з інфрачервоним датчиком/посадковим маяком потребує датчика [IR-LOCK](https://irlock.com/products/ir-lock-sensor-precision-landing-kit) та напрямленого донизу [датчика відстані](../sensor/rangefinders.md), підключеного до автопілота, а також інфрачервоного маяка в якості цілі (наприклад, [IR-LOCK MarkOne](https://irlock.com/collections/markone)).
+The IR sensor/landing beacon solution requires an [IR-LOCK Sensor](https://irlock.com/products/ir-lock-sensor-precision-landing-kit) and downward facing [distance sensor](../sensor/rangefinders.md) connected to the flight controller, and an IR beacon as a target (e.g. [IR-LOCK MarkOne](https://irlock.com/collections/ir-markers)).
 Це дозволяє приземлитися з точністю приблизно 10 см (в той час як точність GPS може бути в декілька метрів).
 
-Встановіть датчик IR-LOCK, слідуючи [офіційному посібнику](https://irlock.readme.io/v2.0/docs).
+Install the IR-LOCK sensor by following the [official guide](https://irlock.readme.io/docs/getting-started).
 Переконайтеся, що ось x сенсора вирівняна з осью y транспортного засобу, а ось y сенсора вирівняна з напрямком -x транспортного засобу (це відбувається, якщо камера нахилена вниз на 90 градусів від напрямку вперед).
 
 Установіть [датчик дальності/відстані](../sensor/rangefinders.md) (виявлено, що _LidarLite v3_ працює добре).
@@ -152,15 +164,18 @@ CONFIG_MODULES_LANDING_TARGET_ESTIMATOR=y
 Інші важливі параметри перераховані в посиланнях на параметри в референсі параметрів під [Landing_target estimator](../advanced_config/parameter_reference.md#landing-target-estimator) та [Precision land](../advanced_config/parameter_reference.md#precision-land).
 Деякі з найбільш корисних перераховані нижче.
 
-| Параметр                                                                                                                                        | Опис                                                                                                                                                                                                 |
-| ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a id="SENS_EN_IRLOCK"></a>[SENS_EN_IRLOCK](../advanced_config/parameter_reference.md#SENS_EN_IRLOCK) | IR-LOCK Sensor (зовнішній I2C). Disable: `0` (default): Enable: `1`).          |
-| <a id="LTEST_MODE"></a>[LTEST_MODE](../advanced_config/parameter_reference.md#LTEST_MODE)                                  | Landing target is moving (`0`) or stationary (`1`). За замовчуванням - рухома.                                                 |
-| <a id="PLD_HACC_RAD"></a>[PLD_HACC_RAD](../advanced_config/parameter_reference.md#PLD_HACC_RAD)       | Горизонтальний радіус прийняття, всередині якого транспортний засіб почне спускатися. За замовчуванням - 0,2 м.                                                      |
-| <a id="PLD_BTOUT"></a>[PLD_BTOUT](../advanced_config/parameter_reference.md#PLD_BTOUT)                                     | Таймаут цілі посадки, після якого припускається, що ціль втрачена. За замовчуванням - 5 секунд.                                                                      |
-| <a id="PLD_FAPPR_ALT"></a>[PLD_FAPPR_ALT](../advanced_config/parameter_reference.md#PLD_FAPPR_ALT)    | Висота останнього підходу. Висота останнього підходу. За замовчуванням - 0,1 метра.                                                                  |
-| <a id="PLD_MAX_SRCH"></a>[PLD_MAX_SRCH](../advanced_config/parameter_reference.md#PLD_MAX_SRCH)       | Максимальна кількість спроб пошуку у вимаганій посадці.                                                                                                                              |
-| <a id="RTL_PLD_MD"></a>[RTL_PLD_MD](../advanced_config/parameter_reference.md#RTL_PLD_MD)             | Режим точної посадки RTL. `0`: disabled, `1`: [Opportunistic](#opportunistic-mode), `2`: [Required](#required-mode). |
+| Параметр                                                                                                                                                                   | Опис                                                                                                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <a id="SENS_EN_IRLOCK"></a>[SENS_EN_IRLOCK](../advanced_config/parameter_reference.md#SENS_EN_IRLOCK)                            | IR-LOCK Sensor (зовнішній I2C). Disable: `0` (default): Enable: `1`).          |
+| <a id="LTEST_MODE"></a>[LTEST_MODE](../advanced_config/parameter_reference.md#LTEST_MODE)                                                             | Landing target is moving (`0`) or stationary (`1`). За замовчуванням - рухома.                                                 |
+| <a id="PLD_HACC_RAD"></a>[PLD_HACC_RAD](../advanced_config/parameter_reference.md#PLD_HACC_RAD)                                  | Горизонтальний радіус прийняття, всередині якого транспортний засіб почне спускатися. За замовчуванням - 0,2 м.                                                      |
+| <a id="PLD_MOVING_T_MIN"></a>[PLD_MOVING_T_MIN](../advanced_config/parameter_reference.md#PLD_MOVING_T_MIN) | Minimum moving-target prediction time for the precision landing setpoint.                                                                                                            |
+| <a id="PLD_MOVING_T_MAX"></a>[PLD_MOVING_T_MAX](../advanced_config/parameter_reference.md#PLD_MOVING_T_MAX) | Maximum moving-target prediction time for the precision landing setpoint.                                                                                                            |
+| <a id="PLD_BTOUT"></a>[PLD_BTOUT](../advanced_config/parameter_reference.md#PLD_BTOUT)                                                                | Таймаут цілі посадки, після якого припускається, що ціль втрачена. За замовчуванням - 5 секунд.                                                                      |
+| <a id="PLD_FAPPR_ALT"></a>[PLD_FAPPR_ALT](../advanced_config/parameter_reference.md#PLD_FAPPR_ALT)                               | Висота останнього підходу. Висота останнього підходу. За замовчуванням - 0,1 метра.                                                                  |
+| <a id="PLD_MAX_SRCH"></a>[PLD_MAX_SRCH](../advanced_config/parameter_reference.md#PLD_MAX_SRCH)                                  | Maximum number of search attempts in a required landing.                                                                                                                             |
+| <a id="PLD_YAW_EN"></a>[PLD_YAW_EN](../advanced_config/parameter_reference.md#PLD_YAW_EN)                                        | Enable yaw alignment during precision landing when target orientation is available.                                                                                                  |
+| <a id="RTL_PLD_MD"></a>[RTL_PLD_MD](../advanced_config/parameter_reference.md#RTL_PLD_MD)                                        | Режим точної посадки RTL. `0`: disabled, `1`: [Opportunistic](#opportunistic-mode), `2`: [Required](#required-mode). |
 
 ### Масштабування ІЧ-маяка
 

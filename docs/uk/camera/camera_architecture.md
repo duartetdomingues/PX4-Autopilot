@@ -36,7 +36,7 @@ PX4 повинен бути налаштований для маршрутиза
 Ця робота виконується трьома компонентами PX4: [`camera_trigger` driver](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/camera_trigger), [`camera_capture` driver](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/camera_capture), модуль `camera-feedback` (../modules/modules_system.md#camera-feedback).
 
 `camera_trigger` підписується на тему [VehicleCommand](../msg_docs/VehicleCommand.md) та відстежує оновлення в [команди, які він підтримує](../camera/fc_connected_camera.md#mavlink-command-interface).
-Ці оновлення відбуваються, коли отримано команду через MAVLink або коли [елемент камери досягнутий у місії](#camera-commands-in-missions).
+These updates occur when either a command is received via MAVLink or when a [camera item is reached in a mission](#camera-commands-in-missions).
 
 Команди увімкнення та вимкнення спрацьовують, а також налаштовують спрацьовування за часовими та відстаневими інтервалами.
 Водій відстежує ці інтервали, і коли це потрібно, спрацьовують виходи.
@@ -88,9 +88,9 @@ PX4 повторно видає пункти камери, знайдені в �
   - Предмети місії виконуються, коли вони активовані.
   - `issue_command(_mission_item)` викликається в кінці цього, щоб відправити поточну непунктову команду
     - [`MissionBlock::видача_команди(const mission_item_s &item)`](https://github.com/PX4/PX4-Autopilot/blob/main/src/modules/navigator/mission_block.cpp#L543-L562)
-      - Створює команду для місії транспортного засобу, а потім викликає `publish_vehicle_cmd` для публікації її (`_navigator->publish_vehicle_cmd(&vcmd);`)
-        - [`void Navigator::publish_vehicle_cmd(vehicle_command_s *vcmd)`](https://github.com/PX4/PX4-Autopilot/blob/main/src/modules/navigator/navigator_main.cpp#L1358)
-          - Для деяких команд камери це встановлює ідентифікатор компонента на ідентифікатор компонента камери (`vcmd->target_component = 100; // MAV_COMP_ID_CAMERA`)
+      - Creates a vehicle command for the mission item then calls `publish_vehicle_command` to publish it (`_navigator->publish_vehicle_command(vehicle_command);`)
+        - [`void Navigator::publish_vehicle_command(vehicle_command_s &vehicle_command)`](https://github.com/PX4/PX4-Autopilot/blob/main/src/modules/navigator/navigator_main.cpp#L1395)
+          - For some camera commands it sets the component ID to the camera component id (`vehicle_command.target_component = 100; // MAV_COMP_ID_CAMERA`)
           - Усі інші просто публікуються під стандартний компонент ID.
           - Тема UORB `VehicleCommand` публікується.
 

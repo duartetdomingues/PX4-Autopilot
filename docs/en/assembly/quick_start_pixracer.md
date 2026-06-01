@@ -41,7 +41,7 @@ The instructions below show how to connect the different types of receivers:
 
   ![Radio Connection](../../assets/flight_controller/pixracer/grau_setup_pixracer_radio.jpg)
 
-- PPM and PWM receivers that have an _individual wire for each channel_ must connect to the **RCIN** port _via a PPM encoder_ [like this one](http://www.getfpv.com/radios/radio-accessories/holybro-ppm-encoder-module.html) (PPM-Sum receivers use a single signal wire for all channels).
+- PPM and PWM receivers that have an _individual wire for each channel_ must connect to the **RCIN** port _via a PPM encoder_ [like this one](https://www.getfpv.com/radios/radio-accessories/holybro-ppm-encoder-module.html) (PPM-Sum receivers use a single signal wire for all channels).
 
 ### Power Module (ACSP4)
 
@@ -52,7 +52,7 @@ The instructions below show how to connect the different types of receivers:
 Pixracer has inbuilt WiFi, but also supports telemetry via external Wi-Fi or radio telemetry modules connected to the `TELEM1` or `TELEM2` ports.
 This is shown in the wiring diagram below.
 
-![Pixracer external telemtry options](../../assets/flight_controller/pixracer/pixracer_top_telemetry.jpg)
+![Pixracer external telemetry options](../../assets/flight_controller/pixracer/pixracer_top_telemetry.jpg)
 
 ::: info
 The `TELEM2` port must be configured as a second MAVLink instance using the [MAV_2_CONFIG](../advanced_config/parameter_reference.md#MAV_2_CONFIG) parameter.

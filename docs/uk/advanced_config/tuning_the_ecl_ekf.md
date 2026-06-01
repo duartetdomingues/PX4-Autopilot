@@ -152,29 +152,29 @@ Three axis body fixed magnetometer data at a minimum rate of 5Hz is required to 
 Magnetometer data fusion can be configured using [EKF2_MAG_TYPE](../advanced_config/parameter_reference.md#EKF2_MAG_TYPE):
 
 0. Automatic:
-  - The magnetometer readings only affect the heading estimate before arming, and the whole attitude after arming.
-  - Heading and tilt errors are compensated when using this method.
-  - Incorrect magnetic field measurements can degrade the tilt estimate.
-  - The magnetometer biases are estimated whenever observable.
+   - The magnetometer readings only affect the heading estimate before arming, and the whole attitude after arming.
+   - Heading and tilt errors are compensated when using this method.
+   - Incorrect magnetic field measurements can degrade the tilt estimate.
+   - The magnetometer biases are estimated whenever observable.
 1. Magnetic heading:
-  - Only the heading is corrected.
-    The tilt estimate is never affected by incorrect magnetic field measurements.
-  - Tilt errors that could arise when flying without velocity/position aiding are not corrected when using this method.
-  - The magnetometer biases are estimated whenever observable.
+   - Only the heading is corrected.
+     The tilt estimate is never affected by incorrect magnetic field measurements.
+   - Tilt errors that could arise when flying without velocity/position aiding are not corrected when using this method.
+   - The magnetometer biases are estimated whenever observable.
 2. Deprecated
 3. Deprecated
 4. Deprecated
 5. None:
-  - Magnetometer data is never used.
-    This is useful when the data can never be trusted (e.g.: high current close to the sensor, external anomalies).
-  - The estimator will use other sources of heading: [GPS heading](#yaw-measurements) or external vision.
-  - When using GPS measurements without another source of heading, the heading can only be initialized after sufficient horizontal acceleration.
-    See [Estimate yaw from vehicle movement](#yaw-from-gps-velocity) below.
+   - Magnetometer data is never used.
+     This is useful when the data can never be trusted (e.g.: high current close to the sensor, external anomalies).
+   - The estimator will use other sources of heading: [GPS heading](#yaw-measurements) or external vision.
+   - When using GPS measurements without another source of heading, the heading can only be initialized after sufficient horizontal acceleration.
+     See [Estimate yaw from vehicle movement](#yaw-from-gps-velocity) below.
 6. Init only:
-  - Magnetometer data is only used to initialize the heading estimate.
-    This is useful when the data can be used before arming but not afterwards (e.g.: high current after the vehicle is armed).
-  - After initialization, the heading is constrained using other observations.
-  - Unlike mag type `None`, when combined with GPS measurements, this method allows position controlled modes to run directly during takeoff.
+   - Magnetometer data is only used to initialize the heading estimate.
+     This is useful when the data can be used before arming but not afterwards (e.g.: high current after the vehicle is armed).
+   - After initialization, the heading is constrained using other observations.
+   - Unlike mag type `None`, when combined with GPS measurements, this method allows position controlled modes to run directly during takeoff.
 
 The following selection tree can be used to select the right option:
 
@@ -236,7 +236,7 @@ The following selection tree can be used to select the right option:
 
 2. Витягніть `.ulg` файл журналу за допомогою, наприклад, [QGroundControl: Аналізувати > Завантажити журнал](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/analyze_view/log_download.html)
 
-  Той самий файл журналу можна використовувати для налаштування оцінювача вітру багатовертольотника [multirotor wind estimator](#mc_wind_estimation_using_drag).
+   Той самий файл журналу можна використовувати для налаштування оцінювача вітру багатовертольотника [multirotor wind estimator](#mc_wind_estimation_using_drag).
 
 :::
 
@@ -270,7 +270,7 @@ The following selection tree can be used to select the right option:
 
 #### Вимірювання повороту
 
-Деякі приймачі GPS, такі як приймач GPS з системою [Trimble MB-Two RTK](https://www.trimble.com/Precision-GNSS/MB-Two-Board.aspx), можуть використовуватися для надання вимірювання кута курсу, що замінює використання даних магнітометра.
+Some GPS receivers such as the [Trimble MB-Two RTK GPS receiver](https://oemgnss.trimble.com/en/products/receiver-modules/mb-two) can be used to provide a heading measurement that replaces the use of magnetometer data.
 Це може бути значним перевагою при роботі в середовищі, де присутні великі магнітні аномалії, або на широтах, де магнітне поле Землі має високий нахил.
 Використання вимірювань курсу від GPS увімкнено, встановивши біт на позиції 3 на 1 (додаючи 8) у параметрі [EKF2_GPS_CTRL](../advanced_config/parameter_reference.md#EKF2_GPS_CTRL).
 
@@ -344,6 +344,74 @@ Weightings applied by the GSF to the individual 3-state EKF outputs are in the`w
 Зверніть увагу, що `ekf2_gps_drift` не зафіксовано!
 :::
 
+#### GNSS Fault Detection
+
+PX4's GNSS fault detection protects against malicious or erroneous GNSS signals using selective fusion control based on measurement validation.
+
+The fault detection logic depends on the GPS mode, and also operates differently for horizontal position and altitude measurements.
+The mode is set using the [EKF2_GPS_MODE](../advanced_config/parameter_reference.md#EKF2_GPS_MODE) parameter:
+
+- **Automatic (`0`)** (Default): Assumes that GNSS is generally reliable and is likely to be recovered.
+  EKF2 resets on fusion timeouts if no other source of position is available.
+- **Dead-reckoning (`1`)**: Assumes that GNSS might be lost indefinitely, so resets should be avoided while we have other estimates of position data.
+  EKF2 may reset if no other sources of position or velocity are available.
+  If GNSS altitude OR horizontal position data drifts, the system disables fusion of both measurements simultaneously (even if one would still pass validation) and avoids performing resets.
+
+:::tip
+See also [Fault Detection](https://youtu.be/CMGQJNPiTJg?si=sFtdf4AQbcOH8-u8) in "Fuse, Reset, or Reject? Handling Various Data-sources in EKF2" _PX4 Developer Summit 2025_, Marco Hauswirth, Auterion AG
+:::
+
+##### Detection Logic
+
+Horizontal Position:
+
+- **Automatic mode**: Horizontal position resets to GNSS data if no other horizontal position source is currently being fused (e.g., Auxiliary Global Position - AGP).
+- **Dead-reckoning mode**: Horizontal position resets to GNSS data only if no other horizontal position OR velocity source is currently being fused (e.g., AGP, airspeed, optical flow).
+
+Altitude:
+
+- The altitude logic is more complex due to the height reference sensor ([EKF2_HGT_REF](../advanced_config/parameter_reference.md#EKF2_HGT_REF)) parameter, which is typically set to GNSS or baro in GNSS-denied scenarios.
+- If height reference is set to baro, GNSS-based height resets are prevented (except when baro fusion fails completely and height reference automatically switches to GNSS).
+- When height reference is set to GNSS:
+- **Automatic mode**: Resets occur on drifting GNSS altitude measurements.
+- **Dead-reckoning mode**: When validation starts failing, the system prevents GNSS altitude resets and labels the GNSS data as faulty.
+
+##### Faulty GNSS Data During Boot
+
+The system cannot automatically detect faulty GNSS data during vehicle boot as no baseline comparison exists.
+
+If GNSS fusion is enabled ([EKF2_GPS_CTRL](../advanced_config/parameter_reference.md#EKF2_GPS_CTRL)), operators will observe incorrect positions on maps and should disable GNSS fusion, then manually set the correct position via ground control station.
+The global position gets corrected, and if [SENS_BAR_AUTOCAL](../advanced_config/parameter_reference.md#SENS_BAR_AUTOCAL) was enabled, baro offsets are automatically adjusted (through bias correction, not parameter changes).
+
+##### Enabling GNSS Fusion Mid-Flight
+
+With Faulty GNSS Data:
+
+- **Automatic mode**: Vehicle will reset to faulty position - potentially dangerous.
+- **Dead-reckoning mode**: Large measurement differences cause GNSS rejection and fault detection activation.
+
+With Valid GNSS Data:
+
+- **Automatic mode**: Vehicle will reset to GNSS measurements.
+- **Dead-reckoning mode**: If estimated position/altitude is close enough to measurements, fusion resumes; if too far apart, data gets labeled as faulty.
+
+##### Примітки
+
+- **Dual Detection**: Horizontal and altitude checks run completely separately but both lead to the same result when triggered - all GNSS fusion gets disabled.
+- **Recovery**: Only the specific check that labeled data as invalid can re-enable fusion.
+- **Alternative Sources**: Dead-reckoning mode provides enhanced protection by requiring absence of alternative navigation sources before allowing resets.
+- **Boot Vulnerability**: Initial faulty GNSS data cannot be detected automatically; requires operator intervention and manual position correction.
+
+#### Ground Position Lock
+
+When a vehicle equipped with dead-reckoning sensors (e.g. airspeed for fixed-wing, or optical flow) is sitting on the ground before takeoff, those sensors provide little to no aiding — airspeed and optical flow measurements are unreliable at rest. In this case, the EKF relies on _constant position fusion_ (fusing a synthetic position measurement at the last known position) to prevent the estimate from drifting. However, this is only active when the vehicle is detected as stationary, so handling the vehicle or starting the engine can interrupt it.
+
+To counter this, [EKF2_POS_LOCK](../advanced_config/parameter_reference.md#EKF2_POS_LOCK) can be enabled to force constant position fusion to run while landed and the global horizontal position has already been initialized.
+
+:::note
+`EKF2_POS_LOCK` has no effect in flight.
+:::
+
 ### Далекомір
 
 [Range finder](../sensor/rangefinders.md) distance to ground is used by a single state filter to estimate the vertical position of the terrain relative to the height datum.
@@ -382,7 +450,6 @@ _Умовна допомога діапазону_ включається шля
 
 - [EKF2_RNG_A_VMAX](../advanced_config/parameter_reference.md#EKF2_RNG_A_VMAX): Максимальна горизонтальна швидкість, при перевищенні якої відключається допомога датчика дальності.
 - [EKF2_RNG_A_HMAX](../advanced_config/parameter_reference.md#EKF2_RNG_A_HMAX): Максимальна висота, при перевищенні якої відключається допомога датчика дальності.
-- [EKF2_RNG_A_IGATE](../advanced_config/parameter_reference.md#EKF2_RNG_A_IGATE): Ворота перевірки узгодженості допомоги датчика дальності (вимірювання помилки до відключення допомоги датчика дальності).
 
 #### Об'єднання висоти дальності
 
@@ -438,9 +505,7 @@ PX4 дозволяє постійно об'єднувати дальномер �
 Фіксованокрилі платформи можуть скористатися припущеною спостереженням дрейфу нульовим, щоб поліпшити оцінку швидкості вітру і також включити оцінку швидкості вітру без датчика повітряної швидкості.
 Це вмикається, встановивши параметр [EKF2_FUSE_BETA](../advanced_config/parameter_reference.md#EKF2_FUSE_BETA) на значення 1.
 
-<a id="mc_wind_estimation_using_drag"></a>
-
-### Оцінка вітру багатовертольотників за допомогою специфічних сил опору
+### Multicopter Wind Estimation using Drag Specific Forces {#mc_wind_estimation_using_drag}
 
 Багатороторні платформи можуть скористатися взаємозв'язком між повітряною швидкістю та силою опору вздовж осей тіла X та Y для оцінки північної / східної складових швидкості вітру.
 Це можна ввімкнути, використовуючи параметр [EKF2_DRAG_CTRL](../advanced_config/parameter_reference.md#EKF2_DRAG_CTRL).
@@ -452,8 +517,8 @@ PX4 дозволяє постійно об'єднувати дальномер �
 
 1. Проведіть польоти один раз у режимі позиції [Position mode](../flight_modes_mc/position.md) повторно вперед/назад/ліворуч/праворуч/вгору/вниз між спокоєм і максимальною швидкістю (найкращі результати отримуються, коли цей тест проводиться в спокійних умовах).
 2. Extract the **.ulg** log file using, for example, [QGroundControl: Analyze > Log Download](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/analyze_view/log_download.html)
-  ::: info
-  The same **.ulg** log file can also be used to tune the [static pressure position error coefficients](#correction-for-static-pressure-position-error).
+   ::: info
+   The same **.ulg** log file can also be used to tune the [static pressure position error coefficients](#correction-for-static-pressure-position-error).
 
 :::
 3. Використовуйте журнал зі сценарієм Python [mc_wind_estimator_tuning.py](https://github.com/PX4/PX4-Autopilot/tree/main/src/modules/ekf2/EKF/python/tuning_tools/mc_wind_estimator), щоб отримати оптимальний набір параметрів.
@@ -533,10 +598,10 @@ The **.ulog** format data can be parsed in python by using the [PX4 pyulog libra
 
 ### Вихідні дані
 
-- Вихідні дані Attitude містяться в повідомленні [VehicleAttitude](https://github.com/PX4/PX4-Autopilot/blob/main/msg/VehicleAttitude.msg).
-- Вихідні дані про локальне положення знаходяться в повідомленні [VehicleLocalPosition](https://github.com/PX4/PX4-Autopilot/blob/main/msg/VehicleLocalPosition.msg).
-- Глобальні вихідні дані \(WGS-84\) містяться в повідомленні [VehicleGlobalPosition](https://github.com/PX4/PX4-Autopilot/blob/main/msg/VehicleGlobalPosition.msg).
-- Вихідні дані про швидкість вітру містяться в повідомленні [Wind.msg](https://github.com/PX4/PX4-Autopilot/blob/main/msg/Wind.msg).
+- Attitude output data is found in the [VehicleAttitude](https://github.com/PX4/PX4-Autopilot/blob/main/msg/versioned/VehicleAttitude.msg) message.
+- Local position output data is found in the [VehicleLocalPosition](https://github.com/PX4/PX4-Autopilot/blob/main/msg/versioned/VehicleLocalPosition.msg) message.
+- Global \(WGS-84\) output data is found in the [VehicleGlobalPosition](https://github.com/PX4/PX4-Autopilot/blob/main/msg/versioned/VehicleGlobalPosition.msg) message.
+- Wind velocity output data is found in the [AirspeedWind.msg](https://github.com/PX4/PX4-Autopilot/blob/main/msg/AirspeedWind.msg) message.
 
 ### Стани
 
@@ -838,3 +903,4 @@ The rise in [EstimatorStatus](https://github.com/PX4/PX4-Autopilot/blob/main/msg
 ## Подальша інформація
 
 - [Огляд оцінки стану PX4](https://youtu.be/HkYRJJoyBwQ), _Саміт розробників PX4 2019_, д-р Пол Райзборо: Огляд оцінювача та основні зміни з 2018/19, а також очікувані покращення до 2019/ 20.
+- [Fuse, Reset, or Reject? Handling Various Data-sources in EKF2](https://www.youtube.com/watch?v=CMGQJNPiTJg) - _PX4 Developer Summit 2025_, Marco Hauswirth, Auterion AG

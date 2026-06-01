@@ -36,7 +36,7 @@ This flight controller is [manufacturer supported](../flight_controller/autopilo
 - Dimensions: 35x35mm
 - Weight: 8g
 
-## 购买渠道
+## Where to Buy {#store}
 
 The board can be bought from one of the following shops (for example):
 
@@ -78,7 +78,7 @@ This is the silkscreen for the _Kakute H7_, showing the top of the board:
 
 The board comes pre-installed with [Betaflight](https://github.com/betaflight/betaflight/wiki).
 Before PX4 firmware can be installed, the _PX4 bootloader_ must be flashed.
-Download the [kakuteh7_bl.hex](https://github.com/PX4/PX4-user_guide/raw/main/assets/flight_controller/kakuteh7/holybro_kakuteh7_bootloader.hex) bootloader binary and read [this page](../advanced_config/bootloader_update_from_betaflight.md) for flashing instructions.
+Download the [kakuteh7_bl.hex](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/flight_controller/kakuteh7/holybro_kakuteh7_bootloader.hex) bootloader binary and read [this page](../advanced_config/bootloader_update_from_betaflight.md) for flashing instructions.
 
 ## 编译固件
 
@@ -102,7 +102,7 @@ The firmware can be installed in any of the normal ways:
   You can use either pre-built firmware or your own custom firmware.
 
 :::info
-If you are loading the pre-built firmware via QGroundcontrol, you must use QGC Daily or QGC version newer than 4.1.7.
+If you are loading the pre-built firmware via QGroundControl, you must use QGC Daily or QGC version newer than 4.1.7.
 :::
 
 ## PX4 配置
@@ -119,7 +119,7 @@ In addition to the [basic configuration](../config/index.md), the following para
 | ------ | ---------- | ---------------------------------------- |
 | USART1 | /dev/ttyS0 | TELEM1                                   |
 | USART2 | /dev/ttyS1 | TELEM2                                   |
-| USART3 | /dev/ttyS2 | Debug Console                            |
+| USART3 | /dev/ttyS2 | 调试控制台                                    |
 | UART4  | /dev/ttyS3 | GPS1                                     |
 | USART6 | /dev/ttyS4 | RC SBUS                                  |
 | UART7  | /dev/ttyS5 | ESC telemetry (DShot) |

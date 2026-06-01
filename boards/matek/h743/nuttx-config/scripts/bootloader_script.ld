@@ -59,7 +59,7 @@
  *   2) BOOT=1: Boot address defined by user option byte BOOT_ADD1[15:0].
  *      ST programmed value: System bootloader at 0x1FF0:0000
  *
- * The Durandal has a Swtich on board, the BOOT0 pin is at ground so by default,
+ * The Durandal has a Switch on board, the BOOT0 pin is at ground so by default,
  * the STM32 will boot to address 0x0800:0000 in FLASH unless the swiutch is
  * drepresed, then the boot will be from 0x1FF0:0000
  *
@@ -110,7 +110,7 @@
 MEMORY
 {
 	itcm  (rwx) : ORIGIN = 0x00000000, LENGTH =   64K
-	flash (rx)  : ORIGIN = 0x08000000, LENGTH = 2048K
+	flash (rx)  : ORIGIN = 0x08000000, LENGTH =  128K
 	dtcm1 (rwx) : ORIGIN = 0x20000000, LENGTH =   64K
 	dtcm2 (rwx) : ORIGIN = 0x20010000, LENGTH =   64K
 	sram  (rwx) : ORIGIN = 0x24000000, LENGTH =  512K
@@ -130,20 +130,12 @@ ENTRY(_stext)
  * code pulled in by libgcc.a requires it (and that code cannot be easily avoided).
  */
 EXTERN(abort)
-EXTERN(_bootdelay_signature)
-
 SECTIONS
 {
 	.text : {
 		_stext = ABSOLUTE(.);
 		*(.vectors)
 		. = ALIGN(32);
-		/*
-		This signature provides the bootloader with a way to delay booting
-		*/
-		_bootdelay_signature = ABSOLUTE(.);
-		FILL(0xffecc2925d7d05c5)
-		. += 8;
 		*(.text .text.*)
 		*(.fixup)
 		*(.gnu.warning)

@@ -36,8 +36,8 @@ Pixhawk®️sco6X-RT ідеально підходить для розробни
 
 ## Ключові пункти дизайну
 
-- High performance [NXP i.MX RT1170 1GHz Crossover MCU](https://www.nxp.com/products/processors-and-microcontrollers/arm-microcontrollers/i-mx-rt-crossover-mcus/i-mx-rt1170-1-ghz-crossover-mcu-with-arm-cortex-cores:i.MX-RT1170) with Arm® Cortex® cores
-- Hardware secure element [NXP EdgeLock SE051](https://www.nxp.com/products/security-and-authentication/authentication/edgelock-se051-proven-easy-to-use-iot-security-solution-with-support-for-updatability-and-custom-applets:SE051) an extension to the widely trusted EdgeLock SE050 Plug & Trust secure element family, supports applet updates in the field and delivers proven security certified to CC EAL 6+, with AVA_VAN.5 up to the OS level, for strong protection against the most recent attack scenarios. Наприклад, для безпечного зберігання ідентифікатора оператора або сертифікатів.
+- High performance [NXP i.MX RT1170 1GHz Crossover MCU](https://www.nxp.com/products/i.MX-RT1170) with Arm® Cortex® cores
+- Hardware secure element [NXP EdgeLock SE051](https://www.nxp.com/products/SE051) an extension to the widely trusted EdgeLock SE050 Plug & Trust secure element family, supports applet updates in the field and delivers proven security certified to CC EAL 6+, with AVA_VAN.5 up to the OS level, for strong protection against the most recent attack scenarios. Наприклад, для безпечного зберігання ідентифікатора оператора або сертифікатів.
 - Modular flight controller: separated IMU, FMU, and Base system connected by a 100-pin & a 50-pin Pixhawk®​ Autopilot Bus connector.
 - Redundancy: 3x IMU sensors & 2x Barometer sensors on separate buses
 - Потрійне резервування доменів: повністю ізольовані сенсорні домени з окремими шинами та окремим керуванням живленням
@@ -122,7 +122,6 @@ Pixhawk®️sco6X-RT ідеально підходить для розробни
   - CAN шина має individual silent controls або ESC RX-MUX control
 
 - 2 порти вводу живлення з SMBus
-
   - 1 AD & IO port
   - 2 додаткових аналогових входи
   - 1 PWM/Capture вхід
@@ -131,9 +130,9 @@ Pixhawk®️sco6X-RT ідеально підходить для розробни
 - Інші характеристики:
   - Operating & storage temperature: -40 ~ 85°c
 
-## Де купити
+## Where to Buy {#store}
 
-Order from [Holybro](https://holybro.com/products/fmuv6x-rt-developer-edition).
+Order from [Holybro](https://holybro.com/products/pixhawk-6x-rt).
 
 ## Зборка/інсталяція
 
@@ -150,7 +149,7 @@ The [Pixhawk 6X Wiring Quick Start](../assembly/quick_start_pixhawk6x.md) provid
 - [Holybro Pixhawk Baseboard Pinout](https://docs.holybro.com/autopilot/pixhawk-6x/pixhawk-baseboard-pinout)
 - [Holybro Pixhawk Mini-Baseboard Pinout](https://docs.holybro.com/autopilot/pixhawk-6x/pixhawk-mini-baseboard-pinout)
 
-Примітки:
+Notes:
 
 - The [camera capture pin](../camera/fc_connected_camera.md#camera-capture-configuration) (`PI0`) is pin 2 on the AD&IO port, marked above as `FMU_CAP1`.
 
@@ -174,7 +173,7 @@ The [Pixhawk 6X Wiring Quick Start](../assembly/quick_start_pixhawk6x.md) provid
 ## Номінальна напруга
 
 _Pixhawk 6X-RT_ can be triple-redundant on the power supply if three power sources are supplied. The three power rails are: **POWER1**, **POWER2** and **USB**.
-The **POWER1** & **POWER2** ports on the Pixhawk 6X uses the 6 circuit [2.00mm Pitch CLIK-Mate Wire-to-Board PCB Receptacle](https://www.molex.com/molex/products/part-detail/pcb_receptacles/5024430670).
+The **POWER1** & **POWER2** ports on the Pixhawk 6X uses the 6 circuit [2.00mm Pitch CLIK-Mate Wire-to-Board PCB Receptacle](https://www.molex.com/en-us/products/part-detail/5024430670).
 
 **Normal Operation Maximum Ratings**
 
@@ -208,13 +207,11 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make px4_fmu-v6xrt_default
 ```
 
-<a id="debug_port"></a>
-
-## Відладочний порт
+## Debug Port {#debug_port}
 
 The [PX4 System Console](../debug/system_console.md) and [SWD interface](../debug/swd_debug.md) run on the **FMU Debug** port.
 
@@ -240,7 +237,7 @@ The pinouts and connector comply with the [Pixhawk Debug Full](../debug/swd_debu
 
 ## Периферійні пристрої
 
-- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor)
+- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor-ms4525do)
 - [Telemetry Radio Modules](https://holybro.com/collections/telemetry-radios?orderby=date)
 - [Rangefinders/Distance sensors](../sensor/rangefinders.md)
 

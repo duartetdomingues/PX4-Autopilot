@@ -23,7 +23,7 @@
 1. Відкрийте меню QGroundControl: **Settings > Parameters > Sensor Calibration**.
 2. Параметри, розташовані в розділі, як показано нижче (або ви можете знайти їх):
 
-  ![FC Orientation QGC v2](../../assets/qgc/setup/sensor/fc_orientation_qgc_v2.png)
+   ![FC Orientation QGC v2](../../assets/qgc/setup/sensor/fc_orientation_qgc_v2.png)
 
 ## Підсумок параметра
 
@@ -34,3 +34,7 @@
   Позитивні кути збільшуються в протипротивна годинниковій стрілці (CCW) напрямку, від'ємні кути збільшуються в напрямку за годинниковою стрілкою (CW).
 - [SENS_BOARD_Z_OFF](../advanced_config/parameter_reference.md#SENS_BOARD_Z_OFF): Поворот, у градусах, навколо осі Z PX4FMU або вісі Yaw.
   Позитивні кути збільшуються в протипротивна годинниковій стрілці (CCW) напрямку, від'ємні кути збільшуються в напрямку за годинниковою стрілкою (CW).
+
+## Дивіться також
+
+- [OEM/Factory Configuration](../advanced_config/oem.md)

@@ -22,7 +22,6 @@ Boards that are not compliant with the requirements are [unsupported](#unsupport
 
 3. 고객을 지원하고 고객이 연락할 수 있는 명확하고 쉬운 방법이 있어야 합니다.
    다음과 같은 방법이 허용됩니다.
-
    - PX4 Discord server presence
    - 지원 이메일
    - 전화번호
@@ -33,10 +32,9 @@ Boards that are not compliant with the requirements are [unsupported](#unsupport
    For more information on bootloaders see: [PX4 Nuttx Porting Guide > Bootloader](../hardware/porting_guide_nuttx.md#bootloader).
 
 6. 다음 내용을 포함하는 적절한 문서:
-
    - PX4 핀 정의를 아래에 매핑하는 완전한 핀배열 공개:
-      1. 마이크로컨트롤러 핀
-      2. 물리적 외부 커넥터
+     1. 마이크로컨트롤러 핀
+     2. 물리적 외부 커넥터
    - A block diagram or full schematic of the main components (sensors, power supply, etc.) that allows to infer software requirements and boot order
    - A manual of the finished product detailing its use
 
@@ -52,16 +50,14 @@ Manufacturer supported boards may be as well/better supported than Pixhawk board
 
 ## Pixhawk표준
 
-Pixhawk 보드는 Pixhawk 표준을 준수하는 보드입니다. These standards are laid out on [http://pixhawk.org](http://pixhawk.org/), but at high-level require that the board passes electrical tests mandated by the standard and the manufacturer has signed the Pixhawk adopter and trademark agreement.
+Pixhawk 보드는 Pixhawk 표준을 준수하는 보드입니다. These standards are laid out on [pixhawk.org](https://pixhawk.org/), but at high-level require that the board passes electrical tests mandated by the standard and the manufacturer has signed the Pixhawk adopter and trademark agreement.
 
 PX4는 일반적으로 상업적으로 사용 가능한 보드만 지원하므로, 일반적으로 지난 5년 이내에 출시된 보드 표준이 지원됩니다.
 
-<a id="ver_rev_id"></a>
-
-### VER 및 REV ID(하드웨어 개정 및 버전 감지)
+### VER and REV ID (Hardware Revision and Version Sensing) {#ver_rev_id}
 
 FMUv5 이상에는 전기 감지 메커니즘이 있습니다.
-선택적 구성 데이터와 결합된 이 감지는 필수 장치 및 전원 공급 장치 구성과 관련하여 하드웨어 구성을 정의합니다. Manufacturers must obtain the VER and REV ID from PX4 board maintainers by issuing a PR to ammend the [DS-018 Pixhawk standard](https://github.com/pixhawk/Pixhawk-Standards) for board versions and revisions.
+선택적 구성 데이터와 결합된 이 감지는 필수 장치 및 전원 공급 장치 구성과 관련하여 하드웨어 구성을 정의합니다. Manufacturers must obtain the VER and REV ID from PX4 board maintainers by issuing a PR to amend the [DS-018 Pixhawk standard](https://github.com/pixhawk/Pixhawk-Standards) for board versions and revisions.
 
 Because these boards are 100% compliant with the Pixhawk standard, the values assigned for VER and REV ID are the defaults for that FMU Version.
 
@@ -101,7 +97,7 @@ _New_ experimental boards are allocated [VER and REV IDs](#ver_rev_id) based on 
 이 범주에는 PX4 프로젝트 또는 제조업체에서 지원하지 않고 "실험적" 지원에 해당하지 않는 모든 보드가 포함됩니다.
 
 - 보드는 우리가 이미 지원하는 것과 문서상 어느 정도 호환되며 "실험적"으로 올리려면, 최소한의 노력이 필요하지만 개발 팀이나 제조업체 모두 현재 이를 추구하지 않습니다.
-- Manufacturer/Owner of hardware violates our [Code of Conduct](https://discuss.px4.io/t/code-of-conduct/13655)
+- Manufacturer/Owner of hardware violates our [Code of Conduct](https://discuss.px4.io/t/px4-community-code-of-conduct/13655)
 - 라이선스 제한으로 인해 보드 지원을 추가하는 데 필요한 도구/libs/drivers/etc가 호환되지 않는 것으로 간주되는 비공개 소스
 - 보드가 일반 요구 사항에 명시된 최소 요구 사항을 충족하지 않습니다.
 

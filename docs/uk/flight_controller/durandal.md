@@ -19,7 +19,7 @@ _Durandal_<sup>&reg;</sup> is the latest update to the successful family of Holy
 - Внутрішня система ізоляції вібрації.
 - На платі є два високопродуктивних, малошумних ІМП (інерціальних вимірювачів кутової швидкості), призначених для вимогливих застосувань стабілізації.
 
-A summary of the key features, [assembly](../assembly/quick_start_durandal.md), and [purchase](#purchase) links can be found below.
+A summary of the key features, [assembly](../assembly/quick_start_durandal.md), and [purchase](#store) links can be found below.
 
 :::info
 This flight controller is [manufacturer supported](../flight_controller/autopilot_manufacturer_supported.md).
@@ -86,13 +86,9 @@ This flight controller is [manufacturer supported](../flight_controller/autopilo
 
 For more information see: [Durandal Technical Data Sheet](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Durandal_technical_data_sheet_90f8875d-8035-4632-a936-a0d178062077.pdf).
 
-<a id="purchase"></a>
+## Where to Buy {#store}
 
-## Де купити
-
-Order from [Holybro](https://holybro.com/collections/autopilot-flight-controllers/products/durandal).
-
-<a id="connections"></a>
+Order from [Holybro](https://holybro.com/products/durandal).
 
 ## З'єднання
 
@@ -164,7 +160,7 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make holybro_durandal-v1_default
 ```
 
@@ -182,9 +178,7 @@ make holybro_durandal-v1_default
 
 <!-- Note: Got ports using https://github.com/PX4/PX4-user_guide/pull/672#issuecomment-598198434 -->
 
-<a id="debug_port"></a>
-
-## Відладочний порт
+## Debug Port {#debug_port}
 
 The [PX4 System Console](../debug/system_console.md) and [SWD interface](../debug/swd_debug.md) run on the _Debug Port_.
 
@@ -211,7 +205,7 @@ The complete set of supported configurations can be seen in the [Airframes Refer
 ## Схема розташування виводів
 
 _Durandal_ pinouts are listed below.
-These can also be downloaded from [here](https://holybro.com/collections/autopilot-flight-controllers/products/Durandal-Pinouts).
+These can also be downloaded from [here](https://cdn.shopifycdn.net/s/files/1/0604/5905/7341/files/Durandal_Pinouts_v1.0.pdf?v=1693983344).
 
 ### Верхні виводи
 
@@ -422,4 +416,4 @@ These can also be downloaded from [here](https://holybro.com/collections/autopil
 
 - [Durandal Wiring QuickStart](../assembly/quick_start_durandal.md)
 - [Durandal Technical Data Sheet](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Durandal_technical_data_sheet_90f8875d-8035-4632-a936-a0d178062077.pdf)
-- [Durandal Pinouts](https://holybro.com/collections/autopilot-flight-controllers/products/Durandal-Pinouts) (Holybro)
+- [Durandal Pinouts](https://cdn.shopifycdn.net/s/files/1/0604/5905/7341/files/Durandal_Pinouts_v1.0.pdf?v=1693983344) (Holybro)

@@ -22,7 +22,6 @@ Boards that are not compliant with the requirements are [unsupported](#unsupport
 
 3. Чіткий та простий спосіб зв'язатися з службою підтримки клієнтів для клієнтів.
    Один або декілька з наступних приймається:
-
    - Присутність сервера PX4 у Discord
    - Електронна пошта підтримки
    - Номер телефону
@@ -33,10 +32,9 @@ Boards that are not compliant with the requirements are [unsupported](#unsupport
    For more information on bootloaders see: [PX4 Nuttx Porting Guide > Bootloader](../hardware/porting_guide_nuttx.md#bootloader).
 
 6. Достатня документація, яка включає, але не обмежується:
-
    - Повний підключення, яке стало доступним для громадськості, яке відображає PX4 визначення контактів на:
-      1. Піни мікроконтролера
-      2. Фізичні зовнішні роз'ємники
+     1. Піни мікроконтролера
+     2. Фізичні зовнішні роз'ємники
    - A block diagram or full schematic of the main components (sensors, power supply, etc.) that allows to infer software requirements and boot order
    - Посібник з використання готового продукту
 
@@ -52,16 +50,14 @@ Manufacturer supported boards may be as well/better supported than Pixhawk board
 
 ## Pixhawk Connector Standard
 
-Плата Pixhawk - це та, яка відповідає стандартам Pixhawk. These standards are laid out on [http://pixhawk.org](http://pixhawk.org/), but at high-level require that the board passes electrical tests mandated by the standard and the manufacturer has signed the Pixhawk adopter and trademark agreement.
+Плата Pixhawk - це та, яка відповідає стандартам Pixhawk. These standards are laid out on [pixhawk.org](https://pixhawk.org/), but at high-level require that the board passes electrical tests mandated by the standard and the manufacturer has signed the Pixhawk adopter and trademark agreement.
 
 PX4 загалом підтримує лише плати, які є комерційно доступними, що зазвичай означає, що стандарти плат, випущені за останні п'ять років, підтримуються.
 
-<a id="ver_rev_id"></a>
-
-### Ідентифікатори VER та REV (Апаратна ревізія та виявлення версії)
+### VER and REV ID (Hardware Revision and Version Sensing) {#ver_rev_id}
 
 У FMUv5 та пізніше є електричний механізм виявлення.
-Цей сенсорний зв'язок разом з необов'язковими даними конфігурації буде використовуватися для визначення конфігурації апаратного забезпечення щодо обов'язкової конфігурації пристрою та живлення. Manufacturers must obtain the VER and REV ID from PX4 board maintainers by issuing a PR to ammend the [DS-018 Pixhawk standard](https://github.com/pixhawk/Pixhawk-Standards) for board versions and revisions.
+Цей сенсорний зв'язок разом з необов'язковими даними конфігурації буде використовуватися для визначення конфігурації апаратного забезпечення щодо обов'язкової конфігурації пристрою та живлення. Manufacturers must obtain the VER and REV ID from PX4 board maintainers by issuing a PR to amend the [DS-018 Pixhawk standard](https://github.com/pixhawk/Pixhawk-Standards) for board versions and revisions.
 
 Оскільки ці борди на 100% відповідають стандарту Pixhawk, значення, призначені для VER та REV ID, є значеннями за замовчуванням для цієї версії FMU.
 
@@ -101,7 +97,7 @@ _New_ experimental boards are allocated [VER and REV IDs](#ver_rev_id) based on 
 Ця категорія включає всі плати, які не підтримуються проектом PX4 або виробником, і що виходять за межі "експериментальної" підтримки.
 
 - Плата на папері в певній мірі сумісна з чимось, що ми вже підтримуємо, і для того, щоб підняти її до рівня "експериментального", потрібно буде мінімальних зусиль, проте або команда розробників, або виробник наразі цим не займаються
-- Manufacturer/Owner of hardware violates our [Code of Conduct](https://discuss.px4.io/t/code-of-conduct/13655)
+- Manufacturer/Owner of hardware violates our [Code of Conduct](https://discuss.px4.io/t/px4-community-code-of-conduct/13655)
 - Закритий вихідний код, де будь-які необхідні інструменти/бібліотеки/драйвери тощо, необхідні для підтримки плати, вважаються несумісними через ліцензійні обмеження
 - Плата не відповідає мінімальним вимогам, визначеним у Загальних вимогах
 

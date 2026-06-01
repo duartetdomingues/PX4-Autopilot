@@ -14,51 +14,52 @@ PX4 використовує термін VTOL для посилання на т
 
 ## Типи VTOL
 
-PX4 підтримує три найважливіші/основні типи VTOL.
+PX4 supports the three most important/main VTOL types: [Standard VTOL](standardvtol.md), [Tiltrotor](tiltrotor.md), and [Tailsitter](tailsitter.md).
 
-<div class="grid_wrapper three_column">
-  <div class="grid_item">
-    <div class="grid_item_heading"><a href="tailsitter.html" title="Tailsitter"><big>Tailsitter</big></a></div>
-    <div class="grid_text">
-    Ротори постійно в фіксованому положенні крила.
-    Злітає та сідає на хвіст. Уся транспортна засіб нахиляється вперед, щоб увійти в режим польоту вперед.
-    <img src="../../assets/airframes/vtol/wingtraone/hero.jpg" title="wingtraone" />
-    <ul>
-      <li>Простий та надійний</li>
-      <li>Мінімальний набір приводів</li>
-      <li>Може бути важко контролювати, особливо на вітер</li>
-      <li>Компроміс між ефективністю у режимі гвинтокрилу та прямолітання, оскільки використовуються одні й ті ж приводи</li>
-    </ul>
-    </div>
-  </div>
-<div class="grid_item">
-  <div class="grid_item_heading"><a href="tiltrotor.html" title="Tiltrotor"><big>Tiltrotor</big></a></div>
-  
-  Ротори обертаються на 90 градусів для переходу від багатокоптерного до орієнтації польоту вперед.
-  Злітає та сідає на живіт.
-  <div class="grid_text">
-  <img src="../../assets/airframes/vtol/eflite_convergence_pixfalcon/hero.jpg" title="Eflight Confvergence" />
-  <ul>
-    <li>Додаткові приводи для нахилу двигуна</li>
-    <li>Механічно складний механізм нахилу</li>
-    <li>Легше контролювати у режимі гвинтокрилу, ніж у режимі вертикального зльоту через більшу владу над керуванням</li>
-  </ul>
-  </div>
-</div>
-<div class="grid_item">
-  <div class="grid_item_heading"><a href="standardvtol.html" title="Standard VTOL"><big>Standard VTOL</big></a></div>
-  <div class="grid_text">
-  Окремі ротори/керування польотом для багтороторника та прямого польоту. Злітає та сідає на живіт.
-  <img src="../../assets/airframes/vtol/vertical_technologies_deltaquad/hero_small.png" title="Vertical Technologies: Deltaquad" />
-  <ul>
-    <li>Додаткова вага від окремих систем пропульсії для гвинтового/впередового польоту</li>
-    <li>Найлегше керувати завдяки присвяченим активаторам підйому/переміщення вперед</li>
-    <li>Може зависити</li>
-    <li>Паливні двигуни для просування вперед можуть бути використані</li>
-  </ul>
-  </div>
- </div>
-</div>
+:::: tabs
+
+:::tab Standard VTOL
+
+Окремі ротори/керування польотом для багтороторника та прямого польоту.
+Злітає та сідає на живіт.
+
+![Vertical Technologies: Deltaquad](../../assets/airframes/vtol/vertical_technologies_deltaquad/hero_small.png)
+
+- Додаткова вага від окремих систем пропульсії для гвинтового/впередового польоту
+- Найлегше керувати завдяки присвяченим активаторам підйому/переміщення вперед
+- Може зависити
+- Fuel engines can be used for forward flight propulsion
+
+:::
+
+:::tab Tailsitter
+
+Ротори постійно в фіксованому положенні крила.
+Злітає та сідає на хвіст. Уся транспортна засіб нахиляється вперед, щоб увійти в режим польоту вперед.
+
+![wingtraone](../../assets/airframes/vtol/wingtraone/hero.jpg)
+
+- Простий та надійний
+- Мінімальний набір приводів
+- Може бути важко контролювати, особливо на вітер
+- Компроміс між ефективністю у режимі гвинтокрилу та прямолітання, оскільки використовуються одні й ті ж приводи
+
+:::
+
+:::tab Tiltrotor
+
+Ротори обертаються на 90 градусів для переходу від багатокоптерного до орієнтації польоту вперед.
+Злітає та сідає на живіт.
+
+![Eflight Confvergence](../../assets/airframes/vtol/eflite_convergence_pixfalcon/hero.jpg)
+
+- Додаткові приводи для нахилу двигуна
+- Механічно складний механізм нахилу
+- Легше контролювати у режимі гвинтокрилу, ніж у режимі вертикального зльоту через більшу владу над керуванням
+
+:::
+
+::::
 
 Загалом, зі збільшенням механічної складності літаки стають легшими у керуванні, але збільшується вартість та вага.
 Кожен тип має переваги й недоліки, і є успішні комерційні проекти, що ґрунтуються на них.
@@ -98,11 +99,11 @@ The mapping between flight controller outputs and specific controls/motors depen
 Assembly information is covered in several sections:
 
 - [Basic Assembly](../assembly/index.md) contains topics shows the setup of core components for a number of popular [flight controllers](../flight_controller/index.md).
- Контролери польоту, для яких у нас немає посібників, зазвичай налаштовуються таким же чином (і майже завжди містять схожі посібники з налаштуванням).
+  Контролери польоту, для яких у нас немає посібників, зазвичай налаштовуються таким же чином (і майже завжди містять схожі посібники з налаштуванням).
 - [Peripherals](../peripherals/index.md) contains information about other peripherals, including [Airspeed Sensors](../sensor/airspeed.md).
 - [Airframes Reference > VTOL](../airframes/airframe_reference.md#vtol) explains which flight controller outputs must be connected to different flight controls for each airframe configuration:
- - Виберіть конфігурацію для вашого транспортного засобу, якщо вона існує, оскільки вона буде достатньо попередньо налаштована для польоту (можливо, потребує тільки дрібного налаштування).
- - В іншому випадку виберіть "Загальну конструкцію", яка відповідає вашому транспортному засобу.
+  - Виберіть конфігурацію для вашого транспортного засобу, якщо вона існує, оскільки вона буде достатньо попередньо налаштована для польоту (можливо, потребує тільки дрібного налаштування).
+  - В іншому випадку виберіть "Загальну конструкцію", яка відповідає вашому транспортному засобу.
 
 In addition, build logs showing how others have set up different types of vehicles are provided as sub topics.
 For example see [FunCub QuadPlane](../frames_vtol/vtol_quadplane_fun_cub_vtol_pixhawk.md).
@@ -126,7 +127,7 @@ VTOL Control & Airspeed Fault Detection (PX4 Developer Summit 2019)
 
 <!-- 20190704 -->
 
-### Tailsitter
+### Tailsitter {#tailsitter_video}
 
 [UAV Works VALAQ Patrol Tailsitter](https://www.valaqpatrol.com/valaq_patrol_technical_data/)
 
@@ -136,7 +137,7 @@ VTOL Control & Airspeed Fault Detection (PX4 Developer Summit 2019)
 
 <lite-youtube videoid="acG0aTuf3f8" title="PX4 VTOL - Call for Testpilots"/>
 
-### Tiltrotor
+### Tiltrotor {#tiltrotor_video}
 
 [Convergence Tiltrotor](../frames_vtol/vtol_tiltrotor_eflite_convergence_pixfalcon.md)
 

@@ -24,7 +24,7 @@ Create the `offb_node.cpp` file in your ROS package (by also adding it to your `
 ```cpp
 /**
  * @file offb_node.cpp
- * @brief Offboard control example node, written with MAVROS version 0.19.x, PX4 Pro Flight
+ * @brief Offboard control example node, written with MAVROS version 0.19.x, PX4 Flight
  * Stack and tested in Gazebo Classic SITL
  */
 
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 ```
 
 The `mavros_msgs` package contains all of the custom messages required to operate services and topics provided by the MAVROS package.
-All services and topics as well as their corresponding message types are documented in the [mavros wiki](http://wiki.ros.org/mavros).
+All services and topics as well as their corresponding message types are documented in the [mavros wiki](https://wiki.ros.org/mavros).
 
 ```cpp
 mavros_msgs::State current_state;
@@ -173,7 +173,7 @@ pose.pose.position.y = 0;
 pose.pose.position.z = 2;
 ```
 
-Попри те, що PX4 Pro Flight Stack працює в координатній площині NED, MAVROS переводить ці координати до ENU стандарту та навпаки.
+Even though the PX4 Flight Stack operates in the aerospace NED coordinate frame, MAVROS translates these coordinates to the standard ENU frame and vice-versa.
 This is why we set `z` to positive 2.
 
 ```cpp
@@ -194,7 +194,7 @@ offb_set_mode.request.custom_mode = "OFFBOARD";
 ```
 
 We set the custom mode to `OFFBOARD`.
-A list of [supported modes](http://wiki.ros.org/mavros/CustomModes#PX4_native_flight_stack) is available for reference.
+A list of [supported modes](https://wiki.ros.org/mavros/CustomModes#PX4_native_flight_stack) is available for reference.
 
 ```cpp
 mavros_msgs::CommandBool arm_cmd;

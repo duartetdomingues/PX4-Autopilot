@@ -6,7 +6,7 @@ It is small, rugged and just large enough to host a [Pixracer](../flight_control
 Key information:
 
 - **Frame:** Wing Wing Z-84
-- **Flight controller:** Pixracer
+- **Flight controller:** Pixracer (Discontinued)
 
 ![Wing Wing Z-84 build](../../assets/airframes/fw/wing_wing/wing_wing_build11.jpg)
 
@@ -14,10 +14,7 @@ Key information:
 
 ### Z-84 Plug n' Fly (PNF/PNP) or Kit
 
-One of these:
-
 - [Banggood](https://www.banggood.com/Wing-Wing-Z-84-Z84-EPO-845mm-Wingspan-Flying-Wing-PNP-p-973125.html)
-- [Hobbyking US Warehouse](https://hobbyking.com/en_us/wing-wing-z-84-epo-845mm-kit.html)
 
 :::tip
 PNF (or "PNP") versions include motor, propeller and electronic speed controller.
@@ -26,18 +23,17 @@ The "kit" version does not include these components, which must be purchased sep
 
 ### Electronic Speed Controller (ESC)
 
-One of these (any small (>=12A) ESC will do):
+Any small (>=12A) ESC will do:
 
-- [Turnigy 20A Brushed ESC ESC](https://hobbyking.com/en_us/turnigy-20a-brushed-esc.html) (Hobbyking)
 - [Lumenier Regler 30A BLHeli_S ESC OPTO](https://www.getfpv.com/lumenier-30a-blheli-s-esc-opto-2-4s.html) (GetFPV)
 
 ### Autopilot and Essential Components
 
 - [Pixracer](../flight_controller/pixracer.md) kit (including GPS and power module)
 - FrSky D4R-II receiver or equivalent (jumpered to PPM sum output according to its manual)
-- [Mini telemetry set](../flight_controller/pixfalcon.md#availability) for Holybro pix32
-- [Digital airspeed sensor](../flight_controller/pixfalcon.md#availability) for Holybro pix32 / Pixfalcon
-- 1800 mAh 2S LiPo Battery - e.g. [Team Orion 1800mAh 7.4V 50C 2S1P](https://teamorion.com/en/batteries-en/lipo/soft-case/team-orion-lipo-1800-2s-7-4v-50c-xt60-en/)
+- _Mini telemetry set_ for Holybro pix32
+- _Digital airspeed sensor_ for Holybro pix32 / Pixfalcon
+- 1800 mAh 2S LiPo Battery - e.g. Team Orion 1800mAh 7.4V 50C 2S1P with XT 60 plug.
 
 ### Recommended spare parts
 

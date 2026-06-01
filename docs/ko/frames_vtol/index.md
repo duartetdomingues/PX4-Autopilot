@@ -14,51 +14,52 @@ PX4가 지원하는 VTOL 유형, 조립, 구성 및 비행 방법에 대하여 �
 
 ## VTOL 유형
 
-PX4는 세 가지 중요한 VTOL 유형을 지원합니다.
+PX4 supports the three most important/main VTOL types: [Standard VTOL](standardvtol.md), [Tiltrotor](tiltrotor.md), and [Tailsitter](tailsitter.md).
 
-<div class="grid_wrapper three_column">
-  <div class="grid_item">
-    <div class="grid_item_heading"><a href="tailsitter.html" title="Tailsitter"><big>Tailsitter</big></a></div>
-    <div class="grid_text">
-    Rotors permanently in fixed-wing position.
-    이륙하고 꼬리로 착륙합니다. 전체 차량이 앞으로 기울어져 전진 비행으로 전환합니다.
-    <img src="../../assets/airframes/vtol/wingtraone/hero.jpg" title="wingtraone" />
-    <ul>
-      <li>간단하고 견고함.</li>
-      <li>최소한의 액추에이터 세트</li>
-      <li>바람이 불면 제어하기 어려울 수 있음</li>
-      <li>동일한 액츄에이터가 사용되므로 호버링과 전진 비행의 효율성간의 균형</li>
-    </ul>
-    </div>
-  </div>
-<div class="grid_item">
-  <div class="grid_item_heading"><a href="tiltrotor.html" title="Tiltrotor"><big>Tiltrotor</big></a></div>
-  
-  로터는 멀티콥터에서 전진 비행 방향으로 전환하기 위하여 90도 회전합니다.
-  이륙하고 배로 착지합니다.
-  <div class="grid_text">
-  <img src="../../assets/airframes/vtol/eflite_convergence_pixfalcon/hero.jpg" title="Eflight Confvergence" />
-  <ul>
-    <li>모터 틸트용 추가 액추에이터</li>
-    <li>기계적으로 복잡한 틸팅 메커니즘</li>
-    <li>더 많은 제어 권한으로 테일시터보다 호버링이 용이합니다.</li>
-  </ul>
-  </div>
-</div>
-<div class="grid_item">
-  <div class="grid_item_heading"><a href="standardvtol.html" title="Standard VTOL"><big>Standard VTOL</big></a></div>
-  <div class="grid_text">
-  멀티콥터와 전진 비행을 위한 별도의 로터 및 비행 제어 장치. 이륙하고 배로 착지합니다.
-  <img src="../../assets/airframes/vtol/vertical_technologies_deltaquad/hero_small.png" title="Vertical Technologies: Deltaquad" />
-  <ul>
-    <li>별도의 호버링 및 전진 비행 추진 시스템으로 인한 중량 증가</li>
-    <li>전용 호버링 및 포워드 플라이트 액츄에이터로 제어가 가장 용이 </li>
-    <li>호버링 가능</li>
-    <li>전진 비행 추진을 위한 연료 엔진 사용 가능</li>
-  </ul>
-  </div>
- </div>
-</div>
+:::: tabs
+
+:::tab 표준 VTOL
+
+멀티콥터와 전진 비행을 위한 별도의 로터 및 비행 제어 장치.
+이륙하고 배로 착지합니다.
+
+![Vertical Technologies: Deltaquad](../../assets/airframes/vtol/vertical_technologies_deltaquad/hero_small.png)
+
+- 별도의 호버링 및 전진 비행 추진 시스템으로 인한 중량 증가
+- 전용 호버링 및 포워드 플라이트 액츄에이터로 제어가 가장 용이
+- 호버링 가능
+- Fuel engines can be used for forward flight propulsion
+
+:::
+
+:::tab 테일시터
+
+Rotors permanently in fixed-wing position.
+이륙하고 꼬리로 착륙합니다. 전체 차량이 앞으로 기울어져 전진 비행으로 전환합니다.
+
+![wingtraone](../../assets/airframes/vtol/wingtraone/hero.jpg)
+
+- 간단하고 견고함.
+- 최소한의 액추에이터 세트
+- 바람이 불면 제어하기 어려울 수 있음
+- 동일한 액츄에이터가 사용되므로 호버링과 전진 비행의 효율성간의 균형
+
+:::
+
+:::tab 틸트로터
+
+로터는 멀티콥터에서 전진 비행 방향으로 전환하기 위하여 90도 회전합니다.
+이륙하고 배로 착지합니다.
+
+![Eflight Confvergence](../../assets/airframes/vtol/eflite_convergence_pixfalcon/hero.jpg)
+
+- 모터 틸트용 추가 액추에이터
+- 기계적으로 복잡한 틸팅 메커니즘
+- 더 많은 제어 권한으로 테일시터보다 호버링이 용이합니다.
+
+:::
+
+::::
 
 일반적으로, 기계적 복잡성이 증가함에 따라 기체의 비행이 용이할 수 있지만, 비용과 중량이가 증가합니다.
 각 유형에는 장단점이 있으며, 이를 기반으로 성공적인 상업적인 벤처 회사들이 있습니다.
@@ -98,11 +99,11 @@ The mapping between flight controller outputs and specific controls/motors depen
 Assembly information is covered in several sections:
 
 - [Basic Assembly](../assembly/index.md) contains topics shows the setup of core components for a number of popular [flight controllers](../flight_controller/index.md).
- 가이드가 없는 비행 컨트롤러는 일반적으로 거의 같은 방법으로 설정됩니다(거의 항상 유사한 설정 가이드가 포함됨).
+  가이드가 없는 비행 컨트롤러는 일반적으로 거의 같은 방법으로 설정됩니다(거의 항상 유사한 설정 가이드가 포함됨).
 - [Peripherals](../peripherals/index.md) contains information about other peripherals, including [Airspeed Sensors](../sensor/airspeed.md).
 - [Airframes Reference > VTOL](../airframes/airframe_reference.md#vtol) explains which flight controller outputs must be connected to different flight controls for each airframe configuration:
- - 정의된 기체의 구성을 선택하십시오. 이는 비행을 위하여 사전 튜닝이 충분하기 때문입니다(미세 조정만 필요할 수 있음).
- - 그렇지 않으면, 기체와 일치하는 "일반 기체"를 선택하십시오.
+  - 정의된 기체의 구성을 선택하십시오. 이는 비행을 위하여 사전 튜닝이 충분하기 때문입니다(미세 조정만 필요할 수 있음).
+  - 그렇지 않으면, 기체와 일치하는 "일반 기체"를 선택하십시오.
 
 In addition, build logs showing how others have set up different types of vehicles are provided as sub topics.
 For example see [FunCub QuadPlane](../frames_vtol/vtol_quadplane_fun_cub_vtol_pixhawk.md).
@@ -126,7 +127,7 @@ VTOL Control & Airspeed Fault Detection (PX4 Developer Summit 2019)
 
 <!-- 20190704 -->
 
-### 테일시터
+### Tailsitter {#tailsitter_video}
 
 [UAV Works VALAQ Patrol Tailsitter](https://www.valaqpatrol.com/valaq_patrol_technical_data/)
 
@@ -136,7 +137,7 @@ VTOL Control & Airspeed Fault Detection (PX4 Developer Summit 2019)
 
 <lite-youtube videoid="acG0aTuf3f8" title="PX4 VTOL - Call for Testpilots"/>
 
-### 틸트로터
+### Tiltrotor {#tiltrotor_video}
 
 [Convergence Tiltrotor](../frames_vtol/vtol_tiltrotor_eflite_convergence_pixfalcon.md)
 

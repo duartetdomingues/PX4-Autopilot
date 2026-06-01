@@ -54,7 +54,8 @@ enum class SDLogProfileMask : int32_t {
 	VISION_AND_AVOIDANCE =  1 << 7,
 	RAW_IMU_GYRO_FIFO =     1 << 8,
 	RAW_IMU_ACCEL_FIFO =    1 << 9,
-	MAVLINK_TUNNEL =        1 << 10
+	MAVLINK_TUNNEL =        1 << 10,
+	HIGH_RATE_SENSORS =     1 << 11
 };
 
 enum class MissionLogType : int32_t {
@@ -101,6 +102,9 @@ public:
 	 */
 	void initialize_mission_topics(MissionLogType mission_log_type);
 
+	/**
+	 * Add topic subscriptions based on the profile configuration and additional topics from SD card
+	 */
 	bool initialize_logged_topics(SDLogProfileMask profile);
 
 	const RequestedSubscriptionArray &subscriptions() const { return _subscriptions; }
@@ -159,11 +163,6 @@ private:
 	 */
 	void add_mission_topic(const char *name, uint16_t interval_ms = 0);
 
-	/**
-	 * Add topic subscriptions based on the profile configuration
-	 */
-	void initialize_configured_topics(SDLogProfileMask profile);
-
 	void add_default_topics();
 	void add_estimator_replay_topics();
 	void add_thermal_calibration_topics();
@@ -175,6 +174,7 @@ private:
 	void add_raw_imu_gyro_fifo();
 	void add_raw_imu_accel_fifo();
 	void add_mavlink_tunnel();
+	void add_high_rate_sensors_topics();
 
 	/**
 	 * add a logged topic (called by add_topic() above).

@@ -215,7 +215,7 @@ void FeasibilityChecker::doFixedWingChecks(mission_item_s &mission_item, const i
 	}
 
 	if (!_checks_failed.flags.fixed_wing_land_approach_failed) {
-		_checks_failed.flags.fixed_wing_land_approach_failed = !checkFixedWindLandApproach(mission_item, current_index);
+		_checks_failed.flags.fixed_wing_land_approach_failed = !checkFixedWingLandApproach(mission_item, current_index);
 	}
 
 }
@@ -257,12 +257,14 @@ bool FeasibilityChecker::checkMissionItemValidity(mission_item_s &mission_item, 
 	    mission_item.nav_cmd != NAV_CMD_CONDITION_GATE &&
 	    mission_item.nav_cmd != NAV_CMD_DO_WINCH &&
 	    mission_item.nav_cmd != NAV_CMD_DO_GRIPPER &&
+	    mission_item.nav_cmd != NAV_CMD_DO_AUTOTUNE_ENABLE &&
 	    mission_item.nav_cmd != NAV_CMD_DO_JUMP &&
 	    mission_item.nav_cmd != NAV_CMD_DO_CHANGE_SPEED &&
 	    mission_item.nav_cmd != NAV_CMD_DO_SET_HOME &&
 	    mission_item.nav_cmd != NAV_CMD_DO_LAND_START &&
 	    mission_item.nav_cmd != NAV_CMD_DO_TRIGGER_CONTROL &&
 	    mission_item.nav_cmd != NAV_CMD_DO_DIGICAM_CONTROL &&
+	    mission_item.nav_cmd != NAV_CMD_COMPONENT_ARM_DISARM &&
 	    mission_item.nav_cmd != NAV_CMD_IMAGE_START_CAPTURE &&
 	    mission_item.nav_cmd != NAV_CMD_IMAGE_STOP_CAPTURE &&
 	    mission_item.nav_cmd != NAV_CMD_VIDEO_START_CAPTURE &&
@@ -376,7 +378,7 @@ bool FeasibilityChecker::checkTakeoff(mission_item_s &mission_item)
 	return true;
 }
 
-bool FeasibilityChecker::checkFixedWindLandApproach(mission_item_s &mission_item, const int current_index)
+bool FeasibilityChecker::checkFixedWingLandApproach(mission_item_s &mission_item, const int current_index)
 {
 	if (mission_item.nav_cmd == NAV_CMD_LAND && current_index > 0) {
 

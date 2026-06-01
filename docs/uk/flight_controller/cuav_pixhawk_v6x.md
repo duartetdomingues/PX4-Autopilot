@@ -61,7 +61,7 @@ Pixhawk® V6X ідеально підходить для корпоративн�
 - 16 PWM виводів сервоприводів
 - 1 Виділений R/C вхід для Spektrum / DSM та S.Bus з аналоговим / PWM RSSI входом
 - 3 TELEM-порти (з повним контролем потоку)
-- 1 UART4(Seial та I2C)
+- 1 UART4(Serial and I2C)
 - 2 порти GPS
   - 1 повноцінний порт GPS плюс порт перемикача безпеки (GPS1)
   - 1 базовий GPS-порт (з I2C, GPS2)
@@ -96,7 +96,6 @@ Pixhawk® V6X ідеально підходить для корпоративн�
   - Baseboard: 56г
 - Operating & storage temperature: -20 ~ 85°c
 - Розмір
-
   - Політний контролер
 
     ![Pixhawk V6X](../../assets/flight_controller/cuav_pixhawk_v6x/v6x_size.jpg)
@@ -105,7 +104,7 @@ Pixhawk® V6X ідеально підходить для корпоративн�
 
     ![Pixhawk V6X](../../assets/flight_controller/cuav_pixhawk_v6x/core.png)
 
-## Де купити
+## Where to Buy {#store}
 
 Order from [CUAV](https://store.cuav.net/).
 
@@ -117,7 +116,7 @@ The [Pixhawk V6X Wiring Quick Start](../assembly/quick_start_cuav_pixhawk_v6x.md
 
 ![Pixhawk V6x Pinout](../../assets/flight_controller/cuav_pixhawk_v6x/pixhawk_v6x_pinouts.png)
 
-Примітки:
+Notes:
 
 - The [camera capture pin](../camera/fc_connected_camera.md#camera-capture-configuration) (`PI0`) is pin 2 on the AD&IO port, marked above as `FMU_CAP1`.
 
@@ -174,13 +173,11 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make px4_fmu-v6x_default
 ```
 
-<a id="debug_port"></a>
-
-## Відладочний порт
+## Debug Port {#debug_port}
 
 The [PX4 System Console](../debug/system_console.md) and [SWD interface](../debug/swd_debug.md) run on the **FMU Debug** port.
 
@@ -206,7 +203,7 @@ The pinouts and connector comply with the [Pixhawk Debug Full](../debug/swd_debu
 
 ## Периферійні пристрої
 
-- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor)
+- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor-ms4525do)
 - [Telemetry Radio Modules](https://holybro.com/collections/telemetry-radios?orderby=date)
 - [Rangefinders/Distance sensors](../sensor/rangefinders.md)
 

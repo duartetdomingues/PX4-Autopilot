@@ -97,7 +97,7 @@ drivers/telemetry/frsky_telemetry
 
 ![Telemetry Screen on the Taranis](../../assets/hardware/telemetry/taranis_telemetry.jpg)
 
-Instructions for installing the script can be found here: [LuaPilot Taranis Telemetry script > Taranis Setup OpenTX 2.1.6 or newer](http://ilihack.github.io/LuaPilot_Taranis_Telemetry/)
+Instructions for installing the script can be found here: [LuaPilot Taranis Telemetry script > Taranis Setup OpenTX 2.1.6 or newer](https://ilihack.github.io/LuaPilot_Taranis_Telemetry/)
 
 If you open the `LuaPil.lua` script with a text editor, you can edit the configuration. Запропоновані модифікації включають:
 
@@ -166,7 +166,7 @@ D-Port receivers transmit the following messages (from [here](https://github.com
 
 ## FrSky телеметрія Receivers
 
-Pixhawk/PX4 підтримує D (старий) та S (новий) телеметрію FrSky. Таблиця нижче всі FrSky приймачі, які підтримують телеметрію через D/S.PORT (теоретично всі вони повинні працювати).
+Pixhawk/PX4 підтримує D (старий) та S (новий) телеметрію FrSky. The table below lists all FrSky receivers that support telemetry via a D/S.PORT (in theory all of these should work).
 
 :::tip
 Note that the X series receivers listed below are recommended (e.g. XSR, X8R). Серії R та G не були протестовані / перевірені тестовою командою, але повинні працювати.
@@ -190,7 +190,7 @@ Note that the X series receivers listed below are recommended (e.g. XSR, X8R). �
 | R9 slim     | 10км                  | S.Bus (16)                               | Smart Port                    | 43.3x26.8x13.9мм      | 15,8г                 |
 
 :::info
-The above table originates from http://www.redsilico.com/frsky-receiver-chart and FrSky [product documentation](https://www.frsky-rc.com/product-category/receivers/).
+The above table originates from https://blog.redsilico.com/frsky-receiver-chart and FrSky [product documentation](https://www.frsky-rc.com/product-category/receivers/).
 :::
 
 <a id="ready_made_cable"></a>
@@ -199,9 +199,9 @@ The above table originates from http://www.redsilico.com/frsky-receiver-chart an
 
 Готові кабелі для використання з Pixhawk FMUv4 та раніше (крім Pixracer) доступні за адресою:
 
-- [Craft and Theory](http://www.craftandtheoryllc.com/telemetry-cable). Versions are available with DF-13 compatible _PicoBlade connectors_ (for FMUv2/3DR Pixhawk, FMUv2/HKPilot32) and _JST-GH connectors_ (for FMUv3/Pixhawk 2 "The Cube" and FMUv4/PixRacer v1).
+- [Craft and Theory](https://www.craftandtheoryllc.com/store/telemetry-cables-for-smart-port-radios/). Versions are available with DF-13 compatible _PicoBlade connectors_ (for FMUv2/3DR Pixhawk, FMUv2/HKPilot32) and _JST-GH connectors_ (for FMUv3/Pixhawk 2 "The Cube" and FMUv4/PixRacer v1).
 
-  <a href="http://www.craftandtheoryllc.com/telemetry-cable"><img src="../../assets/hardware/telemetry/craft_and_theory_frsky_telemetry_cables.jpg" alt="Purchase cable here from Craft and Theory"></a>
+  <a href="https://www.craftandtheoryllc.com/store/telemetry-cables-for-smart-port-radios/"><img src="../../assets/hardware/telemetry/craft_and_theory_frsky_telemetry_cables.jpg" alt="Purchase cable here from Craft and Theory"></a>
 
 <a id="diy_cables"></a>
 
@@ -213,8 +213,8 @@ You will need connectors that are appropriate for your autopilot (e.g. _JST-GH c
 Pixracer включає електроніку для перетворення сигналів S.PORT і UART, але для інших плат вам знадобиться адаптер UART на S.PORT.
 Ці можна отримати з:
 
-- [FrSky FUL-1](https://www.frsky-rc.com/product/ful-1/): [unmannedtech.co.uk](https://www.unmannedtechshop.co.uk/frsky-transmitter-receiver-upgrade-adapter-ful-1/)
-- SPC: [getfpv.com](http://www.getfpv.com/frsky-smart-port-converter-cable.html), [unmannedtechshop.co.uk](https://www.unmannedtechshop.co.uk/frsky-smart-port-converter-spc/)
+- [FrSky FUL-1](https://www.frsky-rc.com/product/ful-1/): [unmannedtech.co.uk](https://www.unmannedtechshop.co.uk/products/frsky-transmitter-receiver-upgrade-adapter-ful-1)
+- SPC: [getfpv.com](https://www.getfpv.com/frsky-smart-port-converter-cable.html), [unmannedtechshop.co.uk](https://www.unmannedtechshop.co.uk/products/frsky-smart-port-converter-spc)
 
 Додаткова інформація про з'єднання для різних плат подається нижче.
 

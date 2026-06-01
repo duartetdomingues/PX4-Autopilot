@@ -33,7 +33,7 @@ The boards support the [Pixhawk Autopilot Bus (PAB)](../flight_controller/pixhaw
 
 ## Параметри супутнього комп'ютера
 
-PX4 можна використовувати з комп'ютерами, які можна налаштувати для зв’язку через MAVLink або microROS/uXRCE-DDS через послідовний порт (або порт Ethernet, якщо є).
+PX4 can be used with computers that can be configured to communicate via MAVLink or microROS/uXRCE-DDS over a serial port (or Ethernet port, if present).
 Невеликий набір можливих альтернатив наведено нижче.
 
 Більші приклади високої потужності:
@@ -42,7 +42,7 @@ PX4 можна використовувати з комп'ютерами, які
 - [NXP NavQPlus](https://nxp.gitbook.io/navqplus/user-contributed-content/ros2/microdds)
 - [Nvidia Jetson TX2](https://developer.nvidia.com/embedded/jetson-tx2)
 
-* [Intel NUC](https://www.intel.com/content/www/us/en/products/details/nuc.html)
+* [Intel NUC](https://www.asus.com/au/content/nuc-overview/)
 * [Gigabyte Brix](https://www.gigabyte.com/Mini-PcBarebone/BRIX)
 
 Нижче наведено невелику підгрупу можливих альтернатив:
@@ -78,7 +78,7 @@ MAVSDK, як правило, є простішим у вивченні та ви
 
 Вам знадобиться маршрутизатор, якщо вам потрібен міст MAVLink від апарату до наземної станції або IP-мережі, або якщо вам потрібно кілька з'єднань:
 
-- [MAVLink Router](https://github.com/intel/mavlink-router) (рекомендується)
+- [MAVLink Router](https://github.com/mavlink-router/mavlink-router) (recommended)
 - [MAVProxy](https://ardupilot.org/mavproxy/)
 
 ## Налаштування Ethernet

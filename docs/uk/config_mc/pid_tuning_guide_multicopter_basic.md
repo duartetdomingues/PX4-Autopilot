@@ -13,7 +13,7 @@ Tuning is recommended for all new vehicle setups to get the _very best_ performa
 
 ## Введення
 
-PX4 uses **P**roportional, **I**ntegral, **D**erivative (PID) controllers (these are the most widespread control technique).
+PX4 uses **P**roportional, **I**integral, **D**erivative (PID) controllers (these are the most widespread control technique).
 
 The _QGroundControl_ **PID Tuning** setup provides real-time plots of the vehicle setpoint and response curves.
 The goal of tuning is to set the P/I/D values such that the _Response_ curve matches the _Setpoint_ curve as closely as possible (i.e. a fast response without overshoots).
@@ -41,7 +41,7 @@ The testing procedure for each controller (rate, attitude, velocity/position) an
 ## Передумови
 
 - You have selected the closest matching [default frame configuration](../config/airframe.md) for your vehicle.
-  Це повинно дати вам транспортний засіб, який вже літає.
+  This should give you a vehicle that already flies.
 
 - You should have done an [ESC calibration](../advanced_config/esc_calibration.md).
 
@@ -50,13 +50,13 @@ The testing procedure for each controller (rate, attitude, velocity/position) an
 
   This can be tested in [Acro mode](../flight_modes_mc/acro.md) or in [Stabilized mode](../flight_modes_mc/manual_stabilized.md):
 
-  - Видаліть пропелери
-  - Збройте транспортний засіб і знизьте оберти до мінімуму
-  - Нахиліть транспортний засіб у всі напрямки, близько 60 градусів
-  - Перевірте, чи не вимикаються мотори
+  - Remove propellers
+  - Arm the vehicle and lower the throttle to the minimum
+  - Tilt the vehicle to all directions, about 60 degrees
+  - Check that no motors turn off
 
-- Використовуйте високошвидкісне телеметричне з'єднання, таке як WiFi, якщо це взагалі можливо (типовий телеметричний радіо з невеликим діапазоном не є достатньо швидким для отримання реального часу зворотнього зв'язку та графіків).
-  Це особливо важливо для регулятора швидкості.
+- Use a high-rate telemetry link such as WiFi if at all possible (a typical low-range telemetry radio is not fast enough for real-time feedback and plots).
+  This is particularly important for the rate controller.
 
 - Disable [MC_AIRMODE](../advanced_config/parameter_reference.md#MC_AIRMODE) before tuning a vehicle (there is an options for this in the PID tuning screen).
 
@@ -65,14 +65,14 @@ Poorly tuned vehicles are likely to be unstable, and easy to crash.
 Make sure to have assigned a [Kill switch](../config/safety.md#emergency-switches).
 :::
 
-## Параметри налаштування
+## Tuning Procedure
 
-Параметри налаштування такі:
+The tuning procedure is:
 
 1. Arm the vehicle, takeoff, and hover (typically in [Position mode](../flight_modes_mc/position.md)).
 
 2. Open _QGroundControl_ **Vehicle Setup > PID Tuning**
-  ![QGC Rate Controller Tuning UI](../../assets/mc_pid_tuning/qgc_mc_pid_tuning_rate_controller.png)
+   ![QGC Rate Controller Tuning UI](../../assets/mc_pid_tuning/qgc_mc_pid_tuning_rate_controller.png)
 
 3. Select the **Rate Controller** tab.
 
@@ -80,71 +80,73 @@ Make sure to have assigned a [Kill switch](../config/safety.md#emergency-switche
 
 5. Set the _Thrust curve_ value to: 0.3 (PWM, power-based controllers) or 1 (RPM-based ESCs)
 
-  ::: info
-  For PWM, power-based and (some) UAVCAN speed controllers, the control signal to thrust relationship may not be linear.
-  Як результат, оптимальне налаштування при потужності утримання може бути не ідеальним, коли транспортний засіб працює на вищій потужності.
+   ::: info
+   For PWM, power-based and (some) UAVCAN speed controllers, the control signal to thrust relationship may not be linear.
+   As a result, the optimal tuning at hover thrust may not be ideal when the vehicle is operating at higher thrust.
 
-  Значення кривої тяги може бути використане для компенсації цієї нелинійності:
+   The thrust curve value can be used to compensate for this non-linearity:
 
-  - For PWM controllers, 0.3 is a good default (which may benefit from [further tuning](../config_mc/pid_tuning_guide_multicopter.md#thrust-curve)).
-  - Для контролерів на основі RPM використовуйте 1 (додаткове налаштування не потрібно, оскільки вони мають квадратичну криву тяги).
+   - For PWM controllers, 0.3 is a good default (which may benefit from [further tuning](../config_mc/pid_tuning_guide_multicopter.md#thrust-curve)).
+   - For RPM-based controllers, use 1 (no further tuning is required as these have a quadratic thrust curve).
 
-  For more information see the [detailed PID tuning guide](../config_mc/pid_tuning_guide_multicopter.md#thrust-curve).
+   For more information see the [detailed PID tuning guide](../config_mc/pid_tuning_guide_multicopter.md#thrust-curve).
 
 :::
 
 6. Set the _Select Tuning_ radio button to: **Roll**.
 
 7. (Optionally) Select the **Automatic Flight Mode Switching** checkbox.
-  This will _automatically_ switch from [Position mode](../flight_modes_mc/position.md) to [Stabilised mode](../flight_modes_mc/manual_stabilized.md) when you press the **Start** button
+   This will _automatically_ switch from [Position mode](../flight_modes_mc/position.md) to [Stabilised mode](../flight_modes_mc/manual_stabilized.md) when you press the **Start** button
 
 8. For rate controller tuning switch to _Acro mode_, _Stabilized mode_ or _Altitude mode_ (unless automatic switching is enabled).
 
 9. Select the **Start** button in order to start tracking the setpoint and response curves.
 
 10. Rapidly move the _roll stick_ full range and observe the step response on the plots.
-  :::tip
-  Stop tracking to enable easier inspection of the plots.
-  Це відбувається автоматично, коли ви збільшуєте/панорамуєте.
-  Use the **Start** button to restart the plots, and **Clear** to reset them.
+    :::tip
+    Stop tracking to enable easier inspection of the plots.
+    This happens automatically when you zoom/pan.
+    Use the **Start** button to restart the plots, and **Clear** to reset them.
 
 :::
 
 11. Modify the three PID values using the sliders (for roll rate-tuning these affect `MC_ROLLRATE_K`, `MC_ROLLRATE_I`, `MC_ROLLRATE_D`) and observe the step response again.
-  Значення зберігаються на транспортний засіб, як тільки переміщуються слайдери.
-  ::: info
-  The goal is for the _Response_ curve to match the _Setpoint_ curve as closely as possible (i.e. a fast response without overshoots).
+    The values are saved to the vehicle as soon as the sliders are moved.
+
+    ::: info
+    The goal is for the _Response_ curve to match the _Setpoint_ curve as closely as possible (i.e. a fast response without overshoots).
 
 :::
-  The PID values can be adjusted as follows:
-  - P (пропорційне) або К підсилення:
-    - збільште це для більшої реакції
-    - зменшити, якщо відповідь перевищує і / або коливається (до певної міри збільшення значення D також допомагає).
-  - D (похідне) надходження:
-    - це можна збільшити, щоб заглушити перевищення та коливання
-    - збільшуйте це лише настільки, наскільки це потрібно, оскільки це підсилює шум (і може призвести до нагрітих моторів)
-  - I (інтегральний) коефіцієнт отримання:
-    - використовується для зменшення поміченої похибки стану рівноваги
-    - якщо значення занадто низьке, відповідь може ніколи не досягти заданої точки (наприклад, у вітрових умовах)
-    - якщо занадто високий, можуть виникнути повільні коливання
+
+    The PID values can be adjusted as follows:
+
+    - P (пропорційне) або К підсилення:
+      - збільште це для більшої реакції
+      - зменшити, якщо відповідь перевищує і / або коливається (до певної міри збільшення значення D також допомагає).
+    - D (похідне) надходження:
+      - це можна збільшити, щоб заглушити перевищення та коливання
+      - збільшуйте це лише настільки, наскільки це потрібно, оскільки це підсилює шум (і може призвести до нагрітих моторів)
+    - I (інтегральний) коефіцієнт отримання:
+      - використовується для зменшення поміченої похибки стану рівноваги
+      - якщо значення занадто низьке, відповідь може ніколи не досягти заданої точки (наприклад, у вітрових умовах)
+      - якщо занадто високий, можуть виникнути повільні коливання
 
 12. Повторіть процес налаштування вище для крена та курсу:
-  - Use _Select Tuning_ radio button to select the axis to tune
-  - Перемістіть відповідні палички (тобто паличку крена для крена, паличку риштування для риштування).
-  - Для налаштування крену почніть з тих самих значень, що й для крену.
-    :::tip
-    Use the **Save to Clipboard** and **Reset from Clipboard** buttons to copy the roll settings for initial pitch settings.
+    - Use _Select Tuning_ radio button to select the axis to tune
+    - Перемістіть відповідні палички (тобто паличку крена для крена, паличку риштування для риштування).
+    - Для налаштування крену почніть з тих самих значень, що й для крену.
+      :::tip
+      Use the **Save to Clipboard** and **Reset from Clipboard** buttons to copy the roll settings for initial pitch settings.
 
 :::
 
 13. Повторіть процес налаштування контролера нахилу для всіх осей.
 
 14. Повторіть процес налаштування контролерів швидкості та позицій (на всіх осях).
+    - Використовуйте режим позиції при налаштуванні цих контролерів
+    - Select the **Simple position control** option in the _Position control mode ..._ selector (this allows direct control for the generation of step inputs)
 
-  - Використовуйте режим позиції при налаштуванні цих контролерів
-  - Select the **Simple position control** option in the _Position control mode ..._ selector (this allows direct control for the generation of step inputs)
-
-    ![QGC PID tuning: Simple control selector](../../assets/mc_pid_tuning/qgc_mc_pid_tuning_simple_control.png)
+      ![QGC PID tuning: Simple control selector](../../assets/mc_pid_tuning/qgc_mc_pid_tuning_simple_control.png)
 
 Готово!
 Пам'ятайте увімкнути повітряний режим перед виходом з налаштувань.

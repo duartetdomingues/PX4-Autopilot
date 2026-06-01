@@ -45,10 +45,10 @@
 class ExternalVisionVel
 {
 public:
-	ExternalVisionVel(Ekf &ekf_instance, const extVisionSample &vision_sample, const float ev_vel_noise,
+	ExternalVisionVel(Ekf &ekf_instance, const extVisionSample &vision_sample, const float ekf2_evv_noise,
 			  const imuSample &imu_sample) : _ekf(ekf_instance), _sample(vision_sample)
 	{
-		_min_variance = sq(ev_vel_noise);
+		_min_variance = sq(ekf2_evv_noise);
 		const Vector3f angular_velocity = imu_sample.delta_ang / imu_sample.delta_ang_dt - _ekf._state.gyro_bias;
 		Vector3f position_offset_body = _ekf._params.ev_pos_body - _ekf._params.imu_pos_body;
 		_velocity_offset_body = angular_velocity % position_offset_body;
@@ -57,7 +57,7 @@ public:
 	virtual ~ExternalVisionVel() = default;
 	virtual bool fuseVelocity(estimator_aid_source3d_s &aid_src, float gate)
 	{
-		_ekf.fuseLocalFrameVelocity(aid_src, aid_src.timestamp, _measurement,
+		_ekf.fuseLocalFrameVelocity(aid_src, _sample.time_us, _measurement,
 					    _measurement_var, gate);
 		return aid_src.fused;
 
@@ -93,9 +93,9 @@ public:
 class EvVelBodyFrameFrd : public ExternalVisionVel
 {
 public:
-	EvVelBodyFrameFrd(Ekf &ekf_instance, extVisionSample &vision_sample, const float ev_vel_noise,
+	EvVelBodyFrameFrd(Ekf &ekf_instance, extVisionSample &vision_sample, const float ekf2_evv_noise,
 			  const imuSample &imu_sample) :
-		ExternalVisionVel(ekf_instance, vision_sample, ev_vel_noise, imu_sample)
+		ExternalVisionVel(ekf_instance, vision_sample, ekf2_evv_noise, imu_sample)
 	{
 		_measurement = _sample.vel - _velocity_offset_body;
 		_measurement_var = _sample.velocity_var;
@@ -132,9 +132,9 @@ public:
 class EvVelLocalFrameNed : public ExternalVisionVel
 {
 public:
-	EvVelLocalFrameNed(Ekf &ekf_instance, extVisionSample &vision_sample, const float ev_vel_noise,
+	EvVelLocalFrameNed(Ekf &ekf_instance, extVisionSample &vision_sample, const float ekf2_evv_noise,
 			   const imuSample &imu_sample) :
-		ExternalVisionVel(ekf_instance, vision_sample, ev_vel_noise, imu_sample)
+		ExternalVisionVel(ekf_instance, vision_sample, ekf2_evv_noise, imu_sample)
 	{
 		const Vector3f velocity_offset_earth = _ekf._R_to_earth * _velocity_offset_body;
 
@@ -149,9 +149,9 @@ public:
 class EvVelLocalFrameFrd : public ExternalVisionVel
 {
 public:
-	EvVelLocalFrameFrd(Ekf &ekf_instance, extVisionSample &vision_sample, const float ev_vel_noise,
+	EvVelLocalFrameFrd(Ekf &ekf_instance, extVisionSample &vision_sample, const float ekf2_evv_noise,
 			   const imuSample &imu_sample) :
-		ExternalVisionVel(ekf_instance,	vision_sample, ev_vel_noise, imu_sample)
+		ExternalVisionVel(ekf_instance,	vision_sample, ekf2_evv_noise, imu_sample)
 	{
 		const Vector3f velocity_offset_earth = _ekf._R_to_earth * _velocity_offset_body;
 
@@ -166,7 +166,11 @@ public:
 			_measurement = rotation_ev_to_ekf * _sample.vel - velocity_offset_earth;
 			_measurement_var = matrix::SquareMatrix3f(rotation_ev_to_ekf * matrix::diag(
 						   _sample.velocity_var) * rotation_ev_to_ekf.transpose()).diag();
-			_min_variance = math::max(_min_variance, _sample.orientation_var.max());
+			// Velocity variance contribution from orientation uncertainty: δv = δθ × v
+			const float vx = _sample.vel(0), vy = _sample.vel(1), vz = _sample.vel(2);
+			_measurement_var(0) += sq(vz) * _sample.orientation_var(1) + sq(vy) * _sample.orientation_var(2);
+			_measurement_var(1) += sq(vx) * _sample.orientation_var(2) + sq(vz) * _sample.orientation_var(0);
+			_measurement_var(2) += sq(vy) * _sample.orientation_var(0) + sq(vx) * _sample.orientation_var(1);
 		}
 
 		enforceMinimumVariance();

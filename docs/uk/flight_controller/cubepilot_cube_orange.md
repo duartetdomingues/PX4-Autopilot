@@ -10,7 +10,7 @@ The [Cube Orange](https://www.cubepilot.com/#/cube/features) flight controller i
 ![Cube Orange](../../assets/flight_controller/cube/orange/cube_orange_hero.jpg)
 
 Контролер призначений для використання зі специфічною для домену несучою платою, щоб зменшити кількість дротів, підвищити надійність і спростити збірку.
-Наприклад, несуча плата для комерційного інспекційного апарату може містити з'єднання для комп'ютера-компаньйона, тоді як несуча плата для пілота може містити ESC для рами транспортного засобу.
+For example, a carrier board for a commercial inspection vehicle might include connections for a companion computer, while a carrier board for a racer could include ESCs for the frame of the vehicle.
 
 Несуча плата ADS-B включає налаштований приймач ADSB-In на 1090 МГц від uAvionix.
 Це забезпечує позиціонування і розташування комерційних пілотованих літаків в межах досяжності Cube.
@@ -19,7 +19,11 @@ The [Cube Orange](https://www.cubepilot.com/#/cube/features) flight controller i
 Cube має віброізоляцію на двох IMU, з третім фіксованим IMU в якості еталонного/резервного.
 
 :::tip
-The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/the-cube-module-overview) contain detailed information, including an overview of the [Differences between Cube Colours](https://docs.cubepilot.org/user-guides/autopilot/the-cube-module-overview#differences-between-cube-colours).
+The manufacturer [Cube User Guide](https://docs.cubepilot.org/user-guides/autopilot/the-cube) contains detailed information, including an overview of the [Differences between Cube Colours](https://docs.cubepilot.org/user-guides/autopilot/the-cube/introduction/specifications).
+:::
+
+:::info
+This flight controller is [manufacturer supported](../flight_controller/autopilot_manufacturer_supported.md).
 :::
 
 ## Основні характеристики
@@ -36,9 +40,7 @@ The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/th
 - Потужний багатотональний п'єзозвуковий індикатор
 - Карта microSD для високошвидкісної фіксації даних протягом тривалого періоду часу
 
-<a id="stores"></a>
-
-## Де купити
+## Where to Buy {#store}
 
 - [Reseller list](https://www.cubepilot.com/#/reseller/list)
 
@@ -53,7 +55,7 @@ The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/th
   - 400 МГц
   - 1 МБ RAM
   - 2 МБ флеш-пам'яті \(повністю доступна\)
-- **Failsafe co-processor:** <!-- inconsistent info on failsafe processor: 32 bit STM32F103 failsafe co-processor http://www.proficnc.com/all-products/191-pixhawk2-suite.html -->
+- **Failsafe co-processor:** <!-- inconsistent info on failsafe processor: 32 bit STM32F103 failsafe co-processor -->
   - STM32F103 (32bit _ARM Cortex-M3_)
   - 24 МГц
   - 8 KB SRAM
@@ -232,7 +234,7 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target, open up the terminal and enter:
 
-```
+```sh
 make cubepilot_cubeorange
 ```
 
@@ -244,6 +246,5 @@ Board schematics and other documentation can be found here: [The Cube Project](h
 
 - [Cube Wiring Quickstart](../assembly/quick_start_cube.md)
 - Cube Docs (виробник):
-  - [Cube Module Overview](https://docs.cubepilot.org/user-guides/autopilot/the-cube-module-overview)
-  - [Cube User Manual](https://docs.cubepilot.org/user-guides/autopilot/the-cube-user-manual)
+  - [Cube User Guide](https://docs.cubepilot.org/user-guides/autopilot/the-cube)
   - [Mini Carrier Board](https://docs.cubepilot.org/user-guides/carrier-boards/mini-carrier-board)

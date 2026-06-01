@@ -43,15 +43,15 @@ Foxtech Loong 2160 VTOL - це легкий у монтажі майже гот�
 - [Модуль живлення Holybro PM08D (альтернатива Auterion PM)](https://holybro.com/collections/power-modules-pdbs/products/pm08d-digital-power-module-14s-200a)
 - [GPS F9P (включено в Skynode оціночний. комплект)](../gps_compass/rtk_gps_holybro_h-rtk-f9p.md)
 - [GPS M9N (дешевша альтернатива F9P)](../gps_compass/rtk_gps_holybro_h-rtk-m8p.md)
-- [Датчик швидкості (включено в Skynode eval. kit)](https://www.dualrc.com/parts/airspeed-sensor-sdp33) — рекомендований для покращення безпеки та продуктивності
-- [Датчик швидкості (дешевший альтернативний варіант)](https://holybro.com/products/digital-air-speed-sensor?pr_prod_strat=use_description&pr_rec_id=236dfda00&pr_rec_pid=7150470561981&pr_ref_pid=7150472462525&pr_seq=uniform)
+- [Датчик швидкості (включено в Skynode eval. kit)](https://www.dualrc.com/parts/p/airspeed-sensor-sdp33) — recommended for improved safety and performance
+- [Airspeed sensor (cheaper alternative)](https://holybro.com/products/digital-air-speed-sensor-ms4525do)
 - [Lidar Lightware lw20-c (включено в Skynode eval. kit)](../sensor/sfxx_lidar.md) (Необов'язково)
 - [Інфрачервоний сенсор вимірювання відстані Seeed Studio PSK-CM8JL65-CC5 (дешевший аналог)](https://www.seeedstudio.com/PSK-CM8JL65-CC5-Infrared-Distance-Measuring-Sensor-p-4028.html) (Опціонально)
 - [Радіо (RC) система](../getting_started/rc_transmitter_receiver.md) на ваш вибір
-- [Наземна станція та радіо зв'язок](https://holybro.com/collections/rc-radio-transmitter-receiver/products/skydroid-h12?variant=42940989931709)
+- [Groundstation and Radio link](https://holybro.com/products/skydroid-h12)
 - [Розширення кабеля USB-C](https://www.digitec.ch/en/s1/product/powerguard-usb-c-usb-c-025-m-usb-cables-22529949?dbq=1&gclid=Cj0KCQjw2cWgBhDYARIsALggUhrh-z-7DSU0wKfLBVa8filkXLQaxUpi7pC0ffQyRzLng8Ph01h2R1gaAp0mEALw_wcB&gclsrc=aw.ds)
-- [Розгалужувач I2C](https://www.3dxr.co.uk/autopilots-c2/the-cube-aka-pixhawk-2-1-c9/cube-cables-accessories-sensors-c15/cubepilot-i2c-can-splitter-jst-gh-4pin-p2840)
-- [Монтажі, виготовлені на 3D-принтері](https://github.com/PX4/PX4-user_guide/raw/main/assets/airframes/vtol/foxtech_loong_2160/loong-3d-prints.zip)
+- [I2C Splitter](https://www.3dxr.co.uk/autopilots-c2/the-cube-aka-pixhawk-2-1-c9/cube-cables-accessories-sensors-c15/cubepilot-i2c-can-splitter-jst-gh-4pin-hx4-06152-p2840)
+- [3D-Printed mounts](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/airframes/vtol/foxtech_loong_2160/loong-3d-prints.zip)
   - 1x Базова плита
   - 1x Stack-fixture
   - 1x Кріплення вентилятора
@@ -99,33 +99,33 @@ Foxtech Loong 2160 VTOL - це легкий у монтажі майже гот�
 
 1. Вставте 10x різьбових вкладок M3 в піддон, як показано на малюнку:
 
-  ![Основна плита з різбленими вставками](../../assets/airframes/vtol/foxtech_loong_2160/03-baseplate.jpg)
+   ![Основна плита з різбленими вставками](../../assets/airframes/vtol/foxtech_loong_2160/03-baseplate.jpg)
 
 2. Вставте 2x різьбові вставки M3 в пристрій для накладання, як показано на зображенні нижче:
 
-  ![Фіксатор стекла з нарізними вкладками](../../assets/airframes/vtol/foxtech_loong_2160/04-stack-fixture.jpg)
+   ![Фіксатор стекла з нарізними вкладками](../../assets/airframes/vtol/foxtech_loong_2160/04-stack-fixture.jpg)
 
 3. Вставте 2x різьбові вкладки M4 в кріплення вентилятора та кріплення радіо, як показано на малюнку нижче.
 
-  ![Кріплення радіо](../../assets/airframes/vtol/foxtech_loong_2160/05-radio-mount.jpg)
+   ![Кріплення радіо](../../assets/airframes/vtol/foxtech_loong_2160/05-radio-mount.jpg)
 
-  Якщо ви хочете додати 40-мм вентилятор з напругою 5 В на кріплення вентилятора, вставте 4x вставки M3.
+   Якщо ви хочете додати 40-мм вентилятор з напругою 5 В на кріплення вентилятора, вставте 4x вставки M3.
 
-  ![Fan-mount](../../assets/airframes/vtol/foxtech_loong_2160/06-fan-mount.jpg)
+   ![Fan-mount](../../assets/airframes/vtol/foxtech_loong_2160/06-fan-mount.jpg)
 
 4. Змініть кабельний роз'єм на роз'єм для сервоприводу, щоб його можна було вставити в шину сервоприводу для живлення.
 
-  ::: info
-  Можливо знадобиться вентилятор, якщо використовується потужне радіо.
+   ::: info
+   Можливо знадобиться вентилятор, якщо використовується потужне радіо.
 
 :::
 
-  ![Кріплення вентилятора](../../assets/airframes/vtol/foxtech_loong_2160/07-fan-mount.jpg)
+   ![Кріплення вентилятора](../../assets/airframes/vtol/foxtech_loong_2160/07-fan-mount.jpg)
 
 5. Вилучіть оригінальну кронштейнну пластину з автомобіля.
-  Приклейте кабелі до зовнішньої частини фюзеляжу.
+   Приклейте кабелі до зовнішньої частини фюзеляжу.
 
-  ![Порожнє фюзеляж](../../assets/airframes/vtol/foxtech_loong_2160/08-preparations.jpg)
+   ![Порожнє фюзеляж](../../assets/airframes/vtol/foxtech_loong_2160/08-preparations.jpg)
 
 6. Перемістіть підставку в транспортний засіб.
 
@@ -142,9 +142,9 @@ Foxtech Loong 2160 VTOL - це легкий у монтажі майже гот�
 1. Вилучіть корпус з 40A PM.
 2. Зафіксуйте ПМ з 2x M2x6mm до нижньої пластини.
 3. Створіть кабель для подовження роз'єму XT60 до XT30, який закріплений на базовій платі.
-  З цим, живлення від акумулятора 6S може бути підключено безпосередньо до роз'єму XT30 за допомогою попередньо налаштованого кабелю, що поставляється з транспортним засобом.
+   З цим, живлення від акумулятора 6S може бути підключено безпосередньо до роз'єму XT30 за допомогою попередньо налаштованого кабелю, що поставляється з транспортним засобом.
 
-  ![Встановлення модуля живлення 40A](../../assets/airframes/vtol/foxtech_loong_2160/10-40a-power-module.jpg)
+   ![Встановлення модуля живлення 40A](../../assets/airframes/vtol/foxtech_loong_2160/10-40a-power-module.jpg)
 
 Якщо потрібно, вихід 10V з радіопорту на PM також може бути викладений через XT30, який може бути встановлений поруч зі входом батареї 6S XT60.
 
@@ -153,17 +153,17 @@ Foxtech Loong 2160 VTOL - це легкий у монтажі майже гот�
 #### Трубка Піто
 
 1. Датчик може бути встановлений за допомогою 2x винтів M3x16мм в передньому правому куті підставки.
-  Піклуйтесь, щоб конектор був звернутий у бік центру фюзеляжу.
+   Піклуйтесь, щоб конектор був звернутий у бік центру фюзеляжу.
 
-  ![Встановлений датчик швидкості повітря](../../assets/airframes/vtol/foxtech_loong_2160/11-airspeed-sensor.jpg)
+   ![Встановлений датчик швидкості повітря](../../assets/airframes/vtol/foxtech_loong_2160/11-airspeed-sensor.jpg)
 
-  Лише передню трубу (не так, як показано на картинці) використовується; іншу трубу можна видалити, оскільки наш досвід показав, що тиск всередині фюзеляжу достатній як статичний тиск.
+   Лише передню трубу (не так, як показано на картинці) використовується; іншу трубу можна видалити, оскільки наш досвід показав, що тиск всередині фюзеляжу достатній як статичний тиск.
 
 2. Коли стек встановлено всередині фюзеляжу, труба, що йде з крила, та труба, що йде з датчика швидкості повітря, повинні бути з'єднані разом.
-  Використовуйте трохи слини (це найлегший спосіб) щоб з'єднати їх разом, а потім використовуйте термоусадочну трубку, щоб посилити з'єднання.
+   Використовуйте трохи слини (це найлегший спосіб) щоб з'єднати їх разом, а потім використовуйте термоусадочну трубку, щоб посилити з'єднання.
 
-  :::warning
-  Використовуйте джерело тепла обережно, оскільки піна починаєтся танути при високих температурах.
+   :::warning
+   Використовуйте джерело тепла обережно, оскільки піна починаєтся танути при високих температурах.
 
 :::
 
@@ -175,22 +175,22 @@ Foxtech Loong 2160 VTOL - це легкий у монтажі майже гот�
 :::
 
 1. Позначте місце для встановлення лідару за допомогою скотчу або ручки.
-  Виріжте отвір всередині оболонки з ПВХ та піни, щоб лідар вміщувався на місце.
+   Виріжте отвір всередині оболонки з ПВХ та піни, щоб лідар вміщувався на місце.
 
-  ![Підготоване отвір лідару](../../assets/airframes/vtol/foxtech_loong_2160/12-lidar-01.jpg)
+   ![Підготоване отвір лідару](../../assets/airframes/vtol/foxtech_loong_2160/12-lidar-01.jpg)
 
 2. Закріпіть лідар з гарячим клеєм.
 
-  ![Встановлений лідар](../../assets/airframes/vtol/foxtech_loong_2160/13-lidar-02.jpg)
+   ![Встановлений лідар](../../assets/airframes/vtol/foxtech_loong_2160/13-lidar-02.jpg)
 
 #### GPS/компас
 
 1. Використовуйте двосторонній скотч для кріплення GPS на задній частині транспортного засобу під задньою засувкою.
 
-  ![Встановлений GPS](../../assets/airframes//vtol/foxtech_loong_2160/14-gps.jpg)
+   ![Встановлений GPS](../../assets/airframes//vtol/foxtech_loong_2160/14-gps.jpg)
 
-  Стрілка на GPS для орієнтації може бути проігнорована.
-  Орієнтацію буде визначено під час калібрування автопілота.
+   Стрілка на GPS для орієнтації може бути проігнорована.
+   Орієнтацію буде визначено під час калібрування автопілота.
 
 ### Політний контролер
 
@@ -203,15 +203,15 @@ Foxtech Loong 2160 VTOL - це легкий у монтажі майже гот�
 #### Skynode
 
 1. Використовуйте 4x гвинти M3x8 для кріплення Skynode до підстави.
-  Переконайтеся, що верхня частина "A" спрямована вперед транспортного засобу.
+   Переконайтеся, що верхня частина "A" спрямована вперед транспортного засобу.
 2. Вставте 40-амперний модуль живлення в верхній з двох роз'ємів живлення.
 3. Вставте один (або якщо потрібно, два) USB адаптери в 4-контактні роз'єми JST-GH на задній частині Skynode та прокладіть їх до передньої панелі.
-  Виправте кабелі за допомогою хомутів-ґудзиків на місці.
+   Виправте кабелі за допомогою хомутів-ґудзиків на місці.
 4. Приклейте розгалужувач I2C до правої передньої сторони підставки (Розгалужувач може бути використаний для підключення пристроїв ETH, таких як радіозв'язок.)
 5. Підключіть розгалужувач I2C до порту ETH на задній панелі Skynode.
 6. Вставте два 40-контактних кабелі у передню частину Skynode.
 7. Підключіть USB-C кабель подовження та згинайте його впереду.
-  Згин повинен бути дуже тугим, щоб пластина влізла в дрон.
+   Згин повинен бути дуже тугим, щоб пластина влізла в дрон.
 
 ![Встановлений Skynode](../../assets/airframes/vtol/foxtech_loong_2160/15-skynode.jpg)
 
@@ -223,17 +223,17 @@ Foxtech Loong 2160 VTOL - це легкий у монтажі майже гот�
 
 1. Приклейте антени Skynode LTE до боку фюзеляжу, як показано на зображенні:
 
-  ![Антени LTE](../../assets/airframes/vtol/foxtech_loong_2160/16-lte-antennas.jpg)
+   ![Антени LTE](../../assets/airframes/vtol/foxtech_loong_2160/16-lte-antennas.jpg)
 
 2. Якщо ви використовуєте модуль радіотелеметрії, ви можете встановити антени на верх фюзеляжу.
-  Зверху ви можете прямо встановити кабель подовження антени.
+   Зверху ви можете прямо встановити кабель подовження антени.
 
-  ![WIFI-Антени-Фронтальні](../../assets/airframes/vtol/foxtech_loong_2160/17-antenna-front.jpg)
+   ![WIFI-Антени-Фронтальні](../../assets/airframes/vtol/foxtech_loong_2160/17-antenna-front.jpg)
 
-  На задній частині ви можете використовувати адаптер антени з використанням технології 3D-друку.
-  Адаптер можна склеювати на місці гарячим клеєм.
+   На задній частині ви можете використовувати адаптер антени з використанням технології 3D-друку.
+   Адаптер можна склеювати на місці гарячим клеєм.
 
-  ![Задня WIFI антена](../../assets/airframes/vtol/foxtech_loong_2160/19-rear-antenna.jpg)
+   ![Задня WIFI антена](../../assets/airframes/vtol/foxtech_loong_2160/19-rear-antenna.jpg)
 
 ### Модуль потужності 12S
 
@@ -291,12 +291,12 @@ AUX:
 
 ### Завантажте файл параметрів
 
-Далі ми завантажуємо [файл параметрів](https://github.com/PX4/PX4-user_guide/raw/main/assets/airframes/vtol/foxtech_loong_2160/loong.params), який містить параметри, що визначають геометрію каркасу, відображення виводів та значення настройки - тож вам не потрібно!
+Next we load a [parameter file](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/airframes/vtol/foxtech_loong_2160/loong.params) that contains parameters that define the frame geometry, output mappings, and tuning values — so you don't have to!
 Якщо ви дотримувалися інструкцій з підключення двигунів, вам, ймовірно, не знадобиться багато додаткових налаштувань, окрім калібрування датчиків і фіксації кріплень.
 
 Щоб завантажити файл:
 
-1. Завантажте [файл параметрів](https://github.com/PX4/PX4-user_guide/raw/main/assets/airframes/vtol/foxtech_loong_2160/loong.params).
+1. Download the [parameter file](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/airframes/vtol/foxtech_loong_2160/loong.params).
 2. Виберіть вкладку [Параметри](../advanced_config/parameters.md#finding-updating-parameters), а потім натисніть на **Tools** в правому верхньому кутку.
 3. Виберіть **Завантажити з файлу**, а потім виберіть файл `loong.params`, який ви щойно завантажили.
 4. Перезапустіть транспортний засіб.
@@ -305,7 +305,7 @@ AUX:
 
 - Якщо [Lidar Lightware lw20-c (включено в Skynode eval. kit)](../sensor/sfxx_lidar.md) використовується, потрібно встановити [SENS_EN_SF1XX](../advanced_config/parameter_reference.md#SENS_EN_SF1XX) на 6 (SF/LW/20c).
 - Впевніться, що обраний правильний датчик швидкості.
-  Якщо ви використовуєте рекомендований [датчик швидкості SDP33](https://www.dualrc.com/parts/airspeed-sensor-sdp33), зміни не будуть потрібні, оскільки [SENS_EN_SDP3X](../advanced_config/parameter_reference.md#SENS_EN_SDP3X) увімкнено (встановлено на `1`) в файлі параметрів.
+  If you use the recommended [SDP33 airspeed sensor](https://www.dualrc.com/parts/p/airspeed-sensor-sdp33) no changes will be needed as [SENS_EN_SDP3X](../advanced_config/parameter_reference.md#SENS_EN_SDP3X) is enabled (set to `1`) in the parameter file.
 
 ### Калібрування сенсорів
 

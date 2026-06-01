@@ -45,28 +45,6 @@ div.frame_variant td, div.frame_variant th {
 }
 </style>
 
-## 2D Space Robot
-
-### Space Robot
-
-<div class="frame_common">
-<img src="../../assets/airframes/types/AirframeUnknown.svg"/>
-</div>
-
-<div class="frame_variant">
-<table>
- <thead>
-   <tr><th>Назва</th><th></th></tr>
- </thead>
-<tbody>
-<tr id="2d_space_robot_space_robot_kth_space_robot">
- <td>KTH Space Robot</td>
- <td>Maintainer: DISCOWER<p><code>SYS_AUTOSTART</code> = 70000</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-
 ## Дирижабль
 
 ### Дирижабль
@@ -424,7 +402,7 @@ div.frame_variant td, div.frame_variant th {
  <td>Підтримувач: Lorenz Meier &lt;lorenz@px4.io&gt;<p><code>SYS_AUTOSTART</code> = 4050</p></td>
 </tr>
 <tr id="copter_quadrotor_x_holybro_qav250">
- <td><a href="https://docs.px4.io/main/en/frames_multicopter/holybro_qav250_pixhawk4_mini.html">HolyBro QAV250</a></td>
+ <td><a href="https://docs.px4.io/main/en/frames_multicopter/holybro_qav250_pixhawk4_mini">HolyBro QAV250</a></td>
  <td>Супроводжувач: Beat Kueng &lt;beat-kueng@gmx.net&gt;<p><code>SYS_AUTOSTART</code> = 4050</p></td>
 </tr>
 <tr id="copter_quadrotor_x_holybro_kopis_2">
@@ -478,6 +456,10 @@ div.frame_variant td, div.frame_variant th {
 <tr id="copter_simulation_sih_quadcopter_x">
  <td>Квадрокоптер SIH X</td>
  <td>Підтримувач: Romain Chiappinelli &lt;romain.chiap@gmail.com&gt;<p><code>SYS_AUTOSTART</code> = 1100</p></td>
+</tr>
+<tr id="copter_simulation_sih_hexacopter_x">
+ <td>SIH Hexacopter X</td>
+ <td>Підтримувач: Romain Chiappinelli &lt;romain.chiap@gmail.com&gt;<p><code>SYS_AUTOSTART</code> = 1105</p></td>
 </tr>
 </tbody>
 </table>
@@ -617,13 +599,21 @@ div.frame_variant td, div.frame_variant th {
    <tr><th>Назва</th><th></th></tr>
  </thead>
 <tbody>
+<tr id="rover_rover_sih_rover_ackermann">
+ <td>SIH Rover Ackermann</td>
+ <td>Підтримувач: John Doe &lt;john@example.com&gt;<p><code>SYS_AUTOSTART</code> = 1104</p></td>
+</tr>
 <tr id="rover_rover_generic_rover_differential">
  <td>Generic Rover Differential</td>
  <td>Підтримувач: John Doe &lt;john@example.com&gt;<p><code>SYS_AUTOSTART</code> = 50000</p></td>
 </tr>
 <tr id="rover_rover_aion_robotics_r1_ugv">
- <td><a href="https://www.aionrobotics.com/r1">Aion Robotics R1 UGV</a></td>
+ <td><a href="https://docs.px4.io/main/en/complete_vehicles_rover/aion_r1">Aion Robotics R1 UGV</a></td>
  <td>Підтримувач: John Doe &lt;john@example.com&gt;<p><code>SYS_AUTOSTART</code> = 50001</p></td>
+</tr>
+<tr id="rover_rover_hiwonder_tracked">
+ <td><a href="https://www.hiwonder.com/products/suspended-shock-absorbing-tracked-chassis?variant=40378709835863">Hiwonder Tracked</a></td>
+ <td>Підтримувач: John Doe &lt;john@example.com&gt;<p><code>SYS_AUTOSTART</code> = 50002</p></td>
 </tr>
 <tr id="rover_rover_generic_rover_ackermann">
  <td>Generic Rover Ackermann</td>
@@ -633,17 +623,52 @@ div.frame_variant td, div.frame_variant th {
  <td><a href="https://www.axialadventure.com/product/1-10-scx10-ii-trail-honcho-4wd-rock-crawler-brushed-rtr/AXID9059.html">Axial SCX10 2 Trail Honcho</a></td>
  <td>Підтримувач: John Doe &lt;john@example.com&gt;<p><code>SYS_AUTOSTART</code> = 51001</p></td>
 </tr>
+<tr id="rover_rover_nxp_b3rb_rover_ackermann">
+ <td>NXP B3RB Rover Ackermann</td>
+ <td>Підтримувач: John Doe &lt;john@example.com&gt;<p><code>SYS_AUTOSTART</code> = 51002</p></td>
+</tr>
+<tr id="rover_rover_hiwonder_ackermann">
+ <td><a href="https://www.hiwonder.com/products/ackermann-steering-chassis?variant=40382428348503">Hiwonder Ackermann</a></td>
+ <td>Підтримувач: John Doe &lt;john@example.com&gt;<p><code>SYS_AUTOSTART</code> = 51003</p></td>
+</tr>
 <tr id="rover_rover_generic_rover_mecanum">
  <td>Generic Rover Mecanum</td>
  <td>Підтримувач: John Doe &lt;john@example.com&gt;<p><code>SYS_AUTOSTART</code> = 52000</p></td>
 </tr>
-<tr id="rover_rover_generic_ground_vehicle_(deprecated)">
- <td>Generic Ground Vehicle (Deprecated)</td>
- <td><p><code>SYS_AUTOSTART</code> = 59000</p><br><b>Specific Outputs:</b><ul><li><b>Motor1</b>: газ</li><li><b>Servo1</b>: кермування</li></ul></td>
+<tr id="rover_rover_hiwonder_mecanum">
+ <td><a href="https://www.hiwonder.com/products/large-metal-4wd-vehicle-chassis-green">Hiwonder Mecanum</a></td>
+ <td>Підтримувач: John Doe &lt;john@example.com&gt;<p><code>SYS_AUTOSTART</code> = 52001</p></td>
 </tr>
-<tr id="rover_rover_nxp_cup_car:_df_robot_gpx_(deprecated)">
- <td>NXP Cup car: DF Robot GPX (Deprecated)</td>
- <td>Підтримувач: Katrin Moritz<p><code>SYS_AUTOSTART</code> = 59001</p><br><b>Specific Outputs:</b><ul><li><b>Motor1</b>: Швидкість лівих коліс</li><li><b>Servo1</b>: кермувальний сервопривід</li></ul></td>
+</tbody>
+</table>
+</div>
+
+## Spacecraft
+
+### Free-Flyer
+
+<div class="frame_common">
+<img src="../../assets/airframes/types/FreeFlyer.svg"/>
+<table>
+ <thead>
+   <tr><th>Загальні виводи</th></tr>
+ </thead>
+ <tbody>
+<tr>
+ <td><ul><li><b>Motor1</b>: back left thruster, +x thrust</li><li><b>Motor2</b>: front left thruster, -x thrust</li><li><b>Motor3</b>: back right thruster, +x thrust</li><li><b>Motor4</b>: front right thruster, -x thrust</li><li><b>Motor5</b>: front left thruster, +y thrust</li><li><b>Motor6</b>: front right thruster, -y thrust</li><li><b>Motor7</b>: back left thruster, +y thrust</li><li><b>Motor8</b>: back right thruster, -y thrust</li></ul></td>
+</tr>
+</tbody></table>
+</div>
+
+<div class="frame_variant">
+<table>
+ <thead>
+   <tr><th>Назва</th><th></th></tr>
+ </thead>
+<tbody>
+<tr id="spacecraft_free-flyer_kth-atmos">
+ <td><a href="https://atmos.discower.io">KTH-ATMOS</a></td>
+ <td>Maintainer: DISCOWER<p><code>SYS_AUTOSTART</code> = 70000</p></td>
 </tr>
 </tbody>
 </table>
@@ -797,4 +822,3 @@ div.frame_variant td, div.frame_variant th {
 </tbody>
 </table>
 </div>
-

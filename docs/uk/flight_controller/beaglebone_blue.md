@@ -4,12 +4,12 @@
 
 :::warning
 PX4 не розробляє цей (або будь-який інший) автопілот.
-Contact the [manufacturer](https://beagleboard.org/blue) for hardware support or compliance issues.
+Contact the [manufacturer](https://www.beagleboard.org/boards/beaglebone-blue) for hardware support or compliance issues.
 :::
 
-[BeagleBone Blue](https://beagleboard.org/blue) is an all-in-one Linux-based computer.
+[BeagleBone Blue](https://www.beagleboard.org/boards/beaglebone-blue) is an all-in-one Linux-based computer.
 Хоча ця компактна і недорога плата оптимізована для робототехніки, вона має всі необхідні датчики і периферійні пристрої, необхідні для керування польотом.
-This topic shows how to set up the board to run PX4 with [librobotcontrol](https://github.com/StrawsonDesign/librobotcontrol) robotics package.
+This topic shows how to set up the board to run PX4 with [librobotcontrol](https://github.com/beagleboard/librobotcontrol) robotics package.
 
 ![BeagleBone - labelled diagram](../../assets/hardware/BeagleBone_Blue_balloons.jpg)
 
@@ -17,17 +17,17 @@ This topic shows how to set up the board to run PX4 with [librobotcontrol](https
 
 _BeagleBone Blue_ images can be found here:
 
-- [Latest stable OS image](https://beagleboard.org/latest-images).
+- [Latest stable OS image](https://www.beagleboard.org/distros).
 - [Test OS images](https://rcn-ee.net/rootfs/bb.org/testing/) (updated frequently).
 
 Information about flashing OS images can be found on [this page](https://github.com/beagleboard/beaglebone-blue/wiki/Flashing-firmware).
-Other useful information can be found in the [FAQ](https://github.com/beagleboard/beaglebone-blue/wiki/Frequently-Asked-Questions-\(FAQ\)).
+Other useful information can be found in the [FAQ](https://github.com/beagleboard/beaglebone-blue/wiki/Frequently-Asked-Questions-(FAQ)).
 
 :::tip
 Optionally you can update to a realtime kernel, and if you do, re-check if _librobotcontrol_ works properly with the realtime kernel.
 :::
 
-The latest OS images at time of updating this document is [bone-debian-10.3-iot-armhf-2020-04-06-4gb.img.xz](https://debian.beagle.cc/images/bone-debian-10.3-iot-armhf-2020-04-06-4gb.img.xz).
+The latest OS images at time of updating this document is [AM3358 Debian 10.3 2020-04-06 4GB SD IoT](https://www.beagleboard.org/distros/am3358-debian-10-3-2020-04-06-4gb-sd-iot).
 
 ## Збірка для крос-компіляторів (рекомендується)
 
@@ -77,10 +77,9 @@ echo "PermitRootLogin yes" >>  /etc/ssh/sshd_config && systemctl restart sshd
 
 1. First set up _rsync_ (this is used to transfer files from the development computer to the target board over a network - WiFi or Ethernet).
    For _rsync_ over SSH with key authentication, follow the steps here (on the development machine):
-
    1. Створіть ключ SSH, якщо ви раніше цього не робили:
 
-      ```
+      ```sh
       ssh-keygen -t rsa
       ```
 
@@ -90,13 +89,13 @@ echo "PermitRootLogin yes" >>  /etc/ssh/sshd_config && systemctl restart sshd
 
    2. Define the BeagleBone Blue board as `beaglebone` in **/etc/hosts** and copy the public SSH key to the board for password-less SSH access:
 
-      ```
+      ```sh
       ssh-copy-id debian@beaglebone
       ```
 
    3. Крім того, ви можете використовувати IP-адресу beaglebone безпосередньо:
 
-      ```
+      ```sh
       ssh-copy-id debian@<IP>
       ```
 
@@ -105,9 +104,7 @@ echo "PermitRootLogin yes" >>  /etc/ssh/sshd_config && systemctl restart sshd
    5. Введіть root пароль
 
 2. Налаштування крос-компіляції
-
    1. Завантаження інструментів
-
       1. First install the toolchain into _/opt/bbblue_toolchain/gcc-arm-linux-gnueabihf_.
          Ось приклад використання софт-посилання для вибору версії набору інструментів, яку ви хочете використовувати:
 
@@ -119,7 +116,7 @@ echo "PermitRootLogin yes" >>  /etc/ssh/sshd_config && systemctl restart sshd
 
          The ARM Cross Compiler for _BeagleBone Blue_ can be found at [Linaro Toolchain Binaries site](https://www.linaro.org/downloads/#gnu_and_llvm).
 
-         :::tip
+         ::: tip
          GCC in the toolchain should be compatible with kernel in _BeagleBone Blue_.
          General rule of thumb is to choose a toolchain where version of GCC is not higher than version of GCC which comes with the OS image on _BeagleBone Blue_.
 
@@ -127,14 +124,14 @@ echo "PermitRootLogin yes" >>  /etc/ssh/sshd_config && systemctl restart sshd
 
          Download and unpack [gcc-linaro-13.0.0-2022.06-x86_64_arm-linux-gnueabihf.tar.xz](https://snapshots.linaro.org/gnu-toolchain/13.0-2022.06-1/arm-linux-gnueabihf/gcc-linaro-13.0.0-2022.06-x86_64_arm-linux-gnueabihf.tar.xz) to the bbblue_toolchain folder.
 
-         Different ARM Cross Compiler versions for _BeagleBone Blue_ can be found at [Linaro Toolchain Binaries site](http://www.linaro.org/downloads/).
+         Different ARM Cross Compiler versions for _BeagleBone Blue_ can be found at [Linaro Toolchain Binaries site](https://www.linaro.org/downloads/).
 
          ```sh
          wget https://snapshots.linaro.org/gnu-toolchain/13.0-2022.06-1/arm-linux-gnueabihf/gcc-linaro-13.0.0-2022.06-x86_64_arm-linux-gnueabihf.tar.xz
          tar -xf gcc-linaro-13.0.0-2022.06-x86_64_arm-linux-gnueabihf.tar.xz
          ```
 
-         :::tip
+         ::: tip
          The GCC version of the toolchain should be compatible with kernel in _BeagleBone Blue_.
 
 :::
@@ -154,7 +151,7 @@ echo "PermitRootLogin yes" >>  /etc/ssh/sshd_config && systemctl restart sshd
 
       3. Налаштуйте інші залежності, завантаживши вихідний код PX4, а потім виконайте сценарії налаштування:
 
-         ````
+         ````sh
          git clone https://github.com/PX4/PX4-Autopilot.git --recursive
          ols
          ```
@@ -173,7 +170,7 @@ echo "PermitRootLogin yes" >>  /etc/ssh/sshd_config && systemctl restart sshd
 
 Компіляція та завантаження
 
-```
+```sh
 make beaglebone_blue_default upload
 ```
 
@@ -192,9 +189,7 @@ sudo ./bin/px4 -s px4.config
 Currently _librobotcontrol_ requires root access.
 :::
 
-<a id="native_builds"></a>
-
-## Нативні збірки (необов'язково)
+## Native Builds (optional) {#native_builds}
 
 Ви також можете нативно створювати збірки PX4 безпосередньо на BeagleBone Blue.
 
@@ -212,12 +207,14 @@ Currently _librobotcontrol_ requires root access.
    sudo apt-get update
    sudo apt-get install cmake python3-empy=3.3.4-2
    ```
+
 2. Клонуйте програмне забезпечення PX4 безпосередньо на плату BeagleBone Blue.
+
 3. Continue with the [standard build system installation](../dev_setup/dev_env_linux.md).
 
 ## Зміни в конфігурації
 
-Усі зміни можна вносити безпосередньо в файл налаштувань px4.config на beaglebone.
+All changes can be made in the px4.config file directly on beaglebone.
 Наприклад, ви можете змінити WIFI на wlan.
 
 :::info
@@ -296,8 +293,6 @@ UARTs на BeagleBone Blue можуть працювати лише з неін�
 
 1. Підключіть ESC двигуна 1, 2, 3 та 4 до каналу 1, 2, 3 та 4 вихідних сигналів сервоприводів на BeagleBone Blue відповідно.
    Якщо ваш роз'єм ESC містить вихідний контакт живлення, вийміть його і не підключайте його до вихідного контакту живлення каналу сервоприводу на BeagleBone Blue.
-
 2. Connect the above mentioned converted SBUS signal to the dsm2 port if you have the matching connector for dsm2, otherwise connect it to any other available UART port and change the corresponding port in **/home/debian/px4/px4.config** accordingly.
-
 3. Підключіть сигнали модуля GPS до порту GPS на платі BeagleBone Blue.
    Зверніть увагу, що сигнальні контакти порту GPS на BeagleBone Blue підтримують лише 3,3 В, тому обирайте свій GPS-модуль відповідно.

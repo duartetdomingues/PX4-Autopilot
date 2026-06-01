@@ -54,7 +54,6 @@
 #include <pthread.h>
 #include <sys/socket.h>
 #include <termios.h>
-#include <arpa/inet.h>
 
 #include <limits>
 
@@ -98,6 +97,12 @@ SimulatorMavlink::SimulatorMavlink() :
 	}
 
 	_esc_status_pub.advertise();
+#if defined(CONFIG_MODULES_VISION_TARGET_ESTIMATOR) && CONFIG_MODULES_VISION_TARGET_ESTIMATOR
+	_fiducial_marker_pos_report_pub.advertise();
+	_fiducial_marker_yaw_report_pub.advertise();
+	_target_gnss_pub.advertise();
+	_param_vte_en = param_find("VTE_EN");
+#endif // CONFIG_MODULES_VISION_TARGET_ESTIMATOR
 }
 
 void SimulatorMavlink::parameters_update(bool force)
@@ -383,6 +388,22 @@ void SimulatorMavlink::handle_message(const mavlink_message_t *msg)
 		handle_message_landing_target(msg);
 		break;
 
+#if defined(CONFIG_MODULES_VISION_TARGET_ESTIMATOR) && CONFIG_MODULES_VISION_TARGET_ESTIMATOR
+#if defined(MAVLINK_MSG_ID_TARGET_RELATIVE)
+
+	case MAVLINK_MSG_ID_TARGET_RELATIVE:
+		handle_message_target_relative(msg);
+		break;
+#endif // MAVLINK_MSG_ID_TARGET_RELATIVE
+
+#if defined(MAVLINK_MSG_ID_TARGET_ABSOLUTE)
+
+	case MAVLINK_MSG_ID_TARGET_ABSOLUTE:
+		handle_message_target_absolute(msg);
+		break;
+#endif // MAVLINK_MSG_ID_TARGET_ABSOLUTE
+#endif // CONFIG_MODULES_VISION_TARGET_ESTIMATOR
+
 	case MAVLINK_MSG_ID_HIL_STATE_QUATERNION:
 		handle_message_hil_state_quaternion(msg);
 		break;
@@ -413,41 +434,65 @@ void SimulatorMavlink::handle_message_hil_gps(const mavlink_message_t *msg)
 	if (!_gps_blocked) {
 		sensor_gps_s gps{};
 
-		gps.latitude_deg = hil_gps.lat / 1e7;
-		gps.longitude_deg = hil_gps.lon / 1e7;
-		gps.altitude_msl_m = hil_gps.alt / 1e3;
-		gps.altitude_ellipsoid_m = hil_gps.alt / 1e3;
+		if (!_gps_stuck) {
+			if (!_gps_wrong) {
+				gps.latitude_deg = hil_gps.lat / 1e7;
+				gps.longitude_deg = hil_gps.lon / 1e7;
+				gps.altitude_msl_m = hil_gps.alt / 1e3;
+				gps.altitude_ellipsoid_m = hil_gps.alt / 1e3;
 
-		gps.s_variance_m_s = 0.25f;
-		gps.c_variance_rad = 0.5f;
-		gps.fix_type = hil_gps.fix_type;
+			} else {
+				gps.latitude_deg = hil_gps.lat / 1e7 + 1.0;
+				gps.longitude_deg = hil_gps.lon / 1e7 + 1.0;
+				gps.altitude_msl_m = hil_gps.alt / 1e3 + 100.0;
+				gps.altitude_ellipsoid_m = hil_gps.alt / 1e3 - 100.0;
+			}
 
-		gps.eph = (float)hil_gps.eph * 1e-2f; // cm -> m
-		gps.epv = (float)hil_gps.epv * 1e-2f; // cm -> m
+			gps.s_variance_m_s = 0.25f;
+			gps.c_variance_rad = 0.5f;
+			gps.fix_type = hil_gps.fix_type;
 
-		gps.hdop = 0; // TODO
-		gps.vdop = 0; // TODO
+			gps.eph = (float)hil_gps.eph * 1e-2f; // cm -> m
+			gps.epv = (float)hil_gps.epv * 1e-2f; // cm -> m
 
-		gps.noise_per_ms = 0;
-		gps.automatic_gain_control = 0;
-		gps.jamming_indicator = 0;
-		gps.jamming_state = 0;
-		gps.spoofing_state = 0;
+			gps.hdop = 0; // TODO
+			gps.vdop = 0; // TODO
 
-		gps.vel_m_s = (float)(hil_gps.vel) / 100.0f; // cm/s -> m/s
-		gps.vel_n_m_s = (float)(hil_gps.vn) / 100.0f; // cm/s -> m/s
-		gps.vel_e_m_s = (float)(hil_gps.ve) / 100.0f; // cm/s -> m/s
-		gps.vel_d_m_s = (float)(hil_gps.vd) / 100.0f; // cm/s -> m/s
-		gps.cog_rad = ((hil_gps.cog == 65535) ? NAN : matrix::wrap_2pi(math::radians(hil_gps.cog * 1e-2f))); // cdeg -> rad
-		gps.vel_ned_valid = true;
+			gps.noise_per_ms = 0;
+			gps.automatic_gain_control = 0;
+			gps.jamming_indicator = 0;
+			gps.jamming_state = 0;
+			gps.spoofing_state = 0;
 
-		gps.timestamp_time_relative = 0;
-		gps.time_utc_usec = hil_gps.time_usec;
+			if (!_gps_wrong) {
+				gps.vel_m_s = (float)(hil_gps.vel) / 100.0f; // cm/s -> m/s
+				gps.vel_n_m_s = (float)(hil_gps.vn) / 100.0f; // cm/s -> m/s
+				gps.vel_e_m_s = (float)(hil_gps.ve) / 100.0f; // cm/s -> m/s
+				gps.vel_d_m_s = (float)(hil_gps.vd) / 100.0f; // cm/s -> m/s
 
-		gps.satellites_used = hil_gps.satellites_visible;
+			} else {
+				gps.vel_m_s = (float)(hil_gps.vel) / 100.0f - 1.f; // cm/s -> m/s
+				gps.vel_n_m_s = (float)(hil_gps.vn) / 100.0f + 5.f; // cm/s -> m/s
+				gps.vel_e_m_s = (float)(hil_gps.ve) / 100.0f - 8.f; // cm/s -> m/s
+				gps.vel_d_m_s = (float)(hil_gps.vd) / 100.0f + 2.f; // cm/s -> m/s
+			}
 
-		gps.heading = NAN;
-		gps.heading_offset = NAN;
+			gps.cog_rad = ((hil_gps.cog == 65535) ? NAN : matrix::wrap_2pi(math::radians(hil_gps.cog * 1e-2f))); // cdeg -> rad
+			gps.vel_ned_valid = true;
+
+			gps.timestamp_time_relative = 0;
+			gps.time_utc_usec = hil_gps.time_usec;
+
+			gps.satellites_used = hil_gps.satellites_visible;
+
+			gps.heading = NAN;
+			gps.heading_offset = NAN;
+
+			_gps_prev = gps;
+
+		} else {
+			gps = _gps_prev;
+		}
 
 		gps.timestamp = hrt_absolute_time();
 
@@ -460,6 +505,11 @@ void SimulatorMavlink::handle_message_hil_gps(const mavlink_message_t *msg)
 
 			if (_sensor_gps_pubs[i] == nullptr) {
 				_sensor_gps_pubs[i] = new uORB::PublicationMulti<sensor_gps_s> {ORB_ID(sensor_gps)};
+
+				if (_sensor_gps_pubs[i] == nullptr) {
+					break;
+				}
+
 				_gps_ids[i] = hil_gps.id;
 
 				device::Device::DeviceId device_id;
@@ -635,6 +685,231 @@ void SimulatorMavlink::handle_message_landing_target(const mavlink_message_t *ms
 		_irlock_report_pub.publish(report);
 	}
 }
+
+
+#if defined(CONFIG_MODULES_VISION_TARGET_ESTIMATOR) && CONFIG_MODULES_VISION_TARGET_ESTIMATOR
+
+#if defined(MAVLINK_MSG_ID_TARGET_ABSOLUTE)
+void
+SimulatorMavlink::handle_message_target_absolute(const mavlink_message_t *msg)
+{
+	mavlink_target_absolute_t target_absolute;
+	mavlink_msg_target_absolute_decode(msg, &target_absolute);
+
+	target_gnss_s target_GNSS_report{};
+	target_GNSS_report.timestamp = hrt_absolute_time();
+	target_GNSS_report.timestamp_sample = target_absolute.timestamp;
+
+	bool updated = false;
+
+	// Position: bit 0
+	if (!(target_absolute.sensor_capabilities & static_cast<uint8_t>(TargetAbsoluteSensorCapability::kPosition))) {
+		target_GNSS_report.abs_pos_updated = false;
+
+	} else {
+		target_GNSS_report.abs_pos_updated = true;
+		target_GNSS_report.latitude_deg = target_absolute.lat * 1e-7;
+		target_GNSS_report.longitude_deg = target_absolute.lon * 1e-7;
+		target_GNSS_report.altitude_msl_m = target_absolute.alt;
+		target_GNSS_report.eph = target_absolute.position_std[0];
+		target_GNSS_report.epv = target_absolute.position_std[1];
+		updated = true;
+	}
+
+	// Velocity: bit 1
+	if (!(target_absolute.sensor_capabilities & static_cast<uint8_t>(TargetAbsoluteSensorCapability::kVelocity))) {
+		target_GNSS_report.vel_ned_updated = false;
+
+	} else {
+		const matrix::Quatf q_target(target_absolute.q_target);
+		const bool target_attitude_available = (fabsf(q_target(0)) + fabsf(q_target(1)) + fabsf(q_target(2)) +
+							fabsf(q_target(3))) > FLT_EPSILON;
+
+		if (target_attitude_available) {
+			const matrix::Vector3f vel_target_body(target_absolute.vel[0], target_absolute.vel[1], target_absolute.vel[2]);
+			const matrix::Vector3f vel_target_ned = q_target.rotateVector(vel_target_body);
+
+			target_GNSS_report.vel_ned_updated = true;
+			target_GNSS_report.vel_n_m_s = vel_target_ned(0);
+			target_GNSS_report.vel_e_m_s = vel_target_ned(1);
+			target_GNSS_report.vel_d_m_s = vel_target_ned(2);
+			target_GNSS_report.s_acc_m_s = fmaxf(fabsf(target_absolute.vel_std[0]),
+							     fmaxf(fabsf(target_absolute.vel_std[1]),
+									     fabsf(target_absolute.vel_std[2])));
+			updated = true;
+
+		} else {
+			target_GNSS_report.vel_ned_updated = false;
+		}
+	}
+
+	if (updated) { _target_gnss_pub.publish(target_GNSS_report); }
+}
+#endif // MAVLINK_MSG_ID_TARGET_ABSOLUTE
+
+
+#if defined(MAVLINK_MSG_ID_TARGET_RELATIVE)
+void SimulatorMavlink::handle_message_target_relative(const mavlink_message_t *msg)
+{
+	mavlink_target_relative_t target_relative;
+	mavlink_msg_target_relative_decode(msg, &target_relative);
+
+	vehicle_attitude_s	vehicle_attitude;
+	vehicle_local_position_s vehicle_local_position;
+
+	// Unsupported sensor frame
+	if (target_relative.frame != TARGET_OBS_FRAME_LOCAL_OFFSET_NED && target_relative.frame != TARGET_OBS_FRAME_LOCAL_NED &&
+	    target_relative.frame != TARGET_OBS_FRAME_BODY_FRD && target_relative.frame != TARGET_OBS_FRAME_OTHER) {
+		PX4_WARN("target relative: coordinate frame %d unsupported", (int)target_relative.frame);
+		return;
+	}
+
+	// Unsupported measurement type
+	if (target_relative.type != LANDING_TARGET_TYPE_VISION_FIDUCIAL) {
+		PX4_WARN("target relative: unsupported type %d", (int)target_relative.type);
+		return;
+	}
+
+	matrix::Quatf q_sensor(target_relative.q_sensor);
+	bool attitude_available = (fabsf(q_sensor(0)) + fabsf(q_sensor(1)) + fabsf(q_sensor(2)) +
+				   fabsf(q_sensor(3))) > FLT_EPSILON;
+
+	// Check if attitude can be infered based on the frame
+	if (!attitude_available) {
+		if (target_relative.frame == TARGET_OBS_FRAME_LOCAL_OFFSET_NED || target_relative.frame == TARGET_OBS_FRAME_LOCAL_NED) {
+			// Observation already in NED, set quaternion to identity (1,0,0,0)
+			q_sensor.setIdentity();
+			attitude_available = true;
+
+		} else if (target_relative.frame == TARGET_OBS_FRAME_BODY_FRD && _vehicle_attitude_sub.copy(&vehicle_attitude)) {
+			// Set the quaternion to the current attitude
+			const matrix::Quaternionf quat_att(&vehicle_attitude.q[0]);
+			q_sensor = quat_att;
+			attitude_available = true;
+
+		} else if (target_relative.frame == TARGET_OBS_FRAME_OTHER) {
+			// Target sensor frame: OTHER and no quaternion is provided
+			PX4_WARN("target relative: coordinate frame %d unsupported when the q_sensor is not filled",
+				 (int)target_relative.frame);
+		}
+	}
+
+	// Target cannot be sent without valid attitude
+	if (!attitude_available) {
+		return;
+	}
+
+	// Forward target to the vision target estimator (VTE) or precland based VTE_EN
+	int32_t vte_enabled = 0;
+
+	if (_param_vte_en == PARAM_INVALID) {
+		if (hrt_elapsed_time(&_vte_en_invalid_warn_last) > 20_s) {
+			PX4_WARN(" Could not find VTE_EN, target_relative msg ignored.");
+			_vte_en_invalid_warn_last = hrt_absolute_time();
+		}
+
+		return;
+
+	} else {
+		param_get(_param_vte_en, &vte_enabled);
+	}
+
+	if (!vte_enabled) {
+
+		// Send the target directly to the precision landing algorithm in local NED frame
+		landing_target_pose_s landing_target_pose{};
+		landing_target_pose.timestamp = target_relative.timestamp;
+
+		// Measurement already in local NED
+		if (target_relative.frame == TARGET_OBS_FRAME_LOCAL_NED) {
+
+			landing_target_pose.x_abs = target_relative.x;
+			landing_target_pose.y_abs = target_relative.y;
+			landing_target_pose.z_abs = target_relative.z;
+			landing_target_pose.abs_pos_valid = true;
+
+			_landing_target_pose_pub.publish(landing_target_pose);
+
+		} else if (_vehicle_local_position_sub.copy(&vehicle_local_position)
+			   && vehicle_local_position.xy_valid && vehicle_local_position.z_valid) {
+
+			// If the local position is available, convert from sensor frame to local NED
+			matrix::Vector3f target_relative_frame(target_relative.x, target_relative.y, target_relative.z);
+
+			if (target_relative.frame == TARGET_OBS_FRAME_BODY_FRD || target_relative.frame == TARGET_OBS_FRAME_OTHER) {
+				// Rotate measurement into vehicle-carried NED
+				target_relative_frame = q_sensor.rotateVector(target_relative_frame);
+			}
+
+			// Convert from vehicle-carried NED to local NED
+			landing_target_pose.x_abs = target_relative_frame(0) + vehicle_local_position.x;
+			landing_target_pose.y_abs = target_relative_frame(1) + vehicle_local_position.y;
+			landing_target_pose.z_abs = target_relative_frame(2) + vehicle_local_position.z;
+			landing_target_pose.abs_pos_valid = true;
+
+			_landing_target_pose_pub.publish(landing_target_pose);
+		}
+
+	} else {
+
+		// Only supported type: LANDING_TARGET_TYPE_VISION_FIDUCIAL
+
+		// Position report
+		fiducial_marker_pos_report_s fiducial_marker_pos_report{};
+
+		const hrt_abstime now = hrt_absolute_time();
+		const hrt_abstime timestamp_sample = target_relative.timestamp;
+
+		fiducial_marker_pos_report.timestamp = now;
+		fiducial_marker_pos_report.timestamp_sample = timestamp_sample;
+		matrix::Vector3f target_relative_frame(target_relative.x, target_relative.y, target_relative.z);
+
+		// TARGET_OBS_FRAME_LOCAL_NED is absolute in local frame: convert to vehicle-relative.
+		if (target_relative.frame == TARGET_OBS_FRAME_LOCAL_NED) {
+			if (!_vehicle_local_position_sub.copy(&vehicle_local_position)
+			    || !vehicle_local_position.xy_valid || !vehicle_local_position.z_valid) {
+				return;
+			}
+
+			target_relative_frame(0) -= vehicle_local_position.x;
+			target_relative_frame(1) -= vehicle_local_position.y;
+			target_relative_frame(2) -= vehicle_local_position.z;
+		}
+
+		fiducial_marker_pos_report.rel_pos[0] = target_relative_frame(0);
+		fiducial_marker_pos_report.rel_pos[1] = target_relative_frame(1);
+		fiducial_marker_pos_report.rel_pos[2] = target_relative_frame(2);
+
+		fiducial_marker_pos_report.cov_rel_pos[0] = target_relative.pos_std[0] * target_relative.pos_std[0];
+		fiducial_marker_pos_report.cov_rel_pos[1] = target_relative.pos_std[1] * target_relative.pos_std[1];
+		fiducial_marker_pos_report.cov_rel_pos[2] = target_relative.pos_std[2] * target_relative.pos_std[2];
+
+		q_sensor.copyTo(fiducial_marker_pos_report.q);
+		_fiducial_marker_pos_report_pub.publish(fiducial_marker_pos_report);
+
+		const matrix::Quatf q_target(target_relative.q_target);
+		const bool target_attitude_available = (fabsf(q_target(0)) + fabsf(q_target(1)) + fabsf(q_target(2)) +
+							fabsf(q_target(3))) > FLT_EPSILON;
+
+		if (target_attitude_available) {
+			// Yaw report
+			fiducial_marker_yaw_report_s fiducial_marker_yaw_report{};
+			fiducial_marker_yaw_report.timestamp = now;
+			fiducial_marker_yaw_report.timestamp_sample = timestamp_sample;
+
+			// Transform quaternion from the target's frame to the TARGET_OBS_FRAME to the yaw relative to NED
+			const matrix::Quatf q_in_ned = q_sensor * q_target;
+			const float target_yaw_ned = matrix::Eulerf(q_in_ned).psi();
+
+			fiducial_marker_yaw_report.yaw_ned = target_yaw_ned;
+			fiducial_marker_yaw_report.yaw_var_ned = target_relative.yaw_std * target_relative.yaw_std;
+			_fiducial_marker_yaw_report_pub.publish(fiducial_marker_yaw_report);
+		}
+	}
+
+}
+#endif // MAVLINK_MSG_ID_TARGET_RELATIVE
+#endif // CONFIG_MODULES_VISION_TARGET_ESTIMATOR
 
 void SimulatorMavlink::handle_message_odometry(const mavlink_message_t *msg)
 {
@@ -1097,7 +1372,9 @@ void SimulatorMavlink::run()
 
 	if (_ip == InternetProtocol::UDP) {
 
-		if ((_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+		_fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+		if (_fd < 0) {
 			PX4_ERR("Creating UDP socket failed: %s", strerror(errno));
 			return;
 		}
@@ -1130,7 +1407,9 @@ void SimulatorMavlink::run()
 		PX4_INFO("Waiting for simulator to accept connection on TCP port %u", _port);
 
 		while (true) {
-			if ((_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+			_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+			if (_fd < 0) {
 				PX4_ERR("Creating TCP socket failed: %s", strerror(errno));
 				return;
 			}
@@ -1232,9 +1511,9 @@ void SimulatorMavlink::check_failure_injections()
 		bool handled = false;
 		bool supported = false;
 
-		const int failure_unit = static_cast<int>(vehicle_command.param1 + 0.5f);
-		const int failure_type = static_cast<int>(vehicle_command.param2 + 0.5f);
-		const int instance = static_cast<int>(vehicle_command.param3 + 0.5f);
+		const int failure_unit = static_cast<int>(std::lround(vehicle_command.param1));
+		const int failure_type = static_cast<int>(std::lround(vehicle_command.param2));
+		const int instance = static_cast<int>(std::lround(vehicle_command.param3));
 
 		if (failure_unit == vehicle_command_s::FAILURE_UNIT_SENSOR_GPS) {
 			handled = true;
@@ -1248,6 +1527,16 @@ void SimulatorMavlink::check_failure_injections()
 				PX4_INFO("CMD_INJECT_FAILURE, GPS ok");
 				supported = true;
 				_gps_blocked = false;
+				_gps_stuck = false;
+				_gps_wrong = false;
+
+			} else if (failure_type == vehicle_command_s::FAILURE_TYPE_STUCK) {
+				supported = true;
+				_gps_stuck = true;
+
+			} else if (failure_type == vehicle_command_s::FAILURE_TYPE_WRONG) {
+				supported = true;
+				_gps_wrong = true;
 			}
 
 		} else if (failure_unit == vehicle_command_s::FAILURE_UNIT_SENSOR_ACCEL) {
@@ -1551,6 +1840,11 @@ int SimulatorMavlink::publish_distance_topic(const mavlink_distance_sensor_t *di
 
 		if (_dist_pubs[i] == nullptr) {
 			_dist_pubs[i] = new uORB::PublicationMulti<distance_sensor_s> {ORB_ID(distance_sensor)};
+
+			if (_dist_pubs[i] == nullptr) {
+				break;
+			}
+
 			_dist_sensor_ids[i] = dist.device_id;
 			_dist_pubs[i]->publish(dist);
 			break;

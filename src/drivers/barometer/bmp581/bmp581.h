@@ -101,6 +101,10 @@
 #define BMP5_DEEP_ENABLED		(0)
 #define BMP5_DEEP_DISABLED              (1)
 
+/* Pressure operating range (Pa) */
+#define BMP5_PRESSURE_MIN_PA            (30000.0f)
+#define BMP5_PRESSURE_MAX_PA            (125000.0f)
+
 /* ODR settings */
 #define BMP5_ODR_50_HZ                  (0x0F)
 #define BMP5_ODR_05_HZ                  (0x18)
@@ -286,8 +290,6 @@ private:
 	perf_counter_t 		_sample_perf;
 	perf_counter_t 		_measure_perf;
 	perf_counter_t 		_comms_errors;
-
-	bool			_collect_phase{false};
 
 	uint8_t			_chip_id{0};
 	uint8_t			_chip_rev_id{0};

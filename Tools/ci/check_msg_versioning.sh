@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # Copy a git diff between two commits if msg versioning is added
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -27,9 +27,9 @@ do
     # - An old .msg version exists
     # - A translation header exists and is included
 
-    # Ignore changes to comments or constants
-    content_a=$(git show "${BASE_COMMIT}:${file}" | grep -o '^[^#]*' | grep -v =)
-    content_b=$(git show "${HEAD_COMMIT}:${file}" | grep -o '^[^#]*' | grep -v =)
+    # Ignore changes to comments or constants and trim whitespace
+    content_a=$(git show "${BASE_COMMIT}:${file}" | grep -o '^[^#]*' | grep -v = | sed 's/^ *//;s/[ \t]*$//')
+    content_b=$(git show "${HEAD_COMMIT}:${file}" | grep -o '^[^#]*' | grep -v = | sed 's/^ *//;s/[ \t]*$//')
     if [ "${content_a}" == "${content_b}" ]; then
       echo "No version update required for ${file}"
       continue

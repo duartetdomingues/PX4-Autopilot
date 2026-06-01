@@ -23,7 +23,7 @@ PX4에서는 단위 테스트 작성에 필요한 몇가지 수단을 제공합�
 Tests can be run via `make tests`, after which you will find the binary in `build/px4_sitl_test/unit-MyNewUnit`.
 디버거에서 바로 실행할 수 있습니다.
 
-## GTest 기능 테스트 작성
+## Writing a GTest Functional Test {#functional-test}
 
 GTest 기능 시험은 매개변수, uORB 메세지, 고급 GTest 기능에 따라 테스트할 테스트 단위 또는 구성 요소가 있을 때 활용해야합니다.
 게다가, 기능 테스트 과정에서 자체 STL 데이터 구조를 사용할 수 있습니다(플랫폼간 차이에 유의해야 함. 예: maxOS, Linux).
@@ -126,34 +126,34 @@ It can be run directly in a debugger, however be careful to only run one test pe
 
 10. Within [tests_main.h](https://github.com/PX4/PX4-Autopilot/blob/main/src/systemcmds/tests/tests_main.h) define the new test:
 
-   ```cpp
-   extern int test_[description](int argc, char *argv[]);
-   ```
+    ```cpp
+    extern int test_[description](int argc, char *argv[]);
+    ```
 
 11. Within [tests_main.c](https://github.com/PX4/PX4-Autopilot/blob/main/src/systemcmds/tests/tests_main.c) add description name, test function and option:
 
-   ```cpp
-   ...
-   } tests[] = {
-       {...
-       {"[description]", test_[description], OPTION},
-       ...
-   }
-   ```
+    ```cpp
+    ...
+    } tests[] = {
+        {...
+        {"[description]", test_[description], OPTION},
+        ...
+    }
+    ```
 
-   `OPTION` can be `OPT_NOALLTEST`,`OPT_NOJIGTEST` or `0` and is considered if within px4 shell one of the two commands are called:
+    `OPTION` can be `OPT_NOALLTEST`,`OPT_NOJIGTEST` or `0` and is considered if within PX4 shell one of the two commands are called:
 
-   ```sh
-   pxh> tests all
-   ```
+    ```sh
+    pxh> tests all
+    ```
 
-   또는
+    또는
 
-   ```sh
-   pxh> tests jig
-   ```
+    ```sh
+    pxh> tests jig
+    ```
 
-   If a test has option `OPT_NOALLTEST`, then that test will be excluded when calling `tests all`. The same is true for `OPT_NOJITEST` when command `test jig` is called. Option `0` means that the test is never excluded, which is what most developer want to use.
+    If a test has option `OPT_NOALLTEST`, then that test will be excluded when calling `tests all`. The same is true for `OPT_NOJITEST` when command `test jig` is called. Option `0` means that the test is never excluded, which is what most developer want to use.
 
 12. Add the test `test_[description].cpp` to the [CMakeLists.txt](https://github.com/PX4/PX4-Autopilot/blob/main/src/systemcmds/tests/CMakeLists.txt).
 
@@ -178,3 +178,10 @@ make tests TESTFILTER=<regex filter expression>
 - `make tests TESTFILTER=unit` only run GTest unit tests
 - `make tests TESTFILTER=sitl` only run simulation tests
 - `make tests TESTFILTER=Attitude` only run the `AttitudeControl` test
+
+## Fuzz Testing
+
+Fuzz tests are a generalised form of unit test that ensures code is robust against any input.
+They are run as part of the unit tests, and also more extensively in their own testing mode.
+
+For more information see [Fuzz Tests](../test_and_ci/fuzz_tests.md).

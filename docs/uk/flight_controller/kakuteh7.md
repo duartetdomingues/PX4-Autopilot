@@ -36,7 +36,7 @@ This flight controller is [manufacturer supported](../flight_controller/autopilo
 - Розміри: 35 x 35мм
 - Вага: 8г
 
-## Де купити
+## Where to Buy {#store}
 
 Плату можна придбати в одному з наступних магазинів (наприклад):
 
@@ -78,7 +78,7 @@ This is the silkscreen for the _Kakute H7_, showing the top of the board:
 
 The board comes pre-installed with [Betaflight](https://github.com/betaflight/betaflight/wiki).
 Before PX4 firmware can be installed, the _PX4 bootloader_ must be flashed.
-Download the [kakuteh7_bl.hex](https://github.com/PX4/PX4-user_guide/raw/main/assets/flight_controller/kakuteh7/holybro_kakuteh7_bootloader.hex) bootloader binary and read [this page](../advanced_config/bootloader_update_from_betaflight.md) for flashing instructions.
+Download the [kakuteh7_bl.hex](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/flight_controller/kakuteh7/holybro_kakuteh7_bootloader.hex) bootloader binary and read [this page](../advanced_config/bootloader_update_from_betaflight.md) for flashing instructions.
 
 ## Збірка прошивки
 
@@ -102,7 +102,7 @@ make holybro_kakuteh7_default
   Ви можете використовувати або готове вбудоване програмне забезпечення, або власне користувацьке програмне забезпечення.
 
 :::info
-Якщо ви завантажуєте готове програмне забезпечення через QGroundcontrol, вам необхідно використовувати щоденну версію QGC або версію QGC новішу за 4.1.7.
+If you are loading the pre-built firmware via QGroundControl, you must use QGC Daily or QGC version newer than 4.1.7.
 :::
 
 ## Конфігурація PX4

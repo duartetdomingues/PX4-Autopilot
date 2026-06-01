@@ -1,4 +1,4 @@
-# LightWare Lidar (SF1X/SF02/LW20/SF45)
+# LightWare Lidar (SF1X/SF02/LW20/SF45/GRF250/GRF500)
 
 LightWare는 UAV에 장착에 적합한 경량의 범용 레이저 고도계( "라이다")를 개발합니다.
 지형 추적, 정밀 호버링 (예 : 사진 촬영), 규제 높이 제한 경고, 충돌 방지 감지 등에 사용됩니다.
@@ -11,22 +11,25 @@ LightWare는 UAV에 장착에 적합한 경량의 범용 레이저 고도계( "�
 
 | 모델                                                         | 범위 (m) | 버스           | 설명                                                                                                            |
 | ---------------------------------------------------------- | ------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------- |
-| [SF11/C](https://lightwarelidar.com/products/sf11-c-100-m) | 100                       | 직렬 또는 I2C 버스 |                                                                                                               |
-| [LW20/C](https://lightware.co.za/products/lw20-c-100-m)    | 100                       | I2C 버스       | 감지 및 회피 애플리케이션을 위한 서보가 있는 방수 (IP67)                                                        |
+| [SF11/C](https://lightwarelidar.com/shop/sf11-c-100-m/)    | 100                       | 직렬 또는 I2C 버스 |                                                                                                               |
+| [LW20/C](https://lightwarelidar.com/products/lw20-c-100-m) | 100                       | I2C 버스       | 감지 및 회피 애플리케이션을 위한 서보가 있는 방수 (IP67)                                                        |
+| [SF30/D](https://lightwarelidar.com/shop/sf30-d-200-m/)    | 200                       | I2C 버스       | Waterproofed (IP67)                                                                        |
 | [SF45/B](../sensor/sf45_rotating_lidar.md)                 | 50                        | 직렬           | Rotary Lidar (Used for [Collision Prevention](../computer_vision/collision_prevention.md)) |
+| [GRF250](../sensor/grf_lidar.md)                           | 250                       | 직렬 또는 I2C 버스 | Gimbal Range Finder                                                                                           |
+| [GRF500](../sensor/grf_lidar.md)                           | 500                       | 직렬 또는 I2C 버스 | Gimbal Range Finder                                                                                           |
 
 :::details
 Discontinued
 
 The following models are supported by PX4 but are no longer available from the manufacturer.
 
-| 모델                                                                                                 | 범위   | 버스           |                                                        |
-| -------------------------------------------------------------------------------------------------- | ---- | ------------ | ------------------------------------------------------ |
-| [SF02](http://documents.lightware.co.za/SF02%20-%20Laser%20Rangefinder%20Manual%20-%20Rev%208.pdf) | 50   | 직렬           |                                                        |
-| [SF10/A](http://documents.lightware.co.za/SF10%20-%20Laser%20Altimeter%20Manual%20-%20Rev%206.pdf) | 25   | 직렬 또는 I2C 버스 |                                                        |
-| [SF10/B](http://documents.lightware.co.za/SF10%20-%20Laser%20Altimeter%20Manual%20-%20Rev%206.pdf) | 50   | 직렬 또는 I2C 버스 |                                                        |
-| SF10/C                                                                                             | 100m | 직렬 또는 I2C 버스 |                                                        |
-| LW20/B                                                                                             | 50   | I2C 버스       | 감지 및 회피 애플리케이션을 위한 서보가 있는 방수 (IP67) |
+| 모델                                                                                                  | 범위   | 버스           |                                                        |
+| --------------------------------------------------------------------------------------------------- | ---- | ------------ | ------------------------------------------------------ |
+| [SF02](https://documents.lightware.co.za/SF02%20-%20Laser%20Rangefinder%20Manual%20-%20Rev%208.pdf) | 50   | 직렬           |                                                        |
+| [SF10/A](https://documents.lightware.co.za/SF10%20-%20Laser%20Altimeter%20Manual%20-%20Rev%206.pdf) | 25   | 직렬 또는 I2C 버스 |                                                        |
+| [SF10/B](https://documents.lightware.co.za/SF10%20-%20Laser%20Altimeter%20Manual%20-%20Rev%206.pdf) | 50   | 직렬 또는 I2C 버스 |                                                        |
+| SF10/C                                                                                              | 100m | 직렬 또는 I2C 버스 |                                                        |
+| LW20/B                                                                                              | 50   | I2C 버스       | 감지 및 회피 애플리케이션을 위한 서보가 있는 방수 (IP67) |
 
 :::
 

@@ -34,10 +34,7 @@
 #pragma once
 
 #include <drivers/drv_hrt.h>
-#include "fw_pitch_controller.h"
-#include "fw_roll_controller.h"
 #include "fw_wheel_controller.h"
-#include "fw_yaw_controller.h"
 #include <lib/mathlib/mathlib.h>
 #include <lib/parameters/param.h>
 #include <lib/perf/perf_counter.h>
@@ -54,6 +51,7 @@
 #include <uORB/SubscriptionCallback.hpp>
 #include <uORB/topics/airspeed_validated.h>
 #include <uORB/topics/autotune_attitude_control_status.h>
+#include <uORB/topics/fixed_wing_runway_control.h>
 #include <uORB/topics/landing_gear_wheel.h>
 #include <uORB/topics/manual_control_setpoint.h>
 #include <uORB/topics/parameter_update.h>
@@ -66,17 +64,37 @@
 #include <uORB/topics/vehicle_rates_setpoint.h>
 #include <uORB/topics/vehicle_status.h>
 
+using matrix::AxisAnglef;
 using matrix::Eulerf;
 using matrix::Quatf;
+using matrix::Vector3f;
 
 using uORB::SubscriptionData;
 
 using namespace time_literals;
 
-class FixedwingAttitudeControl final : public ModuleBase<FixedwingAttitudeControl>, public ModuleParams,
+/**
+ * Computes the attitude error for fixed-wing attitude control.
+ * The yaw error is removed since fixed-wing aircraft have no direct yaw authority.
+ */
+inline Vector3f computeAttitudeError(const Quatf &q_current, const Quatf &q_sp)
+{
+	// Compute yaw offset to cancel yaw error (fixed-wing has no direct yaw authority)
+	// See formula_derrivation.py on how to get these formulas
+	const float yaw_offset = -2.f * (q_current(0) * q_sp(3) - q_current(1) * q_sp(2) + q_current(2) * q_sp(1) - q_current(3) * q_sp(0)) /
+				 (q_current(0) * q_sp(0) - q_current(1) * q_sp(1) - q_current(2) * q_sp(2) + q_current(3) * q_sp(3));
+
+	const Quatf q_yaw_offset = Quatf(1.f, 0.f, 0.f, yaw_offset / 2.f).normalized();
+	const Quatf q_err = (q_current.inversed() * q_yaw_offset * q_sp).canonical();
+	return 2.f * q_err.imag();
+}
+
+class FixedwingAttitudeControl final : public ModuleBase, public ModuleParams,
 	public px4::ScheduledWorkItem
 {
 public:
+	static Descriptor desc;
+
 	FixedwingAttitudeControl(bool vtol = false);
 	~FixedwingAttitudeControl() override;
 
@@ -100,6 +118,7 @@ private:
 
 	uORB::Subscription _att_sp_sub{ORB_ID(vehicle_attitude_setpoint)};			/**< vehicle attitude setpoint */
 	uORB::Subscription _autotune_attitude_control_status_sub{ORB_ID(autotune_attitude_control_status)};
+	uORB::Subscription _fixed_wing_runway_control_sub{ORB_ID(fixed_wing_runway_control)};
 	uORB::Subscription _local_pos_sub{ORB_ID(vehicle_local_position)};			/**< local position subscription */
 	uORB::Subscription _manual_control_setpoint_sub{ORB_ID(manual_control_setpoint)};	/**< notification of manual control updates */
 	uORB::Subscription _vehicle_control_mode_sub{ORB_ID(vehicle_control_mode)};			/**< vehicle status subscription */
@@ -129,10 +148,10 @@ private:
 	bool _landed{true};
 	float _groundspeed{0.f};
 	bool _in_fw_or_transition_wo_tailsitter_transition{false}; // only run the FW attitude controller in these states
+	float _steering_wheel_yaw_setpoint{NAN};
 
 	DEFINE_PARAMETERS(
 		(ParamFloat<px4::params::FW_AIRSPD_MAX>) _param_fw_airspd_max,
-		(ParamFloat<px4::params::FW_AIRSPD_MIN>) _param_fw_airspd_min,
 		(ParamFloat<px4::params::FW_AIRSPD_STALL>) _param_fw_airspd_stall,
 		(ParamFloat<px4::params::FW_AIRSPD_TRIM>) _param_fw_airspd_trim,
 		(ParamBool<px4::params::FW_USE_AIRSPD>) _param_fw_use_airspd,
@@ -157,12 +176,9 @@ private:
 
 		(ParamFloat<px4::params::FW_Y_RMAX>) _param_fw_y_rmax,
 		(ParamFloat<px4::params::FW_MAN_YR_MAX>) _param_man_yr_max
-
 	)
 
-	RollController _roll_ctrl;
-	PitchController _pitch_ctrl;
-	YawController _yaw_ctrl;
+	matrix::Vector3f _proportional_gain;
 	WheelController _wheel_ctrl;
 
 	void parameters_update();

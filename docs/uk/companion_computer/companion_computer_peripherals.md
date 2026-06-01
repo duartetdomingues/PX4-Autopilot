@@ -30,7 +30,8 @@ USB-адаптери FTDI є найбільш поширеним способо�
 [mro_usb_ftdi_serial_to_jst_gh]: https://store.mrobotics.io/USB-FTDI-Serial-to-JST-GH-p/mro-ftdi-jstgh01-mr.htm
 [sparkfun_ftdi basic_breakout]: https://www.sparkfun.com/products/9873
 
-Ви також можете використовувати готовий FTDI-кабель, [наприклад, такий](https://www.sparkfun.com/products/9717), і підключити його до польотного контролера за допомогою відповідного перехідника для заголовника (роз'єми JST-GH вказані у стандарті Pixhawk, але ви повинні підтвердити роз'єми для вашого польотного контролера).
+You can also use an off-the-shelf FTDI cable [like this one](https://www.sparkfun.com/ftdi-cable-5v-vcc-3-3v-i-o.html) and connect it to flight controller using the appropriate header adaptor
+(JST-GH connectors are specified in the Pixhawk standard, but you should confirm the connectors for your flight controller).
 
 ### Рівні логічних перетворювачів
 
@@ -39,7 +40,7 @@ USB-адаптери FTDI є найбільш поширеним способо�
 
 Інші варіанти включають:
 
-- [Перетворювач логічного рівня SparkFun - двонаправлений](https://www.sparkfun.com/products/12009)
+- [SparkFun Logic Level Converter - Bi-Directional](https://www.sparkfun.com/sparkfun-logic-level-converter-bi-directional.html)
 - [4-канальний I2C-безпечний двонаправлений перетворювач логічного рівня - BSS138](https://www.adafruit.com/product/757)
 
 ## Камери
@@ -53,8 +54,8 @@ Cameras are used image and video capture, and more generally to provide data for
 
 Серед популярних стереокамер:
 
-- [Intel® RealSense™ Depth Camera D435](https://www.intelrealsense.com/depth-camera-d435/)
-- [Intel® RealSense™ Depth Camera D415](https://www.intelrealsense.com/depth-camera-d415/)
+- [Intel® RealSense™ Depth Camera D435](https://www.realsenseai.com/products/stereo-depth-camera-d435/)
+- [Intel® RealSense™ Depth Camera D415](https://www.realsenseai.com/products/stereo-depth-camera-d415/)
 - [DUO MLX](https://duo3d.com/product/duo-minilx-lv1)
 
 ### VIO Камера/Сенсори
@@ -77,7 +78,7 @@ Cameras are used image and video capture, and more generally to provide data for
 :::
 
 Загальним підходом є налаштування віртуальної приватної мережі між супутником та комп'ютером GCS (тобто встановлення системи VPN, такої як [zerotier](https://www.zerotier.com/), на обох комп'ютерах).
-Маршрутизації трафіку між послідовним інтерфейсом (контролером польоту) та комп'ютером GCS в VPN-мережі.
+The companion then uses [mavlink-router](https://github.com/mavlink-router/mavlink-router) to route traffic between the serial interface (flight controller) and GCS computer on the VPN network.
 
 Цей метод має перевагу у тому, що IP-адреса комп'ютера GCS може бути статичною в межах VPN, тому конфігурацію _маршрутизатора mavlink_ не потрібно змінювати з часом.
 Крім того, комунікаційний зв'язок є безпечним, оскільки весь трафік VPN зашифрований (сам MAVLink 2 не підтримує шифрування).
@@ -89,5 +90,6 @@ Cameras are used image and video capture, and more generally to provide data for
 
 Деякі USB-модулі, які відомі своєю сумісністю, включають:
 
-- [Huawei E8372](https://consumer.huawei.com/en/mobile-broadband/e8372/) and [Huawei E3372](https://consumer.huawei.com/en/mobile-broadband/e3372/)
-  - Модель _E8372_ має Wi-Fi, яке можна використовувати для налаштування SIM-карти, коли вона підключена до супутника (що полегшує процес розробки). Модель _E3372_ не має Wi-Fi, тому вам потрібно налаштувати її, підключивши пристрій до ноутбука.
+- [Huawei E8372](https://consumer.huawei.com/au/support/routers/e8372/) and [Huawei E3372](https://consumer.huawei.com/au/support/routers/e3372/)
+  - Модель _E8372_ має Wi-Fi, яке можна використовувати для налаштування SIM-карти, коли вона підключена до супутника (що полегшує процес розробки).
+    Модель _E3372_ не має Wi-Fi, тому вам потрібно налаштувати її, підключивши пристрій до ноутбука.

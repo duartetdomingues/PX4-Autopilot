@@ -5,7 +5,7 @@ import sys
 
 
 class JsonOutput():
-    def __init__(self, groups, board, inject_xml_file_name):
+    def __init__(self, groups, board):
         all_json=dict()
         all_json['version']=1
         all_params=[]
@@ -82,6 +82,8 @@ class JsonOutput():
 
                     if param.GetVolatile():
                         curr_param['volatile'] = True
+                    if param.GetReadonly():
+                        curr_param['readOnly'] = True
 
                     last_param_name = param.GetName()
                     for code in param.GetFieldCodes():

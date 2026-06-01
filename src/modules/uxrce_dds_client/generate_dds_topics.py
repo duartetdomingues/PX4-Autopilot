@@ -79,10 +79,16 @@ if not os.path.exists(folder_name):
 with open(args.yaml_file, 'r') as file:
     msg_map = yaml.safe_load(file)
 
+# Get DDS namespace from environment, default to empty string
+namespace = os.getenv('PX4_UXRCE_DDS_NS', '')
+
 merged_em_globals = {}
 all_type_includes = []
 
 def process_message_type(msg_type):
+    # Add namespace to topic
+    msg_type['topic'] = f"/{namespace}{msg_type['topic']}" if namespace else msg_type['topic']
+
     # eg TrajectoryWaypoint from px4_msgs::msg::TrajectoryWaypoint
     simple_base_type = msg_type['type'].split('::')[-1]
 
@@ -96,26 +102,48 @@ def process_message_type(msg_type):
     # topic_simple: eg vehicle_status
     msg_type['topic_simple'] = msg_type['topic'].split('/')[-1]
 
-pubs_not_empty = msg_map['publications'] is not None
-if pubs_not_empty:
-    for p in msg_map['publications']:
-        process_message_type(p)
+    # Optional per-publisher QoS options from YAML 'options:' field.
+    # Converts e.g. {cc: block, express: true} -> "cc=block,express=true"
+    opts = msg_type.get('options', None)
+    if opts and isinstance(opts, dict):
+        # Normalize booleans to lowercase strings expected by the parser.
+        msg_type['pub_options_str'] = ','.join(
+            f"{k}={str(v).lower() if isinstance(v, bool) else v}" for k, v in opts.items()
+        )
+    else:
+        msg_type['pub_options_str'] = ''
 
-merged_em_globals['publications'] = msg_map['publications'] if pubs_not_empty else []
+def process_message_instance(msg_type):
+    if 'instance' in msg_type:
+        # if instance is given, check if it is a non negative integer
+        if not (type(msg_type['instance']) is int and msg_type['instance'] >= 0) :
+            raise TypeError("`instance` must be a non negative integer")
+        # add trailing instance to topic name
+        msg_type['topic'] = f"{msg_type['topic']}{msg_type['instance']}"
+    else:
+        # if instance is not given,
+        msg_type['instance'] = 0
 
-subs_not_empty = msg_map['subscriptions'] is not None
-if subs_not_empty:
-    for s in msg_map['subscriptions']:
-        process_message_type(s)
+merged_em_globals['namespace'] = namespace
 
-merged_em_globals['subscriptions'] = msg_map['subscriptions'] if subs_not_empty else []
+pubs = msg_map.get('publications') or []
+for p in pubs:
+    process_message_type(p)
+    process_message_instance(p)
 
-subs_multi_not_empty = msg_map['subscriptions_multi'] is not None
-if subs_multi_not_empty:
-    for sm in msg_map['subscriptions_multi']:
-        process_message_type(sm)
+merged_em_globals['publications'] = pubs
 
-merged_em_globals['subscriptions_multi'] = msg_map['subscriptions_multi'] if subs_multi_not_empty else []
+subs = msg_map.get('subscriptions') or []
+for s in subs:
+    process_message_type(s)
+
+merged_em_globals['subscriptions'] = subs
+
+subs_multi = msg_map.get('subscriptions_multi') or []
+for sd in subs_multi:
+    process_message_type(sd)
+
+merged_em_globals['subscriptions_multi'] = subs_multi
 
 merged_em_globals['type_includes'] = sorted(set(all_type_includes))
 

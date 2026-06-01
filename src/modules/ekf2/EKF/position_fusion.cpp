@@ -101,9 +101,12 @@ void Ekf::resetHorizontalPositionTo(const double &new_latitude, const double &ne
 	updateHorizontalPositionResetStatus(delta_horz_pos);
 
 #if defined(CONFIG_EKF2_EXTERNAL_VISION)
-	_ev_pos_b_est.setBias(_ev_pos_b_est.getBias() - delta_horz_pos);
+
+	if (_control_status.flags.ev_pos) {
+		_ev_pos_b_est.setBias(_ev_pos_b_est.getBias() - delta_horz_pos);
+	}
+
 #endif // CONFIG_EKF2_EXTERNAL_VISION
-	//_gps_pos_b_est.setBias(_gps_pos_b_est.getBias() + _state_reset_status.posNE_change);
 
 	_gpos.setLatLonDeg(new_latitude, new_longitude);
 	_output_predictor.resetLatLonTo(new_latitude, new_longitude);
@@ -201,13 +204,25 @@ void Ekf::resetAltitudeTo(const float new_altitude, float new_vert_pos_var)
 	updateVerticalPositionResetStatus(delta_z);
 
 #if defined(CONFIG_EKF2_BAROMETER)
-	_baro_b_est.setBias(_baro_b_est.getBias() + delta_z);
+
+	if (_control_status.flags.baro_hgt) {
+		_baro_b_est.setBias(_baro_b_est.getBias() + delta_z);
+	}
+
 #endif // CONFIG_EKF2_BAROMETER
 #if defined(CONFIG_EKF2_EXTERNAL_VISION)
-	_ev_hgt_b_est.setBias(_ev_hgt_b_est.getBias() - delta_z);
+
+	if (_control_status.flags.ev_hgt) {
+		_ev_hgt_b_est.setBias(_ev_hgt_b_est.getBias() - delta_z);
+	}
+
 #endif // CONFIG_EKF2_EXTERNAL_VISION
 #if defined(CONFIG_EKF2_GNSS)
-	_gps_hgt_b_est.setBias(_gps_hgt_b_est.getBias() + delta_z);
+
+	if (_control_status.flags.gps_hgt) {
+		_gps_hgt_b_est.setBias(_gps_hgt_b_est.getBias() + delta_z);
+	}
+
 #endif // CONFIG_EKF2_GNSS
 
 #if defined(CONFIG_EKF2_TERRAIN)
@@ -232,6 +247,7 @@ void Ekf::updateVerticalPositionResetStatus(const float delta_z)
 	_state_reset_status.reset_count.posD++;
 }
 
+#if defined(CONFIG_EKF2_TERRAIN)
 void Ekf::updateTerrainResetStatus(const float delta_z)
 {
 	if (_state_reset_status.reset_count.hagl == _state_reset_count_prev.hagl) {
@@ -244,6 +260,7 @@ void Ekf::updateTerrainResetStatus(const float delta_z)
 
 	_state_reset_status.reset_count.hagl++;
 }
+#endif // CONFIG_EKF2_TERRAIN
 
 void Ekf::resetHorizontalPositionToLastKnown()
 {
@@ -253,5 +270,5 @@ void Ekf::resetHorizontalPositionToLastKnown()
 
 	// Used when falling back to non-aiding mode of operation
 	resetHorizontalPositionTo(_last_known_gpos.latitude_deg(), _last_known_gpos.longitude_deg(),
-				  sq(_params.pos_noaid_noise));
+				  sq(_params.ekf2_noaid_noise));
 }

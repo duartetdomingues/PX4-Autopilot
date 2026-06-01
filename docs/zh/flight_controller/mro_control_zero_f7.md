@@ -22,20 +22,17 @@ This flight controller is [manufacturer supported](../flight_controller/autopilo
 ## 主要特性
 
 - 微处理器：
-
   - 32-bit STM32F777 Cortex<sup>&reg;</sup> M4 core with FPU rev. 3
   - 216 MHz/512 KB RAM/2 MB Flash
   - F-RAM Cypress MF25V02-G 256-Kbit nonvolatile memory (Flash memory that performs as fast as RAM)
 
 - 传感器：
-
-  - [Bosch BMI088](https://www.bosch-sensortec.com/bst/products/all_products/bmi088_1) 3-axis accelerometer/gyroscope (internally vibration dampened)
-  - [Invensense ICM-20602](https://www.invensense.com/products/motion-tracking/6-axis/icm-20602/) 3-axis accelerometer/gyroscope
-  - [Invensense ICM-20948](https://www.invensense.com/products/motion-tracking/9-axis/icm-20948/) 3-axis accelerometer/gyroscope/magnetometer
-  - [Infineon DPS310 barometer](https://www.infineon.com/cms/en/product/sensor/pressure-sensors/pressure-sensors-for-iot/dps310/) (So smooth and NO more light sensitivity)
+  - [Bosch BMI088](https://www.bosch-sensortec.com/products/motion-sensors/imus/bmi088/) 3-axis accelerometer/gyroscope (internally vibration dampened)
+  - [Invensense ICM-20602](https://invensense.tdk.com/products/motion-tracking/6-axis/icm-20602/) 3-axis accelerometer/gyroscope
+  - [Invensense ICM-20948](https://invensense.tdk.com/products/motion-tracking/9-axis/icm-20948/) 3-axis accelerometer/gyroscope/magnetometer
+  - Infineon DPS310 barometer - [Discontinued](https://www.infineon.com/products/sensor/pressure-sensors/pressure-sensors-for-iot) (So smooth and NO more light sensitivity)
 
 - 接口：
-
   - 6x UART (serial ports total), 3x with HW flow control, 1x FRSky Telemetry (D or X types), 1x Console and 1x GPS+I2C
   - 8x PWM outputs (all DShot capable)
   - 1x CAN
@@ -52,7 +49,6 @@ This flight controller is [manufacturer supported](../flight_controller/autopilo
   - Tricolor LED
 
 - Weight and Dimensions (Uncased):
-
   - Weight: 5.3g (0.19oz)
   - Width: 20mm (0.79")
   - Length: 32mm (1.26")
@@ -60,7 +56,7 @@ This flight controller is [manufacturer supported](../flight_controller/autopilo
 - 电源系统
   - 3x Ultra low noise LDO voltage regulator
 
-## 购买渠道
+## Where to Buy {#store}
 
 - [mRo Control Zero](https://store.mrobotics.io/mRo-Control-Zero-F7-p/mro-ctrl-zero-f7.htm)
 
@@ -73,11 +69,11 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make mro_ctrl-zero-f7
 ```
 
-## Debug Ports
+## Debug Ports {#debug_port}
 
 ### Console Port
 
@@ -96,7 +92,7 @@ The [SWD port](../debug/swd_debug.md) (JTAG) for FMU debugging is a TC2030 debug
 
 ![mro swd port](../../assets/flight_controller/mro_control_zero_f7/mro_control_zero_f7_swd.jpg)
 
-You can use the [Tag Connect](https://www.tag-connect.com/) cable [TC2030 IDC NL](https://www.tag-connect.com/product/tc2030-idc-nl) below (with associated [retaining clip](https://www.tag-connect.com/product/tc2030-clip-retaining-clip-board-for-tc2030-nl-cables)) to attach to either a BlackMagic probe or a ST-LINK V2 debugger.
+You can use the [Tag Connect](https://www.tag-connect.com/) cable [TC2030 IDC NL](https://www.tag-connect.com/product/tc2030-idc-nl) below (with associated [retaining clip](https://www.tag-connect.com/product/tc2030-retaining-clip-board-3-pack)) to attach to either a BlackMagic probe or a ST-LINK V2 debugger.
 
 ![tc2030 idc nl cable](../../assets/flight_controller/mro_control_zero_f7/tc2030_idc_nl.jpg)
 
@@ -110,8 +106,8 @@ There is also an [ARM20-CTX 20-Pin to TC2030-IDC adapter](https://www.tag-connec
 
 | UART   | 设备         | Port                                                                                               |
 | ------ | ---------- | -------------------------------------------------------------------------------------------------- |
-| USART2 | /dev/ttyS0 | TELEM1 (flow control)                                                           |
-| USART3 | /dev/ttyS1 | TELEM2 (flow control)                                                           |
+| USART2 | /dev/ttyS0 | TELEM1 (流控)                                                                     |
+| USART3 | /dev/ttyS1 | TELEM2 (流控)                                                                     |
 | UART4  | /dev/ttyS2 | GPS1                                                                                               |
 | USART6 | /dev/ttyS3 | Flex port (can be configured as SPI or UART with Flow Control). |
 | UART7  | /dev/ttyS4 | CONSOLE                                                                                            |

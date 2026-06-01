@@ -49,6 +49,8 @@
 using namespace matrix;
 using namespace time_literals;
 
+ModuleBase::Descriptor ControlAllocator::desc{task_spawn, custom_command, print_usage};
+
 ControlAllocator::ControlAllocator() :
 	ModuleParams(nullptr),
 	ScheduledWorkItem(MODULE_NAME, px4::wq_configurations::rate_ctrl),
@@ -91,11 +93,6 @@ bool
 ControlAllocator::init()
 {
 	if (!_vehicle_torque_setpoint_sub.registerCallback()) {
-		PX4_ERR("callback registration failed");
-		return false;
-	}
-
-	if (!_vehicle_thrust_setpoint_sub.registerCallback()) {
 		PX4_ERR("callback registration failed");
 		return false;
 	}
@@ -150,7 +147,7 @@ ControlAllocator::update_allocation_method(bool force)
 
 	if (_allocation_method_id != configured_method || force) {
 
-		matrix::Vector<float, NUM_ACTUATORS> actuator_sp[ActuatorEffectiveness::MAX_NUM_MATRICES];
+		ActuatorVector actuator_sp[ActuatorEffectiveness::MAX_NUM_MATRICES];
 
 		// Cleanup first
 		for (int i = 0; i < ActuatorEffectiveness::MAX_NUM_MATRICES; ++i) {
@@ -234,14 +231,6 @@ ControlAllocator::update_effectiveness_source()
 			tmp = new ActuatorEffectivenessTailsitterVTOL(this);
 			break;
 
-		case EffectivenessSource::ROVER_ACKERMANN:
-			tmp = new ActuatorEffectivenessRoverAckermann();
-			break;
-
-		case EffectivenessSource::ROVER_DIFFERENTIAL:
-			// rover_differential_control does allocation and publishes directly to actuator_motors topic
-			break;
-
 		case EffectivenessSource::FIXED_WING:
 			tmp = new ActuatorEffectivenessFixedWing(this);
 			break;
@@ -271,13 +260,12 @@ ControlAllocator::update_effectiveness_source()
 			break;
 
 		case EffectivenessSource::SPACECRAFT_2D:
-			// spacecraft_allocation does allocation and publishes directly to actuator_motors topic
+			tmp = new ActuatorEffectivenessSpacecraft(this);
 			break;
 
-		case EffectivenessSource::SPACECRAFT_3D:
-			// spacecraft_allocation does allocation and publishes directly to actuator_motors topic
-			break;
-
+		case EffectivenessSource::ROVER_ACKERMANN: // Unreachable: Rover startup scripts don't load control_allocator. Controllers publish actuator_outputs directly.
+		case EffectivenessSource::ROVER_DIFFERENTIAL:
+		case EffectivenessSource::ROVER_MECANUM:
 		default:
 			PX4_ERR("Unknown airframe");
 			break;
@@ -309,8 +297,7 @@ ControlAllocator::Run()
 {
 	if (should_exit()) {
 		_vehicle_torque_setpoint_sub.unregisterCallback();
-		_vehicle_thrust_setpoint_sub.unregisterCallback();
-		exit_and_cleanup();
+		exit_and_cleanup(desc);
 		return;
 	}
 
@@ -345,6 +332,7 @@ ControlAllocator::Run()
 		if (_vehicle_status_sub.update(&vehicle_status)) {
 
 			_armed = vehicle_status.arming_state == vehicle_status_s::ARMING_STATE_ARMED;
+			_is_vtol = vehicle_status.is_vtol;
 
 			ActuatorEffectiveness::FlightPhase flight_phase{ActuatorEffectiveness::FlightPhase::HOVER_FLIGHT};
 
@@ -383,6 +371,9 @@ ControlAllocator::Run()
 	const hrt_abstime now = hrt_absolute_time();
 	const float dt = math::constrain(((now - _last_run) / 1e6f), 0.0002f, 0.02f);
 
+	_actuator_group_preflight_check.handleCommand(now, _effectiveness_source_id == EffectivenessSource::TILTROTOR_VTOL);
+	_actuator_group_preflight_check.updateState(now);
+
 	bool do_update = false;
 	vehicle_torque_setpoint_s vehicle_torque_setpoint;
 	vehicle_thrust_setpoint_s vehicle_thrust_setpoint;
@@ -396,15 +387,8 @@ ControlAllocator::Run()
 
 	}
 
-	// Also run allocator on thrust setpoint changes if the torque setpoint
-	// has not been updated for more than 5ms
 	if (_vehicle_thrust_setpoint_sub.update(&vehicle_thrust_setpoint)) {
 		_thrust_sp = matrix::Vector3f(vehicle_thrust_setpoint.xyz);
-
-		if (dt > 0.005f) {
-			do_update = true;
-			_timestamp_sample = vehicle_thrust_setpoint.timestamp_sample;
-		}
 	}
 
 	if (do_update) {
@@ -437,6 +421,8 @@ ControlAllocator::Run()
 			}
 		}
 
+		_actuator_group_preflight_check.applyOverrides(c, _is_vtol, *_actuator_effectiveness);
+
 		for (int i = 0; i < _num_control_allocation; ++i) {
 
 			_control_allocation[i]->setControlSetpoint(c[i]);
@@ -446,6 +432,11 @@ ControlAllocator::Run()
 			_actuator_effectiveness->allocateAuxilaryControls(dt, i, _control_allocation[i]->_actuator_sp); //flaps and spoilers
 			_actuator_effectiveness->updateSetpoint(c[i], i, _control_allocation[i]->_actuator_sp,
 								_control_allocation[i]->getActuatorMin(), _control_allocation[i]->getActuatorMax());
+
+			if (i == 0) {
+				// The motors are always in allocation 0
+				handle_stopped_motors(now);
+			}
 
 			if (_has_slew_rate) {
 				_control_allocation[i]->applySlewRateLimit(dt);
@@ -606,11 +597,39 @@ ControlAllocator::update_effectiveness_matrix_if_needed(EffectivenessUpdateReaso
 	}
 }
 
+
+void
+ControlAllocator::handle_stopped_motors(const hrt_abstime now)
+{
+	const ActuatorBitmask stopped_motors_due_to_effectiveness = _actuator_effectiveness->getStoppedMotors();
+
+	const ActuatorBitmask stopped_motors = stopped_motors_due_to_effectiveness
+					       | _handled_motor_failure_bitmask
+					       | _motor_stop_mask;
+
+	// Handle stopped motors by setting NaN
+	const unsigned int allocation_index = 0;  // Motors always in allocation 0
+	_control_allocation[allocation_index]->applyNanToActuators(stopped_motors);
+
+	// Apply ice shedding, which applies _only_ to stopped motors
+	const bool any_stopped_motor_failed = 0 != (stopped_motors_due_to_effectiveness & (_handled_motor_failure_bitmask | _motor_stop_mask));
+	const float ice_shedding_output = get_ice_shedding_output(now);
+
+	if (ice_shedding_output > FLT_EPSILON && !any_stopped_motor_failed) {
+		for (int motors_idx = 0; motors_idx < _num_actuators[allocation_index] && motors_idx < actuator_motors_s::NUM_CONTROLS; motors_idx++) {
+			if (stopped_motors & 1u << motors_idx) {
+				_control_allocation[allocation_index]->_actuator_sp(motors_idx) = ice_shedding_output;
+			}
+		}
+	}
+}
+
 void
 ControlAllocator::publish_control_allocator_status(int matrix_index)
 {
 	control_allocator_status_s control_allocator_status{};
 	control_allocator_status.timestamp = hrt_absolute_time();
+	control_allocator_status.actuator_group_preflight_check_active = _actuator_group_preflight_check.isActive();
 
 	// TODO: disabled motors (?)
 
@@ -639,9 +658,9 @@ ControlAllocator::publish_control_allocator_status(int matrix_index)
 			control_allocator_status.unallocated_thrust[2]).norm_squared() < 1e-6f);
 
 	// Actuator saturation
-	const matrix::Vector<float, NUM_ACTUATORS> &actuator_sp = _control_allocation[matrix_index]->getActuatorSetpoint();
-	const matrix::Vector<float, NUM_ACTUATORS> &actuator_min = _control_allocation[matrix_index]->getActuatorMin();
-	const matrix::Vector<float, NUM_ACTUATORS> &actuator_max = _control_allocation[matrix_index]->getActuatorMax();
+	const ActuatorVector &actuator_sp = _control_allocation[matrix_index]->getActuatorSetpoint();
+	const ActuatorVector &actuator_min = _control_allocation[matrix_index]->getActuatorMin();
+	const ActuatorVector &actuator_max = _control_allocation[matrix_index]->getActuatorMax();
 
 	for (int i = 0; i < NUM_ACTUATORS; i++) {
 		if (actuator_sp(i) > (actuator_max(i) - FLT_EPSILON)) {
@@ -654,8 +673,34 @@ ControlAllocator::publish_control_allocator_status(int matrix_index)
 
 	// Handled motor failures
 	control_allocator_status.handled_motor_failure_mask = _handled_motor_failure_bitmask;
+	control_allocator_status.motor_stop_mask = _motor_stop_mask;
 
 	_control_allocator_status_pub[matrix_index].publish(control_allocator_status);
+}
+
+float
+ControlAllocator::get_ice_shedding_output(hrt_abstime now)
+{
+	const float period_sec = _param_ice_shedding_period.get();
+
+	const bool feature_disabled_by_param = period_sec <= FLT_EPSILON;
+	const bool in_forward_flight = _actuator_effectiveness->getFlightPhase() == ActuatorEffectiveness::FlightPhase::FORWARD_FLIGHT;
+
+	// If any stopped motor has failed, the feature will create much more
+	// torque than in the nominal case, and becomes pointless anyway as we
+	// cannot go back to multicopter
+	const bool apply_shedding = _is_vtol && in_forward_flight;
+
+	if (feature_disabled_by_param || !apply_shedding) {
+		return 0.0f;
+
+	} else {
+		// Square wave output
+		const float elapsed_in_period = fmodf(static_cast<float>(now) / 1_s, period_sec);
+		const float ice_shedding_output = elapsed_in_period < ICE_SHEDDING_ON_SEC ? ICE_SHEDDING_OUTPUT : 0.0f;
+
+		return ice_shedding_output;
+	}
 }
 
 void
@@ -678,8 +723,6 @@ ControlAllocator::publish_actuator_controls()
 	int actuator_idx = 0;
 	int actuator_idx_matrix[ActuatorEffectiveness::MAX_NUM_MATRICES] {};
 
-	uint32_t stopped_motors = _actuator_effectiveness->getStoppedMotors() | _handled_motor_failure_bitmask;
-
 	// motors
 	int motors_idx;
 
@@ -687,11 +730,6 @@ ControlAllocator::publish_actuator_controls()
 		int selected_matrix = _control_allocation_selection_indexes[actuator_idx];
 		float actuator_sp = _control_allocation[selected_matrix]->getActuatorSetpoint()(actuator_idx_matrix[selected_matrix]);
 		actuator_motors.control[motors_idx] = PX4_ISFINITE(actuator_sp) ? actuator_sp : NAN;
-
-		if (stopped_motors & (1u << motors_idx)) {
-			actuator_motors.control[motors_idx] = NAN;
-		}
-
 		++actuator_idx_matrix[selected_matrix];
 		++actuator_idx;
 	}
@@ -729,8 +767,13 @@ ControlAllocator::check_for_motor_failures()
 
 	if ((FailureMode)_param_ca_failure_mode.get() > FailureMode::IGNORE
 	    && _failure_detector_status_sub.update(&failure_detector_status)) {
-		if (failure_detector_status.fd_motor) {
 
+		if (_motor_stop_mask != failure_detector_status.motor_stop_mask) {
+			_motor_stop_mask = failure_detector_status.motor_stop_mask;
+			PX4_WARN("Stopping motors (%d)", _motor_stop_mask);
+		}
+
+		if (failure_detector_status.fd_motor) {
 			if (_handled_motor_failure_bitmask != failure_detector_status.motor_failure_mask) {
 				// motor failure bitmask changed
 				switch ((FailureMode)_param_ca_failure_mode.get()) {
@@ -777,8 +820,8 @@ int ControlAllocator::task_spawn(int argc, char *argv[])
 	ControlAllocator *instance = new ControlAllocator();
 
 	if (instance) {
-		_object.store(instance);
-		_task_id = task_id_is_work_queue;
+		desc.object.store(instance);
+		desc.task_id = task_id_is_work_queue;
 
 		if (instance->init()) {
 			return PX4_OK;
@@ -789,8 +832,8 @@ int ControlAllocator::task_spawn(int argc, char *argv[])
 	}
 
 	delete instance;
-	_object.store(nullptr);
-	_task_id = -1;
+	desc.object.store(nullptr);
+	desc.task_id = -1;
 
 	return PX4_ERROR;
 }
@@ -831,13 +874,110 @@ int ControlAllocator::print_status()
 			PX4_INFO("Instance: %i", i);
 		}
 
-		PX4_INFO("  Effectiveness.T =");
-		effectiveness.T().print();
+		PX4_INFO("  Effectiveness =");
+		int num_configured = _control_allocation[i]->numConfiguredActuators();
+
+		// print column numbering
+		if (num_configured > 1) {
+			printf("  ");
+
+			for (int col = 0; col < num_configured; col++) {
+				printf("|%2u      ", col);
+			}
+
+			printf("\n");
+		}
+
+		// Print effectiveness matrix with row labels
+		const char *row_labels[] = {"Mx", "My", "Mz", "Fx", "Fy", "Fz"};
+
+		for (int row = 0; row < 6; row++) {
+			printf("%2s|", row_labels[row]);
+
+			for (int col = 0; col < num_configured; col++) {
+				double d = static_cast<double>(effectiveness(row, col));
+
+				// avoid -0.0 for display
+				if (fabs(d - 0.0) < 1e-9) {
+					// print fixed width zero
+					printf(" 0       ");
+
+				} else if ((fabs(d) < 1e-4) || (fabs(d) >= 10.0)) {
+					printf("% .1e ", d);
+
+				} else {
+					printf("% 6.5f ", d);
+				}
+			}
+
+			printf("\n");
+		}
+
 		PX4_INFO("  minimum =");
-		_control_allocation[i]->getActuatorMin().T().print();
+
+		// print column numbering
+		if (num_configured > 1) {
+			printf("  ");
+
+			for (int col = 0; col < num_configured; col++) {
+				printf("|%2u      ", col);
+			}
+
+			printf("\n");
+		}
+
+		printf("  |");
+
+		for (int col = 0; col < num_configured; col++) {
+			double d = static_cast<double>(_control_allocation[i]->getActuatorMin()(col));
+
+			// avoid -0.0 for display
+			if (fabs(d - 0.0) < 1e-9) {
+				// print fixed width zero
+				printf(" 0       ");
+
+			} else if ((fabs(d) < 1e-4) || (fabs(d) >= 10.0)) {
+				printf("% .1e ", d);
+
+			} else {
+				printf("% 6.5f ", d);
+			}
+		}
+
+		printf("\n");
 		PX4_INFO("  maximum =");
-		_control_allocation[i]->getActuatorMax().T().print();
-		PX4_INFO("  Configured actuators: %i", _control_allocation[i]->numConfiguredActuators());
+
+		// print column numbering
+		if (num_configured > 1) {
+			printf("  ");
+
+			for (int col = 0; col < num_configured; col++) {
+				printf("|%2u      ", col);
+			}
+
+			printf("\n");
+		}
+
+		printf("  |");
+
+		for (int col = 0; col < num_configured; col++) {
+			double d = static_cast<double>(_control_allocation[i]->getActuatorMax()(col));
+
+			// avoid -0.0 for display
+			if (fabs(d - 0.0) < 1e-9) {
+				// print fixed width zero
+				printf(" 0       ");
+
+			} else if ((fabs(d) < 1e-4) || (fabs(d) >= 10.0)) {
+				printf("% .1e ", d);
+
+			} else {
+				printf("% 6.5f ", d);
+			}
+		}
+
+		printf("\n");
+		PX4_INFO("  Configured actuators: %i", num_configured);
 	}
 
 	if (_handled_motor_failure_bitmask) {
@@ -883,5 +1023,5 @@ extern "C" __EXPORT int control_allocator_main(int argc, char *argv[]);
 
 int control_allocator_main(int argc, char *argv[])
 {
-	return ControlAllocator::main(argc, argv);
+	return ModuleBase::main(ControlAllocator::desc, argc, argv);
 }

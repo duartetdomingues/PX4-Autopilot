@@ -79,6 +79,10 @@ static int io_timer_handler7(int irq, void *context, void *arg);
  * FTM0 will drive FMU_CH1-4, FTM3 will drive FMU_CH5,6, and
  * U_TRI. FTM2 will be used as input capture on U_ECH
  */
+#ifdef CONFIG_BOARD_PWM_FREQ
+#define BOARD_PWM_FREQ CONFIG_BOARD_PWM_FREQ
+#endif
+
 #if !defined(BOARD_PWM_FREQ)
 #define BOARD_PWM_FREQ 1000000
 #endif
@@ -339,7 +343,7 @@ int io_timer_validate_channel_index(unsigned channel)
 {
 	int rv = -EINVAL;
 
-	if (channel < MAX_TIMER_IO_CHANNELS && timer_io_channels[channel].timer_channel != 0) {
+	if (channel < MAX_TIMER_IO_CHANNELS) {
 
 		unsigned timer = timer_io_channels[channel].timer_index;
 
@@ -736,7 +740,7 @@ int io_timer_channel_init(unsigned channel, io_timer_channel_mode_t mode,
 
 		/* configure the channel */
 
-		uint32_t chan = timer_io_channels[channel].timer_channel - 1;
+		uint32_t chan = timer_io_channels[channel].timer_channel;
 
 		uint16_t rvalue = REG(timer, KINETIS_FTM_CSC_OFFSET(chan));
 		rvalue &= ~clearbits;
@@ -816,7 +820,7 @@ int io_timer_set_enable(bool state, io_timer_channel_mode_t mode, io_timer_chann
 			masks &= ~(1 << chan_index);
 
 			if (io_timer_validate_channel_index(chan_index) == 0) {
-				uint32_t chan = timer_io_channels[chan_index].timer_channel - 1;
+				uint32_t chan = timer_io_channels[chan_index].timer_channel;
 				uint32_t timer = channels_timer(chan_index);
 				action_cache[timer].base  = io_timers[timer].base;
 				action_cache[timer].cnsc[action_cache[timer].index].cnsc_offset = io_timers[timer].base + KINETIS_FTM_CSC_OFFSET(chan);
@@ -901,7 +905,7 @@ int io_timer_set_ccr(unsigned channel, uint16_t value)
 			irqstate_t flags = px4_enter_critical_section();
 			uint32_t save = rSC(timer);
 			rSC(timer) = save & ~(FTM_SC_CLKS_MASK);
-			REG(timer, KINETIS_FTM_CV_OFFSET(timer_io_channels[channel].timer_channel - 1)) = value;
+			REG(timer, KINETIS_FTM_CV_OFFSET(timer_io_channels[channel].timer_channel)) = value;
 			rSC(timer) = save;
 			px4_leave_critical_section(flags);
 		}
@@ -920,7 +924,7 @@ uint16_t io_channel_get_ccr(unsigned channel)
 		if ((mode == IOTimerChanMode_PWMOut) ||
 		    (mode == IOTimerChanMode_OneShot) ||
 		    (mode == IOTimerChanMode_Trigger)) {
-			value = REG(channels_timer(channel), KINETIS_FTM_CV_OFFSET(timer_io_channels[channel].timer_channel - 1));
+			value = REG(channels_timer(channel), KINETIS_FTM_CV_OFFSET(timer_io_channels[channel].timer_channel));
 		}
 	}
 

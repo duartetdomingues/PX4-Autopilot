@@ -10,7 +10,7 @@ The [Cube Orange](https://www.cubepilot.com/#/cube/features) flight controller i
 ![Cube Orange](../../assets/flight_controller/cube/orange/cube_orange_hero.jpg)
 
 The controller is designed to be used with a domain-specific carrier board in order to reduce the wiring, improve reliability, and ease of assembly.
-For example, a carrier board for a commercial inspection vehicle might include connections for a companion computer, while a carrier board for a racer could includes ESCs for the frame of the vehicle.
+For example, a carrier board for a commercial inspection vehicle might include connections for a companion computer, while a carrier board for a racer could include ESCs for the frame of the vehicle.
 
 The ADS-B carrier board includes a customized 1090MHz ADSB-In receiver from uAvionix.
 This provides attitude and location of commercial manned aircraft within the range of Cube.
@@ -19,7 +19,11 @@ This is automatically configured and enabled in the default PX4 firmware.
 Cube includes vibration isolation on two of the IMU's, with a third fixed IMU as a reference / backup.
 
 :::tip
-The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/the-cube-module-overview) contain detailed information, including an overview of the [Differences between Cube Colours](https://docs.cubepilot.org/user-guides/autopilot/the-cube-module-overview#differences-between-cube-colours).
+The manufacturer [Cube User Guide](https://docs.cubepilot.org/user-guides/autopilot/the-cube) contains detailed information, including an overview of the [Differences between Cube Colours](https://docs.cubepilot.org/user-guides/autopilot/the-cube/introduction/specifications).
+:::
+
+:::info
+This flight controller is [manufacturer supported](../flight_controller/autopilot_manufacturer_supported.md).
 :::
 
 ## 主要特性
@@ -36,9 +40,7 @@ The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/th
 - High-power, multi-tone piezo audio indicator
 - microSD card for high-rate logging over extended periods of time
 
-<a id="stores"></a>
-
-## 购买渠道
+## Where to Buy {#store}
 
 - [Reseller list](https://www.cubepilot.com/#/reseller/list)
 
@@ -53,7 +55,7 @@ The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/th
   - 400 MHz
   - 1 MB RAM
   - 2 MB Flash \(fully accessible\)
-- **Failsafe co-processor:** <!-- inconsistent info on failsafe processor: 32 bit STM32F103 failsafe co-processor http://www.proficnc.com/all-products/191-pixhawk2-suite.html -->
+- **Failsafe co-processor:** <!-- inconsistent info on failsafe processor: 32 bit STM32F103 failsafe co-processor -->
   - STM32F103 (32bit _ARM Cortex-M3_)
   - 24 MHz
   - 8 KB SRAM
@@ -204,14 +206,14 @@ The manufacturer [Cube Docs](https://docs.cubepilot.org/user-guides/autopilot/th
 
 ## 串口映射
 
-| UART   | 设备         | Port                                     |
-| ------ | ---------- | ---------------------------------------- |
-| USART2 | /dev/ttyS0 | TELEM1 (flow control) |
-| USART3 | /dev/ttyS1 | TELEM2 (flow control) |
-| UART4  | /dev/ttyS2 | GPS1                                     |
-| USART6 | /dev/ttyS3 | PX4IO                                    |
-| UART7  | /dev/ttyS4 | CONSOLE/ADSB-IN                          |
-| UART8  | /dev/ttyS5 | GPS2                                     |
+| UART   | 设备         | Port                           |
+| ------ | ---------- | ------------------------------ |
+| USART2 | /dev/ttyS0 | TELEM1 (流控) |
+| USART3 | /dev/ttyS1 | TELEM2 (流控) |
+| UART4  | /dev/ttyS2 | GPS1                           |
+| USART6 | /dev/ttyS3 | PX4IO                          |
+| UART7  | /dev/ttyS4 | CONSOLE/ADSB-IN                |
+| UART8  | /dev/ttyS5 | GPS2                           |
 
 <!-- Note: Got ports using https://github.com/PX4/PX4-user_guide/pull/672#issuecomment-598198434 -->
 
@@ -232,7 +234,7 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target, open up the terminal and enter:
 
-```
+```sh
 make cubepilot_cubeorange
 ```
 
@@ -244,6 +246,5 @@ Board schematics and other documentation can be found here: [The Cube Project](h
 
 - [Cube Wiring Quickstart](../assembly/quick_start_cube.md)
 - Cube Docs (Manufacturer):
-  - [Cube Module Overview](https://docs.cubepilot.org/user-guides/autopilot/the-cube-module-overview)
-  - [Cube User Manual](https://docs.cubepilot.org/user-guides/autopilot/the-cube-user-manual)
+  - [Cube User Guide](https://docs.cubepilot.org/user-guides/autopilot/the-cube)
   - [Mini Carrier Board](https://docs.cubepilot.org/user-guides/carrier-boards/mini-carrier-board)

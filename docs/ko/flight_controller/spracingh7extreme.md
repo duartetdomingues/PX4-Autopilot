@@ -72,7 +72,7 @@ This flight controller is [manufacturer supported](../flight_controller/autopilo
   - 36x36mm with 30.5\*30.5 mouting pattern, M4 holes.
   - 소프트 마운트 M4 ~ M3 그로밋이 제공됩니다.
 
-## 구매처
+## Where to Buy {#store}
 
 The SPRacingH7EXTREME is available from the [Seriously Pro shop](https://shop.seriouslypro.com/sp-racing-h7-extreme).
 
@@ -83,7 +83,7 @@ Select the PX4 edition when purchasing!
 ## 매뉴얼, 핀배열 및 연결 다이어그램
 
 The manual with pinouts can be downloaded from [here](http://seriouslypro.com/files/SPRacingH7EXTREME-Manual-latest.pdf).
-See the [SPRacingH7EXTREME website](http://seriouslypro.com/spracingh7extreme) for other diagrams.
+See the [SPRacingH7EXTREME website](http://seriouslypro.com/products/spracingh7extreme) for other diagrams.
 
 ## Credits
 

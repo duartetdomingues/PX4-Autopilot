@@ -11,24 +11,24 @@ It is based on the **Pixhawk-project FMUv3** open hardware design and runs **PX4
 
 ![ThePeach_R1](../../assets/flight_controller/thepeach_r1/main.png)
 
+:::info
+This flight controller is [manufacturer supported](../flight_controller/autopilot_manufacturer_supported.md).
+:::
+
 ## 사양
 
 - Main 프로세서: STM32F427VIT6
-
   - 32bit ARM Cortex-M4, 168 MHz 256 KB RAM 2 MB Flash memory
 
 - IO 프로세서: STM32F100C8T6
-
   - ARM Cortex-M3, 32bit ARM Cortex-M3, 24 MHz, 8KB SRAM
 
 - 내장 센서 :
-
   - 가속도/자이로: ICM-20602
   - 가속도/자이로스코프/지자기: MPU-9250
   - 기압계: MS5611
 
 - 인터페이스
-
   - 8+6개의 PWM 출력 (IO 8개, FMU 6개)
   - Spektrum DSM / DSM2 / DSM-X Satellite 입력 호환
   - Futaba S.BUS 입출력 호환
@@ -42,7 +42,6 @@ It is based on the **Pixhawk-project FMUv3** open hardware design and runs **PX4
   - 배터리 하나의 전압 / 전류에 대한 아날로그 입력
 
 - 라즈베리파이 CM3+의 인터페이스
-
   - VBUS
   - DDR2 커넥터: 라즈베리파이 CM3+
   - UART 포트 1개
@@ -103,4 +102,4 @@ make thepeach_r1_default
 
 ## 구매처
 
-Order from [ThePeach](http://thepeach.shop/)
+Order from [ThePeach](https://thepeach.shop/)

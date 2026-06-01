@@ -30,7 +30,7 @@ This is the version that is installed by default.
 
 :::
 
-4. Select the **PX4 Pro Stable Release vX.x.x** option to install the latest stable version of PX4 _for your flight controller_ (autodetected).
+4. Select the **PX4 Stable Release vX.x.x** option to install the latest stable version of PX4 _for your flight controller_ (autodetected).
 
    ![Install PX4 default](../../assets/qgc/setup/firmware/firmware_connected_default_px4.png)
 
@@ -56,15 +56,15 @@ Next you will need to specify the [vehicle airframe](../config/airframe.md) (and
 
 Щоб встановити іншу версію PX4:
 
-1. Connect the vehicle as above, and select **PX4 Pro Stable Release vX.x.x**.
+1. Connect the vehicle as above, and select **PX4 Stable Release vX.x.x**.
    ![Install PX4 version](../../assets/qgc/setup/firmware/qgc_choose_firmware.png)
 2. Check **Advanced settings** and select the version from the dropdown list:
    - **Standard Version (stable):** The default version (i.e. no need to use advanced settings to install this!)
    - **Beta Testing (beta):** A beta/candidate release.
-      Лише доступно, коли готується новий реліз.
+     Лише доступно, коли готується новий реліз.
    - **Developer Build (master):** The latest build of PX4/PX4-Autopilot _main_ branch.
    - **Custom Firmware file...:** A custom firmware file (e.g. [that you have built locally](../dev_setup/building_px4.md)).
-      Якщо ви виберете це, вам доведеться вибрати власну прошивку з файлової системи на наступному кроці.
+     Якщо ви виберете це, вам доведеться вибрати власну прошивку з файлової системи на наступному кроці.
 
 Оновлення прошивки потім продовжується, як і раніше.
 

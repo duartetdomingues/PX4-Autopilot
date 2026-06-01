@@ -103,31 +103,18 @@ void TECSAirspeedFilter::update(const float dt, const Input &input, const Param 
 	new_state_predicted(0) = _airspeed_state.speed + dt * _airspeed_state.speed_rate;
 	new_state_predicted(1) = _airspeed_state.speed_rate;
 
-	const float airspeed_noise_inv{1.0f / param.airspeed_measurement_std_dev};
-	const float airspeed_rate_noise_inv{1.0f / param.airspeed_rate_measurement_std_dev};
-	const float airspeed_rate_noise_inv_squared_process_noise{airspeed_rate_noise_inv *airspeed_rate_noise_inv * param.airspeed_rate_noise_std_dev};
-	const float denom{airspeed_noise_inv + airspeed_rate_noise_inv_squared_process_noise};
-	const float common_nom{std::sqrt(param.airspeed_rate_noise_std_dev * (2.0f * airspeed_noise_inv + airspeed_rate_noise_inv_squared_process_noise))};
-
-	matrix::Matrix<float, 2, 2> kalman_gain;
-	kalman_gain(0, 0) = airspeed_noise_inv * common_nom / denom;
-	kalman_gain(0, 1) = airspeed_rate_noise_inv_squared_process_noise / denom;
-	kalman_gain(1, 0) = airspeed_noise_inv * airspeed_noise_inv * param.airspeed_rate_noise_std_dev / denom;
-	kalman_gain(1, 1) = airspeed_rate_noise_inv_squared_process_noise * common_nom / denom;
-
 	const matrix::Vector2f innovation{(airspeed - new_state_predicted(0)), (airspeed_derivative - new_state_predicted(1))};
+
 	matrix::Vector2f new_state;
-	new_state = new_state_predicted + dt * (kalman_gain * (innovation));
+	new_state(0) = new_state_predicted(0) + dt * (kKg00 * innovation(0) + kKg01 * innovation(1));
+	new_state(1) = new_state_predicted(1) + dt * (kKg10 * innovation(0) + kKg11 * innovation(1));
 
 	// Clip airspeed at zero
 	if (new_state(0) < FLT_EPSILON) {
 		new_state(0) = 0.0f;
 		// calculate input that would result in zero speed.
-		const float desired_airspeed_innovation = (-new_state_predicted(0) / dt - kalman_gain(0,
-				1) * innovation(1)) / kalman_gain(0,
-						0);
-		new_state(1) = new_state_predicted(1) + dt * (kalman_gain(1, 0) * desired_airspeed_innovation + kalman_gain(1,
-				1) * innovation(1));
+		const float desired_airspeed_innovation = (-new_state_predicted(0) / dt - kKg01 * innovation(1)) / kKg00;
+		new_state(1) = new_state_predicted(1) + dt * (kKg10 * desired_airspeed_innovation + kKg11 * innovation(1));
 	}
 
 	// Update states
@@ -172,7 +159,12 @@ void TECSAltitudeReferenceModel::update(const float dt, const AltitudeReferenceS
 	bool control_altitude = true;
 	float altitude_setpoint = setpoint.alt;
 
-	if (PX4_ISFINITE(setpoint.alt_rate)) {
+	if (!PX4_ISFINITE(setpoint.alt) && !PX4_ISFINITE(setpoint.alt_rate)) {
+		// neither altitude nor altitude rate is set - reset to current altitude
+		_velocity_control_traj_generator.reset(0.f, 0, current_alt);
+		altitude_setpoint = current_alt;
+
+	} else if (PX4_ISFINITE(setpoint.alt_rate)) {
 		// input is height rate (not altitude)
 		_velocity_control_traj_generator.setCurrentPositionEstimate(current_alt);
 		_velocity_control_traj_generator.update(dt, setpoint.alt_rate);
@@ -180,6 +172,7 @@ void TECSAltitudeReferenceModel::update(const float dt, const AltitudeReferenceS
 		control_altitude = PX4_ISFINITE(altitude_setpoint); // returns true if altitude is locked
 
 	} else {
+		// input is altitude
 		_velocity_control_traj_generator.reset(0, height_rate, altitude_setpoint);
 	}
 
@@ -463,7 +456,7 @@ void TECSControl::_calcPitchControlUpdate(float dt, const Input &input, const Co
 	if (param.integrator_gain_pitch > FLT_EPSILON) {
 
 		// Calculate derivative from change in climb angle to rate of change of specific energy balance
-		const float climb_angle_to_SEB_rate = input.tas * CONSTANTS_ONE_G;
+		const float climb_angle_to_SEB_rate = max(input.tas, param.tas_min) * CONSTANTS_ONE_G;
 
 		// Calculate pitch integrator input term
 		float pitch_integ_input = _getControlError(seb_rate) * param.integrator_gain_pitch / climb_angle_to_SEB_rate;
@@ -584,7 +577,9 @@ void TECSControl::_calcThrottleControlUpdate(float dt, const STERateLimit &limit
 			if (_throttle_setpoint >= param.throttle_max) {
 				throttle_integ_input = math::min(0.f, throttle_integ_input);
 
-			} else if (_throttle_setpoint <= param.throttle_min) {
+			}
+
+			if (_throttle_setpoint <= param.throttle_min) {
 				throttle_integ_input = math::max(0.f, throttle_integ_input);
 			}
 
@@ -710,7 +705,6 @@ void TECS::update(float pitch, float altitude, float hgt_setpoint, float EAS_set
 		  float throttle_trim, float pitch_limit_min, float pitch_limit_max, float target_climbrate,
 		  float target_sinkrate, const float speed_deriv_forward, float hgt_rate, float hgt_rate_sp)
 {
-
 	// Calculate the time since last update (seconds)
 	const hrt_abstime now(hrt_absolute_time());
 	const float dt = static_cast<float>((now - _update_timestamp)) / 1_s;
@@ -781,7 +775,9 @@ void TECS::update(float pitch, float altitude, float hgt_setpoint, float EAS_set
 
 void TECS::_setFastDescend(const float alt_setpoint, const float alt)
 {
-	if (_control_flag.airspeed_enabled && (_fast_descend_alt_err > FLT_EPSILON)
+	// disable fast descend if we are close to the target altitude or the altitude setpoint is not finite
+
+	if (PX4_ISFINITE(alt_setpoint) && _control_flag.airspeed_enabled && (_fast_descend_alt_err > FLT_EPSILON)
 	    && ((alt_setpoint + _fast_descend_alt_err) < alt)) {
 		auto now = hrt_absolute_time();
 
@@ -792,7 +788,7 @@ void TECS::_setFastDescend(const float alt_setpoint, const float alt)
 		_fast_descend = constrain(max(_fast_descend, static_cast<float>(now - _enabled_fast_descend_timestamp) /
 					      static_cast<float>(FAST_DESCEND_RAMP_UP_TIME)), 0.f, 1.f);
 
-	} else if ((_fast_descend > FLT_EPSILON) && (_fast_descend_alt_err > FLT_EPSILON)) {
+	} else if (PX4_ISFINITE(alt_setpoint) && (_fast_descend > FLT_EPSILON) && (_fast_descend_alt_err > FLT_EPSILON)) {
 		// Were in fast descend, scale it down. up until 5m above target altitude
 		_fast_descend = constrain((alt - alt_setpoint - 5.f) / _fast_descend_alt_err, 0.f, 1.f);
 		_enabled_fast_descend_timestamp = 0U;

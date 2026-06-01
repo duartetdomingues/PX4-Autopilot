@@ -119,10 +119,11 @@ else
 	param set SYS_AUTOCONFIG 1
 fi
 
-if param compare SYS_AUTOCONFIG 1
+# To trigger a parameter reset during boot SYS_AUTOCONFIG was set to 1 before
+if param greater SYS_AUTOCONFIG 0
 then
-	# Reset params except Airframe, RC calibration, sensor calibration, flight modes, total flight time, and next flight UUID.
-	param reset_all SYS_AUTOSTART RC* CAL_* COM_FLTMODE* LND_FLIGHT* TC_* COM_FLIGHT*
+	# Reset parameters except airframe, parameter version, sensor calibration, total flight time, flight UUID
+	param reset_all SYS_AUTOSTART SYS_PARAM_VER CAL_* LND_FLIGHT* TC_* COM_FLIGHT*
 	set AUTOCNF yes
 fi
 
@@ -164,7 +165,6 @@ param set-default COM_RC_IN_MODE 1
 param set-default EKF2_REQ_GPS_H 0.5
 
 param set-default IMU_GYRO_FFT_EN 1
-param set-default MAV_PROTO_VER 2 # Ensures QGC does not drop the first few packets after a SITL restart due to MAVLINK 1 packets
 
 param set-default -s MC_AT_EN 1
 
@@ -181,6 +181,9 @@ param set-default SYS_FAILURE_EN 1
 # does not go below 50% by default, but failure injection can trigger failsafes.
 param set-default COM_LOW_BAT_ACT 3
 
+# set default IP to localhost
+param set-default UXRCE_DDS_AG_IP 2130706433  # 127.0.0.1
+
 
 # Adapt timeout parameters if simulation runs faster or slower than realtime.
 if [ -n "$PX4_SIM_SPEED_FACTOR" ]; then
@@ -195,10 +198,6 @@ if [ -n "$PX4_SIM_SPEED_FACTOR" ]; then
 	COM_OF_LOSS_T_LONGER=$(echo "$PX4_SIM_SPEED_FACTOR * 1.0" | bc)
 	echo "COM_OF_LOSS_T set to $COM_OF_LOSS_T_LONGER"
 	param set COM_OF_LOSS_T $COM_OF_LOSS_T_LONGER
-
-	COM_OBC_LOSS_T_LONGER=$(echo "$PX4_SIM_SPEED_FACTOR * 5.0" | bc)
-	echo "COM_OBC_LOSS_T set to $COM_OBC_LOSS_T_LONGER"
-	param set COM_OBC_LOSS_T $COM_OBC_LOSS_T_LONGER
 fi
 
 # Autostart ID
@@ -227,6 +226,15 @@ then
 	exit 1
 fi
 
+# Allow overriding parameters via env variables: export PX4_PARAM_{name}={value}
+env | while IFS='=' read -r line; do
+  value=${line#*=}
+  name=${line%%=*}
+  case $name in
+    "PX4_PARAM_"*) param set "${name#PX4_PARAM_}" "$value" ;;
+  esac
+done
+
 dataman start
 
 # only start the simulator if not in replay mode, as both control the lockstep time
@@ -237,7 +245,7 @@ fi
 
 load_mon start
 
-if param compare SIM_BAT_ENABLE 1
+if param greater SIM_BAT_DRAIN 0
 then
 	battery_simulator start
 fi
@@ -286,10 +294,15 @@ then
 	# for multi intances setup, add namespace prefix
 	uxrce_dds_ns="-n px4_$px4_instance"
 fi
-if [ -n "$PX4_UXRCE_DDS_NS" ]
-then
-	# Override namespace if environment variable is defined
-	uxrce_dds_ns="-n $PX4_UXRCE_DDS_NS"
+if [ "${PX4_UXRCE_DDS_NS+x}" ]; then
+	# Override, as variable is set (empty or not)
+	if [ -n "$PX4_UXRCE_DDS_NS" ]; then
+		# Override namespace if environment variable is non-empty
+		uxrce_dds_ns="-n $PX4_UXRCE_DDS_NS"
+	else
+		# Clear namespace if variable is empty
+		uxrce_dds_ns=""
+	fi
 fi
 if [ -n "$ROS_DOMAIN_ID" ]
 then
@@ -305,7 +318,12 @@ then
 	uxrce_dds_port="$PX4_UXRCE_DDS_PORT"
 fi
 
-uxrce_dds_client start -t udp -h 127.0.0.1 -p $uxrce_dds_port $uxrce_dds_ns
+uxrce_dds_client start -t udp -p $uxrce_dds_port $uxrce_dds_ns
+
+if param greater -s ZENOH_ENABLE 0
+then
+	zenoh start
+fi
 
 if param greater -s MNT_MODE_IN -1
 then
@@ -328,11 +346,7 @@ then
 	gyro_calibration start
 fi
 
-# Payload deliverer module if gripper is enabled
-if param compare -s PD_GRIPPER_EN 1
-then
-	payload_deliverer start
-fi
+payload_deliverer start
 
 if param compare -s ICE_EN 1
 then

@@ -20,7 +20,7 @@ By default this is set to `Disabled (-1)` and the driver does not run.
 在选择输入模式后，请重新启动飞行器以启动挂载驱动程序。
 
 You should set `MNT_MODE_IN` to one of: `RC (1)`, `MAVlink gimbal protocol v2 (4)` or `Auto (0)` (the other options are deprecated).
-If you select `Auto (0)`, the gimbal will automatically select either RC or or MAVLink input based on the latest input.
+If you select `Auto (0)`, the gimbal will automatically select either RC or MAVLink input based on the latest input.
 请注意，从 MAVLink 到 RC 的自动切换需要一个大幅度地杆量操作！
 
 The output is set using the [MNT_MODE_OUT](../advanced_config/parameter_reference.md#MNT_MODE_OUT) parameter.
@@ -43,7 +43,9 @@ The gimbal can be connected to _any free serial port_ using the instructions in 
 For example, if the `TELEM2` port on the flight controller is unused you can connect it to the gimbal and set the following PX4 parameters:
 
 - [MAV_1_CONFIG](../advanced_config/parameter_reference.md#MAV_1_CONFIG) to **TELEM2** (if `MAV_1_CONFIG` is already used for a companion computer (say), use `MAV_2_CONFIG`).
-- [MAV_1_MODE](../advanced_config/parameter_reference.md#MAV_1_MODE) to **NORMAL**
+- [MAV_1_MODE](../advanced_config/parameter_reference.md#MAV_1_MODE) to **Gimbal**
+- [MAV_1_FLOW_CTRL](../advanced_config/parameter_reference.md#MAV_1_FLOW_CTRL) to **Off (0)** (very few gimbals will have RST/CST wires connected).
+- [MAV_1_FORWARD](../advanced_config/parameter_reference.md#MAV_1_FORWARD) to **Enabled** (Note strictly necessary as forwarding is enabled when `MAV_1_MODE` is set to Gimbal).
 - [SER_TEL2_BAUD](../advanced_config/parameter_reference.md#SER_TEL2_BAUD) to manufacturer recommended baud rate.
 
 ### 多云台支持
@@ -72,7 +74,7 @@ The output pins that are used to control the gimbal are set in the [Acuator Conf
 
 ![Gimbal Actuator config](../../assets/config/actuators/qgc_actuators_gimbal.png)
 
-The PWM values to use for the disarmed, maximum and minimum values can be determined in the same way as other servo, using the [Actuator Test sliders](../config/actuators.md#actuator-testing) to confirm that each slider moves the appropriate axis, and changing the values so that the gimbal is in the appropriate position at the disarmed, low and high position in the slider.
+The PWM values to use for the disarmed, maximum, center and minimum values can be determined in the same way as other servo, using the [Actuator Test sliders](../config/actuators.md#actuator-testing) to confirm that each slider moves the appropriate axis, and changing the values so that the gimbal is in the appropriate position at the disarmed, low, center and high position in the slider.
 这些数值也可以在云台文档中提供。
 
 ## Gimbal Control in Missions
@@ -129,7 +131,7 @@ The on-screen gimbal control can be used to move/test a connected MAVLink camera
 
 2. Open QGroundControl and enable the on-screen camera control (Application settings).
 
-  ![Quadrotor(x500) with gimbal (Front-facing) in Gazebo](../../assets/qgc/fly/gimbal_control_x500gz.png)
+   ![Quadrotor(x500) with gimbal (Front-facing) in Gazebo](../../assets/qgc/fly/gimbal_control_x500gz.png)
 
 3. Make sure the vehicle is armed and flying, e.g. by entering with `commander takeoff`.
 

@@ -55,7 +55,7 @@ For example, you might wire it up like this example (orientation as if "sitting 
 | AUX 2  | Right aileron                              |
 | AUX 3  | Elevator                                   |
 | AUX 4  | Rudder                                     |
-| AUX 5  | 油门                                         |
+| AUX 5  | Throttle                                   |
 
 For further instructions on wiring and configurations please see:
 [Standard VTOL Wiring and Configuration](../config_vtol/vtol_quad_configuration.md). <!-- replace with Pixhawk Wiring Quickstart -->
@@ -75,8 +75,3 @@ After you finish calibration the VTOL is ready to fly.
 ## 视频
 
 <lite-youtube videoid="4K8yaa6A0ks" title="Fun Cub PX4 VTOL Maiden"/>
-
-## 技术支持
-
-If you have any questions regarding your VTOL conversion or configuration please visit <https://discuss.px4.io/c/px4/vtol>.
-

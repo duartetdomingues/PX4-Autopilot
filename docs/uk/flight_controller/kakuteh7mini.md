@@ -7,7 +7,7 @@ PX4 не розробляє цей (або будь-який інший) авт�
 Contact the [manufacturer](https://holybro.com/) for hardware support or compliance issues.
 :::
 
-The [Holybro Kakute H7 mini](https://holybro.com/collections/autopilot-flight-controllers/products/kakute-h7-mini) flight controller is intended for lightweight frame builds (such as racers, etc.).
+The [Holybro Kakute H7 mini](https://holybro.com/products/kakute-h7-mini) flight controller is intended for lightweight frame builds (such as racers, etc.).
 
 Цей контролер польоту повний функцій, включаючи роз'єм для HD-камери, подвійні роз'єми ESC 4in1 plug-and-play, перемикач VTX ON/OFF Pit (напруга батареї), барометр, OSD, 6x UART, 128 МБ Flash для журналювання (ще не підтримується з PX4), BEC на 5В, та більші пластини для паяння з простим розташуванням та багато іншого.
 
@@ -40,7 +40,7 @@ PX4 runs on the H7 mini v1.3 and later.
 - Розміри: 30x31x6мм
 - Вага: 5.5г
 
-## Де купити
+## Where to Buy {#store}
 
 Плату можна придбати в одному з наступних магазинів (наприклад):
 
@@ -80,20 +80,20 @@ PX4 runs on the H7 mini v1.3 and later.
 
 The board comes pre-installed with [Betaflight](https://github.com/betaflight/betaflight/wiki).
 Before the PX4 firmware can be installed, the _PX4 bootloader_ must be flashed.
-Download the [holybro_kakuteh7mini_bootloader.hex](https://github.com/PX4/PX4-user_guide/raw/main/assets/flight_controller/kakuteh7mini/holybro_kakuteh7mini_bootloader.hex) bootloader binary and read [this page](../advanced_config/bootloader_update_from_betaflight.md) for flashing instructions.
+Download the [holybro_kakuteh7mini_bootloader.hex](https://github.com/PX4/PX4-Autopilot/raw/main/docs/assets/flight_controller/kakuteh7mini/holybro_kakuteh7mini_bootloader.hex) bootloader binary and read [this page](../advanced_config/bootloader_update_from_betaflight.md) for flashing instructions.
 
 ## Збірка прошивки
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make holybro_kakuteh7mini_default
 ```
 
 ## Встановлення прошивки PX4
 
 :::info
-Якщо ви завантажуєте готове програмне забезпечення через QGroundcontrol, вам необхідно використовувати щоденну версію QGC або версію QGC новішу за 4.1.7.
+If you are loading the pre-built firmware via QGroundControl, you must use QGC Daily or QGC version newer than 4.1.7.
 До випуску вам потрібно буде вручну зібрати та встановити прошивку.
 :::
 
@@ -101,7 +101,7 @@ make holybro_kakuteh7mini_default
 
 - Збудуйте та завантажте джерело:
 
-  ```
+  ```sh
   make holybro_kakuteh7mini_default upload
   ```
 

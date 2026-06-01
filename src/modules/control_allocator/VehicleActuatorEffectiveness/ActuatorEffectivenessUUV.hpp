@@ -54,14 +54,13 @@ public:
 		normalize[0] = true;
 	}
 
-	void updateSetpoint(const matrix::Vector<float, NUM_AXES> &control_sp, int matrix_index,
-			    ActuatorVector &actuator_sp, const matrix::Vector<float, NUM_ACTUATORS> &actuator_min,
-			    const matrix::Vector<float, NUM_ACTUATORS> &actuator_max) override;
+	void updateSetpoint(const matrix::Vector<float, NUM_AXES> &control_sp, int matrix_index, ActuatorVector &actuator_sp,
+			    const ActuatorVector &actuator_min, const ActuatorVector &actuator_max) override;
 
 	const char *name() const override { return "UUV"; }
 
 protected:
 	ActuatorEffectivenessRotors _rotors;
 
-	uint32_t _motors_mask{};
+	ActuatorBitmask _motors_mask{};
 };

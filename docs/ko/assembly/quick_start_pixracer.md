@@ -41,7 +41,7 @@ You will need to [select a compatible transmitter/receiver](../getting_started/r
 
   ![Radio Connection](../../assets/flight_controller/pixracer/grau_setup_pixracer_radio.jpg)
 
-- PPM and PWM receivers that have an _individual wire for each channel_ must connect to the **RCIN** port _via a PPM encoder_ [like this one](http://www.getfpv.com/radios/radio-accessories/holybro-ppm-encoder-module.html) (PPM-Sum receivers use a single signal wire for all channels).
+- PPM and PWM receivers that have an _individual wire for each channel_ must connect to the **RCIN** port _via a PPM encoder_ [like this one](https://www.getfpv.com/radios/radio-accessories/holybro-ppm-encoder-module.html) (PPM-Sum receivers use a single signal wire for all channels).
 
 ### 전원 모듈 (ACSP4)
 
@@ -52,7 +52,7 @@ You will need to [select a compatible transmitter/receiver](../getting_started/r
 Pixracer has inbuilt WiFi, but also supports telemetry via external Wi-Fi or radio telemetry modules connected to the `TELEM1` or `TELEM2` ports.
 무선 다이어그램은 아래의 그림과 같습니다.
 
-![Pixracer external telemtry options](../../assets/flight_controller/pixracer/pixracer_top_telemetry.jpg)
+![Pixracer external telemetry options](../../assets/flight_controller/pixracer/pixracer_top_telemetry.jpg)
 
 :::info
 The `TELEM2` port must be configured as a second MAVLink instance using the [MAV_2_CONFIG](../advanced_config/parameter_reference.md#MAV_2_CONFIG) parameter.

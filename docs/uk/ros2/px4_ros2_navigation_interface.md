@@ -22,80 +22,80 @@
 
 2. Клонуйте репозиторій в робочий простір:
 
-  ```sh
-  cd $ros_workspace/src
-  git clone --recursive https://github.com/Auterion/px4-ros2-interface-lib
-  ```
+   ```sh
+   cd $ros_workspace/src
+   git clone --recursive https://github.com/Auterion/px4-ros2-interface-lib
+   ```
 
-  :::info
-  Для забезпечення сумісності, використовуйте останні _main_ гілки для PX4, _px4_msgs_ та бібліотеки.
-  Дивіться також [here](https://github.com/Auterion/px4-ros2-interface-lib#compatibility-with-px4).
+   :::info
+   Для забезпечення сумісності, використовуйте останні _main_ гілки для PX4, _px4_msgs_ та бібліотеки.
+   Дивіться також [here](https://github.com/Auterion/px4-ros2-interface-lib#compatibility-with-px4).
 
 :::
 
 3. Побудуйте робочий простір:
 
-  ```sh
-  cd ..
-  colcon build
-  ```
+   ```sh
+   cd ..
+   colcon build
+   ```
 
 4. У іншій оболонці запустіть PX4 SITL:
 
-  ```sh
-  cd $px4-autopilot
-  make px4_sitl gazebo-classic
-  ```
+   ```sh
+   cd $px4-autopilot
+   make px4_sitl gazebo-classic
+   ```
 
-  (тут ми використовуємо Gazebo-Classic, але ви можете використовувати будь-яку модель або симулятор)
+   (тут ми використовуємо Gazebo-Classic, але ви можете використовувати будь-яку модель або симулятор)
 
 5. У іншій оболонці запустіть агента micro XRCE (ви можете залишити його запущеним після цього):
 
-  ```sh
-  MicroXRCEAgent udp4 -p 8888
-  ```
+   ```sh
+   MicroXRCEAgent udp4 -p 8888
+   ```
 
 6. Поверніться до терміналу ROS 2, створіть робочу область, яку ви щойно створили (у кроці 3), і запустіть приклад [global_navigation](https://github.com/Auterion/px4-ros2-interface-lib/tree/main/examples/cpp/navigation/global_navigation), який періодично надсилає фіктивні оновлення глобальної позиції:
 
-  ```sh
-  source install/setup.bash
-  ros2 run example_global_navigation_cpp example_global_navigation
-  ```
+   ```sh
+   source install/setup.bash
+   ros2 run example_global_navigation_cpp example_global_navigation
+   ```
 
-  Ви повинні отримати вивід, подібний до цього, що показує, що глобальний інтерфейс успішно надсилає оновлення позиції:
+   Ви повинні отримати вивід, подібний до цього, що показує, що глобальний інтерфейс успішно надсилає оновлення позиції:
 
-  ```sh
-  [INFO] [1702030701.836897756] [example_global_navigation_node]: example_global_navigation_node running!
-  [DEBUG] [1702030702.837279784] [example_global_navigation_node]: Successfully sent position update to navigation interface.
-  [DEBUG] [1702030703.837223884] [example_global_navigation_node]: Successfully sent position update to navigation interface.
-  ```
+   ```sh
+   [INFO] [1702030701.836897756] [example_global_navigation_node]: example_global_navigation_node running!
+   [DEBUG] [1702030702.837279784] [example_global_navigation_node]: Successfully sent position update to navigation interface.
+   [DEBUG] [1702030703.837223884] [example_global_navigation_node]: Successfully sent position update to navigation interface.
+   ```
 
 7. У PX4 оболонці можна перевірити, що PX4 отримує глобальні оновлення позиції:
 
-  ```sh
-  listener aux_global_position
-  ```
+   ```sh
+   listener aux_global_position
+   ```
 
-  Вихід має містити:
+   Вихід має містити:
 
-  ```sh
-  TOPIC: aux_global_position
-  aux_global_position
-     timestamp: 46916000 (0.528000 seconds ago)
-     timestamp_sample: 46916000 (0 us before timestamp)
-     lat: 12.343210
-     lon: 23.454320
-     alt: 12.40000
-     alt_ellipsoid: 0.00000
-     delta_alt: 0.00000
-     eph: 0.31623
-     epv: 0.44721
-     terrain_alt: 0.00000
-     lat_lon_reset_counter: 0
-     alt_reset_counter: 0
-     terrain_alt_valid: False
-     dead_reckoning: False
-  ```
+   ```sh
+   TOPIC: aux_global_position
+   aux_global_position
+      timestamp: 46916000 (0.528000 seconds ago)
+      timestamp_sample: 46916000 (0 us before timestamp)
+      lat: 12.343210
+      lon: 23.454320
+      alt: 12.40000
+      alt_ellipsoid: 0.00000
+      delta_alt: 0.00000
+      eph: 0.31623
+      epv: 0.44721
+      terrain_alt: 0.00000
+      lat_lon_reset_counter: 0
+      alt_reset_counter: 0
+      terrain_alt_valid: False
+      dead_reckoning: False
+   ```
 
 8. Тепер ви готові використовувати навігаційний інтерфейс для надсилання своїх оновлень.
 
@@ -104,7 +104,7 @@
 Для надсилання вимірювання позиції ви заповнюєте структуру позиції з виміряними значеннями.
 Потім викликаєте функцію оновлення інтерфейсу з цією структурою як аргументом.
 
-Для базового прикладу, як користуватися цим інтерфейсом, ознайомтеся з [examples](https://github.com/Auterion/px4-ros2-interface-lib/tree/main/examples/cpp/navigation) в `Auterion/px4-rosface-lib` репозиторію, наприклад [examples/cpp/navigation/local_navigation](https://github.com/Auterion/px4-ros2-interface-lib/b/main/examples/cpp/navigation/local_navigation/inclation/inclde/local_localation.hppation.hpp) або examples/cpps/cppation/globation](https://github.com/Auter/intertere-face-face-face-facb/mainb/mppation/mppation/example/example/navigation/navigation/navigation/navig/navigation/navigation/navig/navig/navig/navighblob/navig
+For a basic example of how to use this interface, check out the [examples](https://github.com/Auterion/px4-ros2-interface-lib/tree/main/examples/cpp/navigation) in the `Auterion/px4-ros2-interface-lib` repository, such as [examples/cpp/navigation/local_navigation](https://github.com/Auterion/px4-ros2-interface-lib/blob/main/examples/cpp/navigation/local_navigation/include/local_navigation.hpp) or [examples/cpp/navigation/global_navigation](https://github.com/Auterion/px4-ros2-interface-lib/blob/main/examples/cpp/navigation/global_navigation/include/global_navigation.hpp).
 
 ### Оновлення локальної позиції
 
@@ -223,7 +223,7 @@ private:
 
 ###
 
-Спочатку переконайтеся, що параметр PX4 [`EKF2_EV_CTRL`](../advanced_config/parameter_reference.md#EKF2_EV_CTRL) налаштований належним чином для ефективного використання зовнішніх локальних вимірів, встановивши відповідні біти в `true`:
+First ensure that the PX4 [`EKF2_AGP_CTRLn`](../advanced_config/parameter_reference.md#EKF2_AGP0_CTRL) parameters are properly configured to fuse external global measurements, by setting the appropriate bits to `true`:
 
 - 0: Дані горизонтальної позиції
 - 1: Дані вертикальної позиції

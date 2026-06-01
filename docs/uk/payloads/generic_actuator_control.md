@@ -60,7 +60,7 @@
 
    - Виберіть заголовок у редакторі маршрутної точки місії, щоб відкрити редактор **Select Mission Command**.
    - Виберіть категорію **Advanced**, а потім пункт **Set actuator** (якщо елемента немає, спробуйте новішу версію _QGroundControl_ або щоденну збірку).
-      Це змінить тип елемента місії на «Set actuator».
+     Це змінить тип елемента місії на «Set actuator».
 
 3. Виберіть підключені приводи та встановіть їхні значення (вони нормалізовані між -1 і 1).
 
@@ -68,7 +68,7 @@
 
 ## MAVSDK (приклад скрипту)
 
-Наступний [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html) [приклад коду](https://github.com/mavlink/MAVSDK/blob/main/examples/set_actuator/set_actuator.cpp) показує, як ініціювати випуск корисного навантаження за допомогою методу [`set_actuator()`](https://mavsdk.mavlink.io/main/en/cpp/api_reference/classmavsdk_1_1_action.html#classmavsdk_1_1_action_1ad30beac27f05c62dcf6a3d0928b86e4c) плагіну MAVSDK Action.
+The following [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html) [example code](https://github.com/mavlink/MAVSDK/blob/main/cpp/examples/set_actuator/set_actuator.cpp) shows how to trigger payload release using the MAVSDK Action plugin's [`set_actuator()`](https://mavsdk.mavlink.io/main/en/cpp/api_reference/classmavsdk_1_1_action.html#classmavsdk_1_1_action_1ad30beac27f05c62dcf6a3d0928b86e4c) method.
 
 Значення індексів в `set_actuator()` зіставляються з виводами корисного навантаження MAVLink, визначених для вашого планера.
 

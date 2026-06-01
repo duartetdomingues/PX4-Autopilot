@@ -128,21 +128,21 @@ You add some "boilerplate" code to regularly listen for changes in the [uORB Top
 
 - **px4_platform_common/module_params.h** to get the `DEFINE_PARAMETERS` macro:
 
- ```cpp
- #include <px4_platform_common/module_params.h>
- ```
+  ```cpp
+  #include <px4_platform_common/module_params.h>
+  ```
 
 - **parameter_update.h** to access the uORB `parameter_update` message:
 
- ```cpp
- #include <uORB/topics/parameter_update.h>
- ```
+  ```cpp
+  #include <uORB/topics/parameter_update.h>
+  ```
 
 - **Subscription.hpp** for the uORB C++ subscription API:
 
- ```cpp
- #include <uORB/Subscription.hpp>
- ```
+  ```cpp
+  #include <uORB/Subscription.hpp>
+  ```
 
 Derive your class from `ModuleParams`, and use `DEFINE_PARAMETERS` to specify a list of parameters and their associated parameter attributes.
 参数的名称必须与其参数元数据定义相同。
@@ -194,7 +194,7 @@ void Module::parameters_update()
 - `_parameter_update_sub.updated()` tells us if there is _any_ update to the `param_update` uORB message (but not what parameter is affected).
 - If there has been "some" parameter updated, we copy the update into a `parameter_update_s` (`param_update`), to clear the pending update.
 - Then we call `ModuleParams::updateParams()`.
- This "under the hood" updates all parameter attributes listed in our `DEFINE_PARAMETERS` list.
+  This "under the hood" updates all parameter attributes listed in our `DEFINE_PARAMETERS` list.
 
 The parameter attributes (`_sys_autostart` and `_att_bias_max` in this case) can then be used to represent the parameters, and will be updated whenever the parameter value changes.
 
@@ -267,12 +267,12 @@ YAML meta data is intended as a full replacement for the **.c** definitions.
 - An example of YAML definitions being used can be found in the MAVLink parameter definitions: [/src/modules/mavlink/module.yaml](https://github.com/PX4/PX4-Autopilot/blob/main/src/modules/mavlink/module.yaml).
 - 通过添加到 cmake 构建系统中注册一个 YAML 文件
 
- ```cmake
- MODULE_CONFIG
- 	module.yaml
- ```
+  ```cmake
+  MODULE_CONFIG
+  	module.yaml
+  ```
 
- to the `px4_add_module` section of the `CMakeLists.txt` file of that module.
+  to the `px4_add_module` section of the `CMakeLists.txt` file of that module.
 
 #### 多实例（模块化）YAML 元数据
 
@@ -357,6 +357,62 @@ The parameter metadata JSON file is compiled into firmware (or hosted on the Int
 
 This process is the same as for [events metadata](../concept/events_interface.md#publishing-event-metadata-to-a-gcs).
 For more information see [PX4 Metadata (Translation & Publication)](../advanced/px4_metadata.md)
+
+## Read-Only Parameters
+
+Integrators who productize PX4 can lock down parameters so that end users cannot change safety-critical or product-defining settings.
+This works in two phases:
+
+1. **Build time** — a YAML file in the board directory declares _which_ parameters are read-only.
+2. **Run time** — `param lock` in the startup script activates enforcement.
+
+Before the lock, all parameters (including those on the read-only list) can be freely set by startup scripts (`rc.board_defaults`, airframe scripts, `config.txt`, etc.).
+After the lock, any attempt to modify a read-only parameter is rejected.
+
+### 配置
+
+Create `boards/<vendor>/<board>/readonly_params.yaml` with the following format:
+
+```yaml
+# mode: 'block' = listed params are read-only (all others writable)
+# mode: 'allow' = only listed params are writable (all others read-only)
+mode: block
+parameters:
+  - SYS_AUTOSTART
+  - SYS_AUTOCONFIG
+  - BAT1_N_CELLS
+```
+
+The two modes are:
+
+- **`block`**: The listed parameters are read-only; all other parameters remain writable.
+- **`allow`**: Only the listed parameters are writable; all others become read-only.
+
+All parameter names in the list are validated at build time — the build will fail if any listed parameter does not exist in the firmware.
+Boards without this file have no read-only enforcement (fully backward compatible).
+
+### Locking
+
+The `param lock` command is called in `rcS` after all startup scripts have finished setting parameters.
+Before this call, startup scripts can freely use `param set-default` and `param set` on any parameter, including those on the read-only list.
+After `param lock`, the read-only list is enforced.
+
+To set a specific locked value, use `param set-default` in a board startup script (e.g. `rc.board_defaults`) to set the desired default _before_ the lock activates.
+
+### Enforcement (after lock)
+
+Read-only parameters are enforced at all entry points:
+
+- **`param set`** and **`param set-default`** shell commands return an error.
+- **MAVLink PARAM_SET** returns a `MAV_PARAM_ERROR_READ_ONLY` error to the GCS.
+- **`param_set()`**, **`param_set_default_value()`** C API calls return `PX4_ERROR`.
+- **`param reset`** silently skips read-only parameters (since `param_reset_all` loops over all params).
+- **`param import`** / **`param load`** from file silently skips read-only parameters.
+
+### 备注
+
+- The read-only list is compiled into firmware as a `constexpr` array, so there is zero runtime overhead when the list is empty.
+- If no `readonly_params.yaml` file exists for a board, `param lock` is a no-op.
 
 ## 更多信息
 

@@ -1,15 +1,65 @@
 # 모듈 참조: 자기 센서(드라이버)
 
+## af9838
+
+Source: [drivers/magnetometer/voltafield/af9838](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/voltafield/af9838)
+
+### Usage {#af9838_usage}
+
+```
+af9838 <command> [arguments...]
+ Commands:
+   start
+     [-I]        Internal I2C bus(es)
+     [-X]        External I2C bus(es)
+     [-b <val>]  board-specific bus (default=all) (external SPI: n-th bus
+                 (default=1))
+     [-f <val>]  bus frequency in kHz
+     [-q]        quiet startup (no message if no device found)
+     [-a <val>]  I2C address
+                 default: 12
+     [-R <val>]  Rotation
+                 default: 0
+
+   stop
+
+   status        print status info
+```
+
 ## ak09916
 
 Source: [drivers/magnetometer/akm/ak09916](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/akm/ak09916)
 
-<a id="ak09916_usage"></a>
-
-### 사용법
+### Usage {#ak09916_usage}
 
 ```
 ak09916 <command> [arguments...]
+ Commands:
+   start
+     [-I]        Internal I2C bus(es)
+     [-X]        External I2C bus(es)
+     [-b <val>]  board-specific bus (default=all) (external SPI: n-th bus
+                 (default=1))
+     [-f <val>]  bus frequency in kHz
+     [-q]        quiet startup (no message if no device found)
+     [-a <val>]  I2C address
+                 default: 12
+     [-R <val>]  Rotation
+                 default: 0
+
+   stop
+
+   status        print status info
+```
+
+## ak09940a
+
+Source: [drivers/magnetometer/akm/ak09940a](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/akm/ak09940a)
+
+### Usage {#ak09940a_usage}
+
+```
+ak09940a <command> [arguments...]
  Commands:
    start
      [-I]        Internal I2C bus(es)
@@ -32,9 +82,7 @@ ak09916 <command> [arguments...]
 
 Source: [drivers/magnetometer/akm/ak8963](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/akm/ak8963)
 
-<a id="ak8963_usage"></a>
-
-### 사용법
+### Usage {#ak8963_usage}
 
 ```
 ak8963 <command> [arguments...]
@@ -60,9 +108,7 @@ ak8963 <command> [arguments...]
 
 Source: [drivers/magnetometer/bosch/bmm150](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/bosch/bmm150)
 
-<a id="bmm150_usage"></a>
-
-### 사용법
+### Usage {#bmm150_usage}
 
 ```
 bmm150 <command> [arguments...]
@@ -88,9 +134,7 @@ bmm150 <command> [arguments...]
 
 Source: [drivers/magnetometer/bosch/bmm350](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/bosch/bmm350)
 
-<a id="bmm350_usage"></a>
-
-### 사용법
+### Usage {#bmm350_usage}
 
 ```
 bmm350 <command> [arguments...]
@@ -116,9 +160,7 @@ bmm350 <command> [arguments...]
 
 Source: [drivers/magnetometer/hmc5883](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/hmc5883)
 
-<a id="hmc5883_usage"></a>
-
-### 사용법
+### Usage {#hmc5883_usage}
 
 ```
 hmc5883 <command> [arguments...]
@@ -147,9 +189,7 @@ hmc5883 <command> [arguments...]
 
 Source: [drivers/magnetometer/st/iis2mdc](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/st/iis2mdc)
 
-<a id="iis2mdc_usage"></a>
-
-### 사용법
+### Usage {#iis2mdc_usage}
 
 ```
 iis2mdc <command> [arguments...]
@@ -173,9 +213,7 @@ iis2mdc <command> [arguments...]
 
 Source: [drivers/magnetometer/isentek/ist8308](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/isentek/ist8308)
 
-<a id="ist8308_usage"></a>
-
-### 사용법
+### Usage {#ist8308_usage}
 
 ```
 ist8308 <command> [arguments...]
@@ -201,9 +239,7 @@ ist8308 <command> [arguments...]
 
 Source: [drivers/magnetometer/isentek/ist8310](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/isentek/ist8310)
 
-<a id="ist8310_usage"></a>
-
-### 사용법
+### Usage {#ist8310_usage}
 
 ```
 ist8310 <command> [arguments...]
@@ -225,45 +261,11 @@ ist8310 <command> [arguments...]
    status        print status info
 ```
 
-## lis2mdl
-
-Source: [drivers/magnetometer/lis2mdl](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/lis2mdl)
-
-<a id="lis2mdl_usage"></a>
-
-### 사용법
-
-```
-lis2mdl <command> [arguments...]
- Commands:
-   start
-     [-I]        Internal I2C bus(es)
-     [-X]        External I2C bus(es)
-     [-s]        Internal SPI bus(es)
-     [-S]        External SPI bus(es)
-     [-b <val>]  board-specific bus (default=all) (external SPI: n-th bus
-                 (default=1))
-     [-c <val>]  chip-select pin (for internal SPI) or index (for external SPI)
-     [-m <val>]  SPI mode
-     [-f <val>]  bus frequency in kHz
-     [-q]        quiet startup (no message if no device found)
-     [-a <val>]  I2C address
-                 default: 30
-     [-R <val>]  Rotation
-                 default: 0
-
-   stop
-
-   status        print status info
-```
-
 ## lis3mdl
 
 Source: [drivers/magnetometer/lis3mdl](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/lis3mdl)
 
-<a id="lis3mdl_usage"></a>
-
-### 사용법
+### Usage {#lis3mdl_usage}
 
 ```
 lis3mdl <command> [arguments...]
@@ -295,9 +297,7 @@ lis3mdl <command> [arguments...]
 
 Source: [drivers/magnetometer/lsm9ds1_mag](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/lsm9ds1_mag)
 
-<a id="lsm9ds1_mag_usage"></a>
-
-### 사용법
+### Usage {#lsm9ds1_mag_usage}
 
 ```
 lsm9ds1_mag <command> [arguments...]
@@ -323,9 +323,7 @@ lsm9ds1_mag <command> [arguments...]
 
 Source: [drivers/magnetometer/memsic/mmc5983ma](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/memsic/mmc5983ma)
 
-<a id="mmc5983ma_usage"></a>
-
-### 사용법
+### Usage {#mmc5983ma_usage}
 
 ```
 mmc5983ma <command> [arguments...]
@@ -357,9 +355,7 @@ mmc5983ma <command> [arguments...]
 
 Source: [drivers/magnetometer/qmc5883l](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/qmc5883l)
 
-<a id="qmc5883l_usage"></a>
-
-### 사용법
+### Usage {#qmc5883l_usage}
 
 ```
 qmc5883l <command> [arguments...]
@@ -381,13 +377,37 @@ qmc5883l <command> [arguments...]
    status        print status info
 ```
 
+## qmc5883p
+
+Source: [drivers/magnetometer/qmc5883p](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/qmc5883p)
+
+### Usage {#qmc5883p_usage}
+
+```
+qmc5883p <command> [arguments...]
+ Commands:
+   start
+     [-I]        Internal I2C bus(es)
+     [-X]        External I2C bus(es)
+     [-b <val>]  board-specific bus (default=all) (external SPI: n-th bus
+                 (default=1))
+     [-f <val>]  bus frequency in kHz
+     [-q]        quiet startup (no message if no device found)
+     [-a <val>]  I2C address
+                 default: 44
+     [-R <val>]  Rotation
+                 default: 0
+
+   stop
+
+   status        print status info
+```
+
 ## rm3100
 
 Source: [drivers/magnetometer/rm3100](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/rm3100)
 
-<a id="rm3100_usage"></a>
-
-### 사용법
+### Usage {#rm3100_usage}
 
 ```
 rm3100 <command> [arguments...]
@@ -415,9 +435,7 @@ rm3100 <command> [arguments...]
 
 Source: [drivers/magnetometer/vtrantech/vcm1193l](https://github.com/PX4/PX4-Autopilot/tree/main/src/drivers/magnetometer/vtrantech/vcm1193l)
 
-<a id="vcm1193l_usage"></a>
-
-### 사용법
+### Usage {#vcm1193l_usage}
 
 ```
 vcm1193l <command> [arguments...]

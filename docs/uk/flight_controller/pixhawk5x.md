@@ -62,7 +62,6 @@ Pixhawk® 5X ідеально підходить для розробників �
   - 32 Bit Arm®️ Cortex®️-M3, 24MHz, 8KB SRAM
 
 - Бортові сенсори:
-
   - Accel/Gyro: ICM-20649
   - Accel/Gyro: ICM-42688P
   - Акселератор/гіроскоп: ICM-20602
@@ -70,7 +69,6 @@ Pixhawk® 5X ідеально підходить для розробників �
   - Barometer: 2x BMP388
 
 - Інтерфейси
-
   - 16 PWM виводів сервоприводів
   - R/C вхід для Spektrum / DSM
   - Виділений R/C вхід для PPM та S.Bus входу
@@ -100,25 +98,22 @@ Pixhawk® 5X ідеально підходить для розробників �
     - 2 виділені відладочні та GPIO лінії
 
 - Номінальна напруга
-
   - Максимальна вхідна напруга: 6 В
   - Вхід USB Power: 4.75~5.25V
   - Вхід сервоприводу: 0~36V
 
 - Розміри
-
   - Модуль політного контролера: 38.8 x 31.8 x 14.6mm
   - Стандартна базова плата: 52.4 x 103.4 x 16.7mm
 
 - Вага
-
   - Модуль політного контролера: 23g
   - Стандартна базова плата: 51g
 
 - Інші характеристики:
   - Operating & storage temperature: -40 ~ 85°c
 
-## Де купити
+## Where to Buy {#store}
 
 Замовляйте на [Holybro](https://holybro.com/products/pixhawk-5x).
 
@@ -136,10 +131,10 @@ Pixhawk® 5X ідеально підходить для розробників �
 
 :::info
 Connector pin assignments are left to right (i.e. Pin 1 - це найлівіший контакт).
-:::info
+:::
 
 - The [camera capture pin](../camera/fc_connected_camera.md#camera-capture-configuration) (`PI0`) is pin 2 on the AD&IO port, marked above as `FMU_CAP1`.
-- Схему контактів _Pixhawk 5X_ можна завантажити у форматі PDF [тут](https://github.com/PX4/PX4-user_guide/blob/main/assets/flight_controller/pixhawk5x/pixhawk5x_pinout.pdf) або [тут](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Holybro_Pixhawk5X_Pinout.pdf).
+- _Pixhawk 5X_ pinouts can be downloaded in PDF from [here](https://github.com/PX4/PX4-user_guide/blob/main/assets/flight_controller/pixhawk5x/pixhawk5x_pinout.pdf) or [here](https://cdn.shopify.com/s/files/1/0604/5905/7341/files/Holybro_Pixhawk5X_Pinout.pdf).
 
 ## Налаштування послідовного порту
 
@@ -161,7 +156,7 @@ Connector pin assignments are left to right (i.e. Pin 1 - це найлівіш�
 ## Номінальна напруга
 
 _Pixhawk 5X_ can be triple-redundant on the power supply if three power sources are supplied. The three power rails are: **POWER1**, **POWER2** and **USB**.
-The **POWER1** & **POWER2** ports on the Pixhawk 5X uses the 6 circuit [2.00mm Pitch CLIK-Mate Wire-to-Board PCB Receptacle](https://www.molex.com/molex/products/part-detail/pcb_receptacles/5024430670).
+The **POWER1** & **POWER2** ports on the Pixhawk 5X uses the 6 circuit [2.00mm Pitch CLIK-Mate Wire-to-Board PCB Receptacle](https://www.molex.com/en-us/products/part-detail/5024430670).
 
 **Normal Operation Maximum Ratings**
 
@@ -182,8 +177,8 @@ The **POWER1** & **POWER2** ports on the Pixhawk 5X uses the 6 circuit [2.00mm P
 
 Цифровий моніторинг батареї I2C увімкнено за замовчуванням (див. [Швидкий старт >  Живлення](../assembly/quick_start_pixhawk5x.md#power)).
 
-::: info
-Аналоговий моніторинг батареї через ADC не підтримується на цій конкретній платі, але може підтримуватися в варіантах цього політного контролера з іншою базовою платою.
+:::info
+Analog battery monitoring via an ADC is not supported on this particular board, but may be supported in variations of this flight controller with a different baseboard.
 :::
 
 ## Збірка прошивки
@@ -195,13 +190,11 @@ It is pre-built and automatically installed by _QGroundControl_ when appropriate
 
 To [build PX4](../dev_setup/building_px4.md) for this target:
 
-```
+```sh
 make px4_fmu-v5x_default
 ```
 
-<a id="debug_port"></a>
-
-## Відладочний порт
+## Debug Port {#debug_port}
 
 The [PX4 System Console](../debug/system_console.md) and [SWD interface](../debug/swd_debug.md) run on the **FMU Debug** port.
 
@@ -227,7 +220,7 @@ The pinouts and connector comply with the [Pixhawk Debug Full](../debug/swd_debu
 
 ## Периферійні пристрої
 
-- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor)
+- [Digital Airspeed Sensor](https://holybro.com/products/digital-air-speed-sensor-ms4525do)
 - [Telemetry Radio Modules](https://holybro.com/collections/telemetry-radios?orderby=date)
 - [Rangefinders/Distance sensors](../sensor/rangefinders.md)
 

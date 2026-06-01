@@ -110,7 +110,7 @@
 MEMORY
 {
 	ITCM_RAM  (rwx) : ORIGIN = 0x00000000, LENGTH =   64K
-	FLASH      (rx) : ORIGIN = 0x08020000, LENGTH = 1792K
+	FLASH      (rx) : ORIGIN = 0x08020000, LENGTH = 1920K
 
 	DTCM1_RAM (rwx) : ORIGIN = 0x20000000, LENGTH =   64K
 	DTCM2_RAM (rwx) : ORIGIN = 0x20010000, LENGTH =   64K
@@ -131,20 +131,12 @@ ENTRY(_stext)
  * code pulled in by libgcc.a requires it (and that code cannot be easily avoided).
  */
 EXTERN(abort)
-EXTERN(_bootdelay_signature)
-
 SECTIONS
 {
 	.text : {
 		_stext = ABSOLUTE(.);
 		*(.vectors)
 		. = ALIGN(32);
-		/*
-		This signature provides the bootloader with a way to delay booting
-		*/
-		_bootdelay_signature = ABSOLUTE(.);
-		FILL(0xffecc2925d7d05c5)
-		. += 8;
 		*(.text .text.*)
 		*(.fixup)
 		*(.gnu.warning)

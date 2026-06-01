@@ -101,9 +101,12 @@ def main(kconfig_file, config1, config2):
     # load_config() and write_config() returns a message to print.
     print(kconf.load_config(config1, replace=False))
     print(kconf.load_config(config2, replace=False))
-
-    # Modification for PX4 unset all symbols (INT,HEX etc) from 2nd config
-
+    # PX4 extension: stock kconfiglib only honors "# CONFIG_X is not set" for
+    # bool/tristate symbols. PX4 overlay fragments need to revert int/hex/
+    # string symbols set by default.px4board back to their Kconfig defaults
+    # — e.g. mr-canhubk3 fmu/sysview overlays revert BOARD_ROMFSROOT from
+    # "cannode" to "px4fmu_common", which also gates the bootloaders and
+    # uavcannode drivers via Kconfig dependencies.
     f = open(config2, 'r')
 
     unset_match = re.compile(r"# {}([^ ]+) is not set".format("CONFIG_"), re.ASCII).match
@@ -113,13 +116,16 @@ def main(kconfig_file, config1, config2):
         #pprint.pprint(line)
         if match is not None:
             sym_name = match.group(1)
-            kconf.syms[sym_name].unset_value()
+            try:
+                kconf.syms[sym_name].unset_value()
 
-            if kconf.syms[sym_name].type is BOOL:
-                for default, cond in kconf.syms[sym_name].orig_defaults:
-                    if(cond.str_value == 'y'):
-                        # Default is y, our diff is unset thus we've set it to no
-                        kconf.syms[sym_name].set_value(0)
+                if kconf.syms[sym_name].type is BOOL:
+                    for default, cond in kconf.syms[sym_name].orig_defaults:
+                        if(cond.str_value == 'y'):
+                            # Default is y, our diff is unset thus we've set it to no
+                            kconf.syms[sym_name].set_value(0)
+            except KeyError:
+                pass
 
     f.close()
 

@@ -63,8 +63,9 @@ public:
 private:
 	bool setNextMissionItem() override;
 	void setActiveMissionItems() override;
+	MissionTraversalType traversalType() const override { return MissionTraversalType::IgnoreDoJump; }
 
-	int _mission_index_prior_rtl{-1};
+	int32_t _mission_index_prior_rtl{INT32_C(-1)};
 
 	uORB::SubscriptionData<home_position_s> _home_pos_sub{ORB_ID(home_position)};		/**< home position subscription */
 };
