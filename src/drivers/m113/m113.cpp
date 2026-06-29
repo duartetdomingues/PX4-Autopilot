@@ -18,6 +18,8 @@
  ****************************************************************************/
 
 #include <drivers/drv_hrt.h>
+#include <drivers/px4io/px4io_driver.h>
+#include <px4_platform_common/atomic.h>
 #include <px4_platform_common/getopt.h>
 #include <px4_platform_common/log.h>
 #include <px4_platform_common/module.h>
@@ -47,10 +49,9 @@ constexpr uint32_t TX_TIMEOUT_MS = 100;
 constexpr uint32_t SDO_TIMEOUT_MS = 200;
 constexpr uint32_t CONTROL_PERIOD_US = 50000;
 constexpr uint32_t RC_TIMEOUT_US = 500000;
-
 constexpr uint8_t THOMSON_ID_1 = 35;
 constexpr uint8_t THOMSON_ID_2 = 36;
-constexpr uint8_t MD80_ID = 10;
+constexpr uint8_t MD80_ACC_ID = 10;
 
 constexpr uint16_t THOMSON_BRAKE_POSITION_1 = 1000;
 constexpr uint16_t THOMSON_BRAKE_POSITION_2 = 1000;
@@ -74,6 +75,89 @@ constexpr uint8_t MD80_OPERATION_ENABLED = 0x27;
 constexpr int8_t MD80_MODE_SERVICE = -2;
 constexpr int8_t MD80_MODE_IDLE = 0;
 constexpr int8_t MD80_MODE_PROFILE_POSITION = 1;
+
+enum class RelayOverride : uint8_t {
+	Auto,
+	ForceOff,
+	ForceOn,
+};
+
+px4::atomic<RelayOverride> relay_override{RelayOverride::Auto};
+px4::atomic<bool> relay_auto_on{false};
+px4::atomic<bool> relay_output_on{false};
+px4::atomic<bool> relay_output_valid{false};
+
+const char *relay_override_name(RelayOverride mode)
+{
+	switch (mode) {
+	case RelayOverride::Auto:
+		return "auto";
+
+	case RelayOverride::ForceOff:
+		return "forced off";
+
+	case RelayOverride::ForceOn:
+		return "forced on";
+	}
+
+	return "unknown";
+}
+
+bool relay_requested_on()
+{
+	switch (relay_override.load()) {
+	case RelayOverride::ForceOn:
+		return true;
+
+	case RelayOverride::ForceOff:
+		return false;
+
+	case RelayOverride::Auto:
+	default:
+		return relay_auto_on.load();
+	}
+}
+
+bool update_relay_output(bool force_write = false)
+{
+	const bool on = relay_requested_on();
+
+	if (!force_write && relay_output_valid.load() && relay_output_on.load() == on) {
+		return true;
+	}
+
+	const int ret = px4io_set_m113_relay(on);
+
+	if (ret != PX4_OK) {
+		PX4_ERR("vehicle relay IO PWM OUT 1 update failed (%i)", ret);
+		return false;
+	}
+
+	relay_output_on.store(on);
+	relay_output_valid.store(true);
+	PX4_INFO("vehicle relay IO PWM OUT 1: GPIO %s", on ? "HIGH" : "LOW");
+	return true;
+}
+
+bool set_relay_auto_state(bool on, bool force_write = false)
+{
+	relay_auto_on.store(on);
+	return update_relay_output(force_write);
+}
+
+bool set_relay_override(RelayOverride mode)
+{
+	relay_override.store(mode);
+	return update_relay_output(true);
+}
+
+void print_relay_status()
+{
+	PX4_INFO("vehicle relay IO PWM OUT 1: GPIO %s, mode: %s, auto request: %s",
+		 !relay_output_valid.load() ? "unknown" : relay_output_on.load() ? "HIGH" : "LOW",
+		 relay_override_name(relay_override.load()),
+		 relay_auto_on.load() ? "ON" : "OFF");
+}
 
 template<typename T>
 void put_le(uint8_t *destination, T value)
@@ -194,12 +278,12 @@ private:
 	{
 		T current{};
 
-		if (!sdo_read(MD80_ID, index, subindex, current)) {
+		if (!sdo_read(MD80_ACC_ID, index, subindex, current)) {
 			return false;
 		}
 
 		if (std::memcmp(&current, &desired, sizeof(T)) != 0) {
-			return sdo_write(MD80_ID, index, subindex, desired);
+			return sdo_write(MD80_ACC_ID, index, subindex, desired);
 		}
 
 		return true;
@@ -212,7 +296,8 @@ private:
 	void apply_enabled_control();
 	void apply_brake();
 	void send_keepalives();
-	bool rc_is_valid() const;
+	bool rc_link_is_valid() const;
+	bool rc_controls_are_valid() const;
 
 	uint8_t _interface_index;
 	uint32_t _interface_mask;
@@ -402,14 +487,14 @@ bool M113::initialize_md80()
 
 	const uint32_t save = 0x65766173;
 
-	if (!sdo_write(MD80_ID, 0x1010, 0x01, save)) {
+	if (!sdo_write(MD80_ACC_ID, 0x1010, 0x01, save)) {
 		PX4_ERR("MD80 parameter store failed");
 		return false;
 	}
 
 	sleep_servicing(2000);
 
-	if (!sdo_write(MD80_ID, 0x6060, 0x00, MD80_MODE_SERVICE)
+	if (!sdo_write(MD80_ACC_ID, 0x6060, 0x00, MD80_MODE_SERVICE)
 	    || !configure_md80_tpdos()
 	    || !configure_md80_rpdos()) {
 		return false;
@@ -417,21 +502,21 @@ bool M113::initialize_md80()
 
 	const uint8_t set_zero = 1;
 
-	if (!sdo_write(MD80_ID, 0x2003, 0x05, set_zero)) {
+	if (!sdo_write(MD80_ACC_ID, 0x2003, 0x05, set_zero)) {
 		PX4_ERR("MD80 zero-position command failed");
 		return false;
 	}
 
 	sleep_servicing(100);
 
-	if (!sdo_write(MD80_ID, 0x6060, 0x00, MD80_MODE_IDLE)
+	if (!sdo_write(MD80_ACC_ID, 0x6060, 0x00, MD80_MODE_IDLE)
 	    || !switch_md80_to_operation_enabled()
-	    || !sdo_write(MD80_ID, 0x6060, 0x00, MD80_MODE_PROFILE_POSITION)) {
+	    || !sdo_write(MD80_ACC_ID, 0x6060, 0x00, MD80_MODE_PROFILE_POSITION)) {
 		return false;
 	}
 
 	_md80_target_position = 0;
-	PX4_INFO("MD80 %u initialized", MD80_ID);
+	PX4_INFO("MD80 %u initialized", MD80_ACC_ID);
 	return true;
 }
 
@@ -469,13 +554,13 @@ bool M113::configure_md80_tpdos()
 
 	for (uint8_t pdo = 0; pdo < 4; ++pdo) {
 		const uint16_t index = 0x1800 + pdo;
-		uint32_t cob_id = (static_cast<uint32_t>(pdo + 1) << 8) + 0x80 + MD80_ID;
+		uint32_t cob_id = (static_cast<uint32_t>(pdo + 1) << 8) + 0x80 + MD80_ACC_ID;
 		const uint32_t disabled_cob_id = cob_id | 0x80000000UL;
 
-		if (!sdo_write(MD80_ID, index, 0x01, disabled_cob_id)
-		    || !sdo_write(MD80_ID, index, 0x02, transmission_type)
-		    || !sdo_write(MD80_ID, index, 0x05, event_timer)
-		    || !sdo_write(MD80_ID, index, 0x01, cob_id)) {
+		if (!sdo_write(MD80_ACC_ID, index, 0x01, disabled_cob_id)
+		    || !sdo_write(MD80_ACC_ID, index, 0x02, transmission_type)
+		    || !sdo_write(MD80_ACC_ID, index, 0x05, event_timer)
+		    || !sdo_write(MD80_ACC_ID, index, 0x01, cob_id)) {
 			PX4_ERR("MD80 TPDO%u configuration failed", pdo + 1);
 			return false;
 		}
@@ -489,18 +574,18 @@ bool M113::configure_md80_tpdos()
 bool M113::configure_md80_rpdos()
 {
 	const uint8_t transmission_type = 0xFF;
-	const uint32_t rpdo4_disabled = 0x80000500UL + MD80_ID;
-	const uint32_t rpdo3_disabled = 0x80000400UL + MD80_ID;
-	const uint32_t rpdo3_enabled = 0x00000400UL + MD80_ID;
-	const uint32_t rpdo2_disabled = 0x80000300UL + MD80_ID;
-	const uint32_t rpdo1_disabled = 0x80000200UL + MD80_ID;
+	const uint32_t rpdo4_disabled = 0x80000500UL + MD80_ACC_ID;
+	const uint32_t rpdo3_disabled = 0x80000400UL + MD80_ACC_ID;
+	const uint32_t rpdo3_enabled = 0x00000400UL + MD80_ACC_ID;
+	const uint32_t rpdo2_disabled = 0x80000300UL + MD80_ACC_ID;
+	const uint32_t rpdo1_disabled = 0x80000200UL + MD80_ACC_ID;
 
-	return sdo_write(MD80_ID, 0x1403, 0x01, rpdo4_disabled)
-	       && sdo_write(MD80_ID, 0x1402, 0x01, rpdo3_disabled)
-	       && sdo_write(MD80_ID, 0x1402, 0x02, transmission_type)
-	       && sdo_write(MD80_ID, 0x1402, 0x01, rpdo3_enabled)
-	       && sdo_write(MD80_ID, 0x1401, 0x01, rpdo2_disabled)
-	       && sdo_write(MD80_ID, 0x1400, 0x01, rpdo1_disabled);
+	return sdo_write(MD80_ACC_ID, 0x1403, 0x01, rpdo4_disabled)
+	       && sdo_write(MD80_ACC_ID, 0x1402, 0x01, rpdo3_disabled)
+	       && sdo_write(MD80_ACC_ID, 0x1402, 0x02, transmission_type)
+	       && sdo_write(MD80_ACC_ID, 0x1402, 0x01, rpdo3_enabled)
+	       && sdo_write(MD80_ACC_ID, 0x1401, 0x01, rpdo2_disabled)
+	       && sdo_write(MD80_ACC_ID, 0x1400, 0x01, rpdo1_disabled);
 }
 
 bool M113::switch_md80_to_operation_enabled()
@@ -508,7 +593,7 @@ bool M113::switch_md80_to_operation_enabled()
 	for (unsigned attempt = 0; attempt < 50; ++attempt) {
 		uint16_t status_word = 0;
 
-		if (!sdo_read(MD80_ID, 0x6041, 0x00, status_word)) {
+		if (!sdo_read(MD80_ACC_ID, 0x6041, 0x00, status_word)) {
 			return false;
 		}
 
@@ -538,7 +623,7 @@ bool M113::switch_md80_to_operation_enabled()
 			return false;
 		}
 
-		if (!sdo_write(MD80_ID, 0x6040, 0x00, control_word)) {
+		if (!sdo_write(MD80_ACC_ID, 0x6040, 0x00, control_word)) {
 			return false;
 		}
 
@@ -650,20 +735,20 @@ void M113::handle_frame(const uavcan::CanFrame &frame)
 		}
 	}
 
-	if (frame.id == (0x180U + MD80_ID) && frame.dlc >= 2) {
+	if (frame.id == (0x180U + MD80_ACC_ID) && frame.dlc >= 2) {
 		_md80_status.status_word = static_cast<uint16_t>(frame.data[0]) | (static_cast<uint16_t>(frame.data[1]) << 8);
 
 		if (frame.dlc >= 3) {
 			_md80_status.mode = static_cast<int8_t>(frame.data[2]);
 		}
 
-	} else if (frame.id == (0x280U + MD80_ID) && frame.dlc >= 6) {
+	} else if (frame.id == (0x280U + MD80_ACC_ID) && frame.dlc >= 6) {
 		_md80_status.position = static_cast<int32_t>(get_le32(&frame.data[2]));
 
-	} else if (frame.id == (0x380U + MD80_ID) && frame.dlc >= 6) {
+	} else if (frame.id == (0x380U + MD80_ACC_ID) && frame.dlc >= 6) {
 		_md80_status.velocity = static_cast<int32_t>(get_le32(&frame.data[2]));
 
-	} else if (frame.id == (0x480U + MD80_ID) && frame.dlc >= 4) {
+	} else if (frame.id == (0x480U + MD80_ACC_ID) && frame.dlc >= 4) {
 		_md80_status.torque = static_cast<int16_t>(static_cast<uint16_t>(frame.data[2])
 				      | (static_cast<uint16_t>(frame.data[3]) << 8));
 	}
@@ -883,7 +968,7 @@ bool M113::send_md80_target(int32_t position)
 	uint8_t data[6]{};
 	put_le(&data[0], MD80_CONTROLWORD_ENABLE_OPERATION);
 	put_le(&data[2], position);
-	const bool sent = send_frame(0x400U + MD80_ID, data, sizeof(data));
+	const bool sent = send_frame(0x400U + MD80_ACC_ID, data, sizeof(data));
 
 	if (sent) {
 		_md80_last_tx = hrt_absolute_time();
@@ -951,13 +1036,18 @@ void M113::send_keepalives()
 	}
 }
 
-bool M113::rc_is_valid() const
+bool M113::rc_link_is_valid() const
 {
 	const hrt_abstime now = hrt_absolute_time();
 	return _input_rc.timestamp_last_signal != 0
 	       && now - _input_rc.timestamp_last_signal <= RC_TIMEOUT_US
 	       && !_input_rc.rc_lost
-	       && !_input_rc.rc_failsafe
+	       && !_input_rc.rc_failsafe;
+}
+
+bool M113::rc_controls_are_valid() const
+{
+	return rc_link_is_valid()
 	       && _input_rc.channel_count >= 5
 	       && _input_rc.values[0] != UINT16_MAX
 	       && _input_rc.values[2] != UINT16_MAX
@@ -966,7 +1056,13 @@ bool M113::rc_is_valid() const
 
 void M113::run()
 {
+	if (!set_relay_auto_state(false, true)) {
+		PX4_ERR("vehicle relay initialization failed");
+		return;
+	}
+
 	if (!initialize()) {
+		(void)set_relay_auto_state(false);
 		PX4_ERR("M113 initialization failed");
 		return;
 	}
@@ -978,14 +1074,20 @@ void M113::run()
 			_input_rc_sub.copy(&_input_rc);
 		}
 
-		const bool enable = rc_is_valid() && _input_rc.values[4] > 1500;
+		const bool rc_connected = rc_link_is_valid();
+		const bool enable_requested = rc_controls_are_valid() && _input_rc.values[4] > 1500;
+		const bool relay_on = set_relay_auto_state(rc_connected) && relay_output_valid.load() && relay_output_on.load();
+		bool enable = false;
 
-		if (enable) {
+		if (enable_requested && relay_on) {
+			enable = true;
 			apply_enabled_control();
 
-		} else if (!_brake_applied) {
-			PX4_WARN("applying M113 brake: RC enable inactive");
-			apply_brake();
+		} else {
+			if (!_brake_applied) {
+				PX4_WARN("applying M113 brake: control inactive");
+				apply_brake();
+			}
 		}
 
 		_enable_active = enable;
@@ -994,19 +1096,22 @@ void M113::run()
 	}
 
 	apply_brake();
+	(void)set_relay_auto_state(false);
 	PX4_INFO("M113 stopped with brake applied");
 }
 
 int M113::print_status()
 {
 	PX4_INFO("CAN%u @ 1 Mbit/s, initialized: %s", _interface_index + 1, _initialized ? "yes" : "no");
-	PX4_INFO("enable: %s, brake: %s, TX: %lu, RX: %lu, TX errors: %lu, SDO timeouts: %lu",
+	PX4_INFO("RC link: %s, enable: %s, brake: %s, TX: %lu, RX: %lu, TX errors: %lu, SDO timeouts: %lu",
+		 rc_link_is_valid() ? "connected" : "disconnected",
 		 _enable_active ? "on" : "off",
 		 _brake_applied ? "on" : "off",
 		 static_cast<unsigned long>(_frames_tx),
 		 static_cast<unsigned long>(_frames_rx),
 		 static_cast<unsigned long>(_tx_errors),
 		 static_cast<unsigned long>(_sdo_timeouts));
+	print_relay_status();
 	PX4_INFO("Thomson %u: position=%u current=%u errors=0x%02x",
 		 THOMSON_ID_1, _thomson_status[0].measured_position, _thomson_status[0].measured_current,
 		 _thomson_status[0].error_flags);
@@ -1014,7 +1119,7 @@ int M113::print_status()
 		 THOMSON_ID_2, _thomson_status[1].measured_position, _thomson_status[1].measured_current,
 		 _thomson_status[1].error_flags);
 	PX4_INFO("MD80 %u: position=%ld velocity=%ld torque=%d status=0x%04x mode=%d",
-		 MD80_ID,
+		 MD80_ACC_ID,
 		 static_cast<long>(_md80_status.position),
 		 static_cast<long>(_md80_status.velocity),
 		 _md80_status.torque,
@@ -1025,6 +1130,35 @@ int M113::print_status()
 
 int M113::custom_command(int argc, char *argv[])
 {
+	if (argc == 2 && strcmp(argv[0], "relay") == 0) {
+		RelayOverride mode;
+
+		if (strcmp(argv[1], "on") == 0) {
+			PX4_WARN("forcing vehicle relay IO PWM OUT 1 GPIO HIGH");
+			mode = RelayOverride::ForceOn;
+
+		} else if (strcmp(argv[1], "off") == 0) {
+			mode = RelayOverride::ForceOff;
+
+		} else if (strcmp(argv[1], "auto") == 0) {
+			mode = RelayOverride::Auto;
+
+		} else if (strcmp(argv[1], "status") == 0) {
+			print_relay_status();
+			return PX4_OK;
+
+		} else {
+			return print_usage("invalid relay mode");
+		}
+
+		if (!set_relay_override(mode)) {
+			return PX4_ERROR;
+		}
+
+		print_relay_status();
+		return PX4_OK;
+	}
+
 	return print_usage("unknown command");
 }
 
@@ -1045,6 +1179,10 @@ The module owns the selected CAN interface and cannot run beside the UAVCAN daem
 	PRINT_MODULE_USAGE_NAME("m113", "driver");
 	PRINT_MODULE_USAGE_COMMAND("start");
 	PRINT_MODULE_USAGE_PARAM_INT('i', 1, 1, 2, "CAN interface number", true);
+	PRINT_MODULE_USAGE_COMMAND_DESCR("relay on", "Force vehicle relay IO PWM OUT 1 GPIO HIGH");
+	PRINT_MODULE_USAGE_COMMAND_DESCR("relay off", "Force vehicle relay IO PWM OUT 1 GPIO LOW");
+	PRINT_MODULE_USAGE_COMMAND_DESCR("relay auto", "Restore automatic vehicle relay control");
+	PRINT_MODULE_USAGE_COMMAND_DESCR("relay status", "Print vehicle relay state");
 	PRINT_MODULE_USAGE_DEFAULT_COMMANDS();
 	return 0;
 }
