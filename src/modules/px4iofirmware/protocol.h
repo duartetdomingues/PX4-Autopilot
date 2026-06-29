@@ -194,6 +194,7 @@ enum {							/* DSM bind states */
 #define PX4IO_P_SETUP_PWM_RATE_GROUP1            20	/* Configure timer group 1 update rate in Hz */
 #define PX4IO_P_SETUP_PWM_RATE_GROUP2            21	/* Configure timer group 2 update rate in Hz */
 #define PX4IO_P_SETUP_PWM_RATE_GROUP3            22	/* Configure timer group 3 update rate in Hz */
+#define PX4IO_P_SETUP_M113_RELAY                  23	/* M113 vehicle relay on IO PWM OUT 1: GPIO low/high */
 
 #define PX4IO_THERMAL_IGNORE			UINT16_MAX
 #define PX4IO_THERMAL_OFF			0

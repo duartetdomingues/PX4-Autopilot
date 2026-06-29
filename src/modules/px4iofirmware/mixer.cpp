@@ -241,4 +241,8 @@ mixer_tick()
 			sbus1_output(_sbus_fd, r_page_servos, PX4IO_SERVO_COUNT);
 		}
 	}
+
+#ifdef M113_RELAY_OUTPUT
+	M113_RELAY_OUTPUT(r_page_setup[PX4IO_P_SETUP_M113_RELAY] != 0);
+#endif
 }

@@ -143,7 +143,8 @@ volatile uint16_t	r_page_setup[] = {
 	[PX4IO_P_SETUP_CRC ...(PX4IO_P_SETUP_CRC + 1)] = 0,
 	[PX4IO_P_SETUP_THERMAL] = PX4IO_THERMAL_IGNORE,
 	[PX4IO_P_SETUP_ENABLE_FLIGHTTERMINATION] = 0,
-	[PX4IO_P_SETUP_PWM_RATE_GROUP0 ... PX4IO_P_SETUP_PWM_RATE_GROUP3] = 0
+	[PX4IO_P_SETUP_PWM_RATE_GROUP0 ... PX4IO_P_SETUP_PWM_RATE_GROUP3] = 0,
+	[PX4IO_P_SETUP_M113_RELAY] = 0
 };
 
 #define PX4IO_P_SETUP_FEATURES_VALID	(PX4IO_P_SETUP_FEATURES_SBUS1_OUT | PX4IO_P_SETUP_FEATURES_SBUS2_OUT | PX4IO_P_SETUP_FEATURES_ADC_RSSI)
@@ -481,6 +482,15 @@ registers_set_one(uint8_t page, uint8_t offset, uint16_t value)
 				r_status_alarms |= PX4IO_P_STATUS_ALARMS_PWM_ERROR;
 			}
 
+			break;
+
+		case PX4IO_P_SETUP_M113_RELAY:
+#ifdef M113_RELAY_OUTPUT
+			r_page_setup[offset] = (value != 0);
+			M113_RELAY_OUTPUT(value != 0);
+#else
+			return -1;
+#endif
 			break;
 
 		default:

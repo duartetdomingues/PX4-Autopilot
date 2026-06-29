@@ -156,12 +156,14 @@ public:
 	uint16_t		system_status() const { return _status; }
 
 	bool updateOutputs(float outputs[MAX_ACTUATORS], unsigned num_outputs, unsigned num_control_groups_updated) override;
+	int set_m113_relay(bool on);
 
 private:
 	void Run() override;
 
 	void updateDisarmed();
 	void updateFailsafe();
+	void updateM113Relay();
 	void updateTimerRateGroups();
 
 	static int checkcrc(int argc, char *argv[]);
@@ -224,6 +226,9 @@ private:
 
 	bool			_test_fmu_fail{false}; ///< To test what happens if IO loses FMU
 	bool			_in_test_mode{false}; ///< true if PWM_SERVO_ENTER_TEST_MODE is active
+
+	bool _m113_relay_enabled{false};
+	bool _m113_relay_on{false};
 
 	MixingOutput _mixing_output{"PWM_MAIN", PX4IO_MAX_ACTUATORS, *this, MixingOutput::SchedulingPolicy::Auto, true};
 
@@ -384,6 +389,34 @@ bool PX4IO::updateOutputs(float outputs[MAX_ACTUATORS], unsigned num_outputs, un
 	return true;
 }
 
+int PX4IO::set_m113_relay(bool on)
+{
+	SmartLock lock_guard(_lock);
+	_m113_relay_enabled = true;
+	_m113_relay_on = on;
+	const int ret = io_reg_set(PX4IO_PAGE_SETUP, PX4IO_P_SETUP_M113_RELAY, on);
+	ScheduleNow();
+	return ret;
+}
+
+int px4io_set_m113_relay(bool on)
+{
+	PX4IO *instance = ModuleBase::get_instance<PX4IO>(PX4IO::desc);
+
+	if (instance == nullptr) {
+		return -ENODEV;
+	}
+
+	return instance->set_m113_relay(on);
+}
+
+void PX4IO::updateM113Relay()
+{
+	if (_m113_relay_enabled) {
+		io_reg_set(PX4IO_PAGE_SETUP, PX4IO_P_SETUP_M113_RELAY, _m113_relay_on);
+	}
+}
+
 int PX4IO::init()
 {
 	SmartLock lock_guard(_lock);
@@ -529,6 +562,7 @@ void PX4IO::Run()
 
 	/* if we have new control data from the ORB, handle it */
 	_mixing_output.update();
+	updateM113Relay();
 
 	if (hrt_elapsed_time(&_poll_last) >= 20_ms) {
 		/* run at 50 */

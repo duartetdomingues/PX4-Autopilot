@@ -46,3 +46,10 @@
 
 device::Device	*PX4IO_serial_interface();
 #endif
+
+/**
+ * Drive IO PWM OUT 1 as a binary GPIO for the M113 vehicle relay.
+ *
+ * @param on Drive a continuous logical high when true, or low when false.
+ */
+int px4io_set_m113_relay(bool on);
