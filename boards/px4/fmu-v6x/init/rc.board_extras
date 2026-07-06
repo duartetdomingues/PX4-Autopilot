@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# PX4 FMUv6X board-specific extras
+#------------------------------------------------------------------------------
+
+# M113 uses PX4IO for its vehicle relay, so start it after PX4IO is ready.
+#m113 start

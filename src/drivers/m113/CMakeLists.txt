@@ -58,6 +58,13 @@ px4_add_module(
 	STACK_MAIN 6144
 	SRCS
 		m113.cpp
+		m113_actuators.cpp
+		m113_canopen.cpp
+		m113_gear.cpp
+		m113_md80.cpp
+		m113_md80_utils.cpp
+		m113_relay.cpp
+		m113_thomson.cpp
 		${LIBDRONECAN_DIR}/libuavcan/src/uc_data_type.cpp
 		${LIBDRONECAN_DIR}/libuavcan/src/uc_error.cpp
 		${LIBDRONECAN_DIR}/libuavcan/src/node/uc_global_data_type_registry.cpp
@@ -74,6 +81,8 @@ px4_add_module(
 		${M113_UAVCAN_DRIVER_DIR}/include
 	DEPENDS
 		m113_uavcan_dsdlc
+	MODULE_CONFIG
+		module.yaml
 	)
 
 target_compile_definitions(drivers__m113 PRIVATE

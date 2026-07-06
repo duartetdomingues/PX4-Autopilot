@@ -1,0 +1,44 @@
+module_name: m113
+
+parameters:
+    - group: M113
+      definitions:
+        M113_GEAR_R:
+            description:
+                short: MD80 reverse gear position
+                long: |
+                    Position target used by the M113 MD80 gear motor when selecting reverse.
+                    It can be updated from the MAVLink shell with: m113 gear set R.
+            type: int32
+            reboot_required: false
+            default: 0
+
+        M113_GEAR_N:
+            description:
+                short: MD80 neutral gear position
+                long: |
+                    Position target used by the M113 MD80 gear motor when selecting neutral.
+                    It can be updated from the MAVLink shell with: m113 gear set N.
+            type: int32
+            reboot_required: false
+            default: 1000
+
+        M113_GEAR_1:
+            description:
+                short: MD80 first gear position
+                long: |
+                    Position target used by the M113 MD80 gear motor when selecting first gear.
+                    It can be updated from the MAVLink shell with: m113 gear set 1.
+            type: int32
+            reboot_required: false
+            default: 2000
+
+        M113_GEAR_2:
+            description:
+                short: MD80 second gear position
+                long: |
+                    Position target used by the M113 MD80 gear motor when selecting second gear.
+                    It can be updated from the MAVLink shell with: m113 gear set 2.
+            type: int32
+            reboot_required: false
+            default: 3000
