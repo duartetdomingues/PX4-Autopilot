@@ -238,6 +238,11 @@ int M113::print_status()
 			 static_cast<unsigned long>(can_node_rx_age_ms(_thomson_status[1].last_rx)));
 	}
 
+	PX4_INFO("Thomson positions %u: brake=%u default=%u max=%u",
+		 THOMSON_ID_1, _thomson_brake_positions[0], _thomson_default_positions[0], _thomson_max_positions[0]);
+	PX4_INFO("Thomson positions %u: brake=%u default=%u max=%u",
+		 THOMSON_ID_2, _thomson_brake_positions[1], _thomson_default_positions[1], _thomson_max_positions[1]);
+
 	PX4_INFO("MD80 %u: %s position=%ld velocity=%ld torque=%d status=0x%04x mode=%d internal_limit=%s motion_status=0x%08lx",
 		 MD80_ACC_ID,
 		 !_md80_initialized ? "disabled" : can_node_is_online(_md80_status.last_rx) ? "online" : "offline",
@@ -335,6 +340,9 @@ The module owns the selected CAN interface and cannot run beside the UAVCAN daem
 	PRINT_MODULE_USAGE_COMMAND_DESCR("relay status", "Print vehicle relay state");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("thomson set 1|2 position current speed",
 					 "Command a Thomson actuator (nodes 35 and 36 are also accepted)");
+	PRINT_MODULE_USAGE_COMMAND_DESCR("thomson status", "Print saved Thomson brake/default/max positions");
+	PRINT_MODULE_USAGE_COMMAND_DESCR("thomson pos 1|2 brake|default|max [position]",
+					 "Save a Thomson position, defaulting to current actuator position");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear status", "Print MD80 gear motor position and saved R/N/1/2 positions");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear config", "Configure and store MD80 gear PDOs, then start TPDO publishing");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear off", "Disable the MD80 gear motor so it can be moved by hand");

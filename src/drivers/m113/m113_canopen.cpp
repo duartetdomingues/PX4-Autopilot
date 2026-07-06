@@ -354,8 +354,8 @@ bool M113::send_thomson_position(unsigned index, uint16_t position)
 		return false;
 	}
 
-	if (position > THOMSON_MAX_POSITION) {
-		position = THOMSON_MAX_POSITION;
+	if (position > _thomson_max_positions[index]) {
+		position = _thomson_max_positions[index];
 	}
 
 	ThomsonCommand &command = _thomson_command[index];

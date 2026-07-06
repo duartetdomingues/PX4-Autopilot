@@ -96,6 +96,13 @@ public:
 	int handle_gear_command(int argc, char *argv[]);
 	int handle_thomson_command(int argc, char *argv[]);
 
+	enum class ThomsonPositionSlot : uint8_t {
+		Brake = 0,
+		Default,
+		Max,
+		Count,
+	};
+
 private:
 	struct ThomsonCommand {
 		uint16_t target_position{THOMSON_DEFAULT_POSITION};
@@ -194,8 +201,12 @@ private:
 	void apply_enabled_control();
 	void apply_brake();
 	void send_keepalives();
+	void load_thomson_positions();
 	void load_gear_positions();
 	void update_gear_from_rc();
+	bool save_thomson_position(unsigned index, ThomsonPositionSlot slot, uint16_t position);
+	bool thomson_slot_from_name(const char *name, ThomsonPositionSlot &slot) const;
+	const char *thomson_slot_name(ThomsonPositionSlot slot) const;
 	bool save_gear_position(GearSlot gear, int32_t position);
 	bool gear_slot_from_name(const char *name, GearSlot &gear) const;
 	const char *gear_slot_name(GearSlot gear) const;
@@ -216,6 +227,9 @@ private:
 	ThomsonStatus _thomson_status[2]{};
 	bool _thomson_motion_reset_pending[2]{};
 	bool _thomson_initialized[2]{};
+	uint16_t _thomson_brake_positions[2]{THOMSON_BRAKE_POSITION_1, THOMSON_BRAKE_POSITION_2};
+	uint16_t _thomson_default_positions[2]{THOMSON_DEFAULT_POSITION, THOMSON_DEFAULT_POSITION};
+	uint16_t _thomson_max_positions[2]{THOMSON_MAX_POSITION, THOMSON_MAX_POSITION};
 	Md80Status _md80_status{};
 	Md80Status _gear_status{};
 	bool _md80_initialized{false};

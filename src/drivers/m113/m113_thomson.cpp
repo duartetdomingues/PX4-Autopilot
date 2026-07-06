@@ -19,6 +19,7 @@
 
 #include "m113.hpp"
 
+#include <parameters/param.h>
 #include <px4_platform_common/log.h>
 
 #include <cstdlib>
@@ -34,7 +35,69 @@ bool parse_thomson_value(const char *text, long minimum, long maximum, long &val
 	return end != text && *end == '\0' && value >= minimum && value <= maximum;
 }
 
+const char *thomson_param_name(unsigned index, M113::ThomsonPositionSlot slot)
+{
+	if (index >= 2) {
+		return nullptr;
+	}
+
+	switch (slot) {
+	case M113::ThomsonPositionSlot::Brake:
+		return index == 0 ? "M113_TH1_BRK" : "M113_TH2_BRK";
+
+	case M113::ThomsonPositionSlot::Default:
+		return index == 0 ? "M113_TH1_DEF" : "M113_TH2_DEF";
+
+	case M113::ThomsonPositionSlot::Max:
+		return index == 0 ? "M113_TH1_MAX" : "M113_TH2_MAX";
+
+	case M113::ThomsonPositionSlot::Count:
+		break;
+	}
+
+	return nullptr;
+}
+
 } // namespace
+
+void M113::load_thomson_positions()
+{
+	for (unsigned i = 0; i < 2; ++i) {
+		for (unsigned slot_index = 0; slot_index < static_cast<unsigned>(ThomsonPositionSlot::Count); ++slot_index) {
+			const auto slot = static_cast<ThomsonPositionSlot>(slot_index);
+			const param_t handle = param_find(thomson_param_name(i, slot));
+			int32_t position = 0;
+
+			if (handle == PARAM_INVALID || param_get(handle, &position) != PX4_OK) {
+				continue;
+			}
+
+			if (position < 0) {
+				position = 0;
+
+			} else if (position > THOMSON_MAX_POSITION) {
+				position = THOMSON_MAX_POSITION;
+			}
+
+			switch (slot) {
+			case ThomsonPositionSlot::Brake:
+				_thomson_brake_positions[i] = static_cast<uint16_t>(position);
+				break;
+
+			case ThomsonPositionSlot::Default:
+				_thomson_default_positions[i] = static_cast<uint16_t>(position);
+				break;
+
+			case ThomsonPositionSlot::Max:
+				_thomson_max_positions[i] = static_cast<uint16_t>(position);
+				break;
+
+			case ThomsonPositionSlot::Count:
+				break;
+			}
+		}
+	}
+}
 
 bool M113::initialize_thomson(uint8_t node_id)
 {
@@ -75,6 +138,58 @@ bool M113::initialize_thomson(uint8_t node_id)
 
 int M113::handle_thomson_command(int argc, char *argv[])
 {
+	if (argc >= 2 && (std::strcmp(argv[1], "status") == 0 || (argc == 2 && std::strcmp(argv[1], "pos") == 0))) {
+		PX4_INFO("Thomson %u positions: brake=%u default=%u max=%u",
+			 THOMSON_ID_1, _thomson_brake_positions[0], _thomson_default_positions[0], _thomson_max_positions[0]);
+		PX4_INFO("Thomson %u positions: brake=%u default=%u max=%u",
+			 THOMSON_ID_2, _thomson_brake_positions[1], _thomson_default_positions[1], _thomson_max_positions[1]);
+		return PX4_OK;
+	}
+
+	if (argc >= 2 && std::strcmp(argv[1], "pos") == 0) {
+		if (argc != 4 && argc != 5) {
+			return print_usage("usage: m113 thomson pos 1|2 brake|default|max [position]");
+		}
+
+		long actuator = 0;
+
+		if (!parse_thomson_value(argv[2], 1, THOMSON_ID_2, actuator)) {
+			return print_usage("invalid Thomson actuator");
+		}
+
+		unsigned index = 0;
+
+		if (actuator == 1 || actuator == THOMSON_ID_1) {
+			index = 0;
+
+		} else if (actuator == 2 || actuator == THOMSON_ID_2) {
+			index = 1;
+
+		} else {
+			return print_usage("Thomson actuator must be 1, 2, 35, or 36");
+		}
+
+		ThomsonPositionSlot slot{};
+
+		if (!thomson_slot_from_name(argv[3], slot)) {
+			return print_usage("Thomson position must be brake, default, or max");
+		}
+
+		long position = _thomson_status[index].measured_position;
+
+		if (argc == 5 && !parse_thomson_value(argv[4], 0, THOMSON_MAX_POSITION, position)) {
+			return print_usage("invalid Thomson position");
+		}
+
+		if (!save_thomson_position(index, slot, static_cast<uint16_t>(position))) {
+			return PX4_ERROR;
+		}
+
+		PX4_INFO("Thomson %u %s position saved at %ld",
+			 index == 0 ? THOMSON_ID_1 : THOMSON_ID_2, thomson_slot_name(slot), position);
+		return PX4_OK;
+	}
+
 	if (argc != 6 || std::strcmp(argv[1], "set") != 0) {
 		return print_usage("usage: m113 thomson set 1|2 position current speed");
 	}
@@ -85,7 +200,6 @@ int M113::handle_thomson_command(int argc, char *argv[])
 	long speed = 0;
 
 	if (!parse_thomson_value(argv[2], 1, THOMSON_ID_2, actuator)
-	    || !parse_thomson_value(argv[3], 0, THOMSON_MAX_POSITION, position)
 	    || !parse_thomson_value(argv[4], 0, THOMSON_MAX_CURRENT, current)
 	    || !parse_thomson_value(argv[5], 0, THOMSON_MAX_SPEED, speed)) {
 		return print_usage("invalid Thomson actuator or setpoint");
@@ -101,6 +215,10 @@ int M113::handle_thomson_command(int argc, char *argv[])
 
 	} else {
 		return print_usage("Thomson actuator must be 1, 2, 35, or 36");
+	}
+
+	if (!parse_thomson_value(argv[3], 0, _thomson_max_positions[index], position)) {
+		return print_usage("invalid Thomson position");
 	}
 
 	if (!_thomson_initialized[index]) {
@@ -120,4 +238,88 @@ int M113::handle_thomson_command(int argc, char *argv[])
 	PX4_INFO("Thomson %u target: position=%ld current=%ld speed=%ld",
 		 index == 0 ? THOMSON_ID_1 : THOMSON_ID_2, position, current, speed);
 	return PX4_OK;
+}
+
+bool M113::save_thomson_position(unsigned index, ThomsonPositionSlot slot, uint16_t position)
+{
+	if (index >= 2 || slot == ThomsonPositionSlot::Count || position > THOMSON_MAX_POSITION) {
+		return false;
+	}
+
+	const param_t handle = param_find(thomson_param_name(index, slot));
+
+	if (handle == PARAM_INVALID) {
+		PX4_ERR("Thomson parameter not found");
+		return false;
+	}
+
+	const int32_t param_value = position;
+
+	if (param_set(handle, &param_value) != PX4_OK) {
+		PX4_ERR("Thomson parameter update failed");
+		return false;
+	}
+
+	if (param_save_default(true) != PX4_OK) {
+		PX4_ERR("Thomson parameter save failed");
+		return false;
+	}
+
+	switch (slot) {
+	case ThomsonPositionSlot::Brake:
+		_thomson_brake_positions[index] = position;
+		break;
+
+	case ThomsonPositionSlot::Default:
+		_thomson_default_positions[index] = position;
+		break;
+
+	case ThomsonPositionSlot::Max:
+		_thomson_max_positions[index] = position;
+		break;
+
+	case ThomsonPositionSlot::Count:
+		break;
+	}
+
+	return true;
+}
+
+bool M113::thomson_slot_from_name(const char *name, ThomsonPositionSlot &slot) const
+{
+	if (std::strcmp(name, "brake") == 0 || std::strcmp(name, "b") == 0) {
+		slot = ThomsonPositionSlot::Brake;
+		return true;
+	}
+
+	if (std::strcmp(name, "default") == 0 || std::strcmp(name, "def") == 0 || std::strcmp(name, "d") == 0) {
+		slot = ThomsonPositionSlot::Default;
+		return true;
+	}
+
+	if (std::strcmp(name, "max") == 0 || std::strcmp(name, "m") == 0) {
+		slot = ThomsonPositionSlot::Max;
+		return true;
+	}
+
+	return false;
+}
+
+const char *M113::thomson_slot_name(ThomsonPositionSlot slot) const
+{
+	switch (slot) {
+	case ThomsonPositionSlot::Brake:
+		return "brake";
+
+	case ThomsonPositionSlot::Default:
+		return "default";
+
+	case ThomsonPositionSlot::Max:
+		return "max";
+
+	case ThomsonPositionSlot::Count:
+		break;
+	}
+
+	return "?";
 }

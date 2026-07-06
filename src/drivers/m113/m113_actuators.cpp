@@ -97,6 +97,7 @@ bool M113::initialize()
 	}
 
 	_initialized = true;
+	load_thomson_positions();
 	load_gear_positions();
 
 	if (_gear_initialized) {
@@ -123,19 +124,19 @@ void M113::apply_enabled_control()
 {
 	const int joystick_1 = scale_joystick(_input_rc.values[0]);
 	const int joystick_2 = scale_joystick(_input_rc.values[2]);
-	uint16_t thomson_1_position = THOMSON_DEFAULT_POSITION;
-	uint16_t thomson_2_position = THOMSON_DEFAULT_POSITION;
+	uint16_t thomson_1_position = _thomson_default_positions[0];
+	uint16_t thomson_2_position = _thomson_default_positions[1];
 
 	if (joystick_1 > 510) {
 		const float alpha = static_cast<float>(joystick_1 - 500) / 500.0f;
-		thomson_1_position = static_cast<uint16_t>((1.0f - alpha) * THOMSON_DEFAULT_POSITION
-				     + alpha * THOMSON_BRAKE_POSITION_1);
+		thomson_1_position = static_cast<uint16_t>((1.0f - alpha) * _thomson_default_positions[0]
+				     + alpha * _thomson_brake_positions[0]);
 	}
 
 	if (joystick_1 < 490) {
 		const float alpha = static_cast<float>(joystick_1) / 500.0f;
-		thomson_2_position = static_cast<uint16_t>(alpha * THOMSON_DEFAULT_POSITION
-				     + (1.0f - alpha) * THOMSON_BRAKE_POSITION_2);
+		thomson_2_position = static_cast<uint16_t>(alpha * _thomson_default_positions[1]
+				     + (1.0f - alpha) * _thomson_brake_positions[1]);
 	}
 
 	int32_t md80_position = MD80_LOW_THROTTLE_POSITION;
@@ -157,8 +158,8 @@ void M113::apply_enabled_control()
 
 void M113::apply_brake()
 {
-	(void)send_thomson_position(0, THOMSON_BRAKE_POSITION_1);
-	(void)send_thomson_position(1, THOMSON_BRAKE_POSITION_2);
+	(void)send_thomson_position(0, _thomson_brake_positions[0]);
+	(void)send_thomson_position(1, _thomson_brake_positions[1]);
 
 	if (_md80_initialized) {
 		(void)send_md80_target(0);

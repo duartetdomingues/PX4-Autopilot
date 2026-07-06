@@ -42,3 +42,75 @@ parameters:
             type: int32
             reboot_required: false
             default: 3000
+
+        M113_TH1_BRK:
+            description:
+                short: Thomson 1 brake position
+                long: |
+                    Brake position used by Thomson actuator 1.
+                    It can be updated from the MAVLink shell with: m113 thomson pos 1 brake.
+            type: int32
+            reboot_required: false
+            min: 0
+            max: 1500
+            default: 1000
+
+        M113_TH1_DEF:
+            description:
+                short: Thomson 1 default position
+                long: |
+                    Default position used by Thomson actuator 1 when the brake joystick is centered.
+                    It can be updated from the MAVLink shell with: m113 thomson pos 1 default.
+            type: int32
+            reboot_required: false
+            min: 0
+            max: 1500
+            default: 1250
+
+        M113_TH1_MAX:
+            description:
+                short: Thomson 1 maximum position
+                long: |
+                    Maximum allowed command position for Thomson actuator 1.
+                    It can be updated from the MAVLink shell with: m113 thomson pos 1 max.
+            type: int32
+            reboot_required: false
+            min: 0
+            max: 1500
+            default: 1500
+
+        M113_TH2_BRK:
+            description:
+                short: Thomson 2 brake position
+                long: |
+                    Brake position used by Thomson actuator 2.
+                    It can be updated from the MAVLink shell with: m113 thomson pos 2 brake.
+            type: int32
+            reboot_required: false
+            min: 0
+            max: 1500
+            default: 1000
+
+        M113_TH2_DEF:
+            description:
+                short: Thomson 2 default position
+                long: |
+                    Default position used by Thomson actuator 2 when the brake joystick is centered.
+                    It can be updated from the MAVLink shell with: m113 thomson pos 2 default.
+            type: int32
+            reboot_required: false
+            min: 0
+            max: 1500
+            default: 1250
+
+        M113_TH2_MAX:
+            description:
+                short: Thomson 2 maximum position
+                long: |
+                    Maximum allowed command position for Thomson actuator 2.
+                    It can be updated from the MAVLink shell with: m113 thomson pos 2 max.
+            type: int32
+            reboot_required: false
+            min: 0
+            max: 1500
+            default: 1500
