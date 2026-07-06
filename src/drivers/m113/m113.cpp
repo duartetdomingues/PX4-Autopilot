@@ -143,12 +143,47 @@ void M113::run()
 			_relay_rc_latched = false;
 		}
 
-		const bool enable_requested = rc_controls_are_valid() && _input_rc.values[4] > 1500;
+		const bool controls_valid = rc_controls_are_valid();
+		const bool enable_requested = controls_valid && _input_rc.values[4] > 1500;
 		const bool relay_on = set_relay_auto_state(_relay_rc_latched) && relay_output_is_on();
 		bool enable = false;
 
+		if (!_control_log_initialized
+		    || rc_connected != _control_log_rc_connected
+		    || enable_requested != _control_log_enable_requested
+		    || relay_on != _control_log_relay_on) {
+			const unsigned channel_5 = _input_rc.channel_count >= 5 ? _input_rc.values[4] : UINT16_MAX;
+			const unsigned channel_7 = _input_rc.channel_count >= 7 ? _input_rc.values[6] : UINT16_MAX;
+
+			PX4_INFO("RC control: link=%s controls=%s ch5=%u enable_request=%s ch7=%u relay_request=%s relay=%s",
+				 rc_connected ? "ok" : "lost",
+				 controls_valid ? "valid" : "invalid",
+				 channel_5,
+				 enable_requested ? "on" : "off",
+				 channel_7,
+				 _relay_rc_latched ? "on" : "off",
+				 relay_on ? "on" : "off");
+
+			if (enable_requested && !relay_on) {
+				PX4_WARN("unbrake blocked: channel 5 is ON but vehicle relay is OFF");
+			}
+
+			_control_log_initialized = true;
+			_control_log_rc_connected = rc_connected;
+			_control_log_enable_requested = enable_requested;
+			_control_log_relay_on = relay_on;
+		}
+
 		if (enable_requested && relay_on) {
 			enable = true;
+
+			if (!_enable_active) {
+				PX4_INFO("unbrake enabled: Thomson35=%s Thomson36=%s MD80=%s",
+					 _thomson_initialized[0] ? "ready" : "disabled",
+					 _thomson_initialized[1] ? "ready" : "disabled",
+					 _md80_initialized ? "ready" : "disabled");
+			}
+
 			apply_enabled_control();
 
 		} else {
@@ -224,6 +259,16 @@ int M113::print_status()
 
 int M113::custom_command(int argc, char *argv[])
 {
+	if (argc >= 1 && strcmp(argv[0], "thomson") == 0) {
+		M113 *instance = ModuleBase::get_instance<M113>(desc);
+
+		if (instance == nullptr) {
+			return print_usage("m113 must be running for Thomson commands");
+		}
+
+		return instance->handle_thomson_command(argc, argv);
+	}
+
 	if (argc >= 1 && strcmp(argv[0], "gear") == 0) {
 		M113 *instance = ModuleBase::get_instance<M113>(desc);
 
@@ -288,6 +333,8 @@ The module owns the selected CAN interface and cannot run beside the UAVCAN daem
 	PRINT_MODULE_USAGE_COMMAND_DESCR("relay off", "Force vehicle relay IO PWM OUT 1 GPIO LOW");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("relay auto", "Restore automatic vehicle relay control");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("relay status", "Print vehicle relay state");
+	PRINT_MODULE_USAGE_COMMAND_DESCR("thomson set 1|2 position current speed",
+					 "Command a Thomson actuator (nodes 35 and 36 are also accepted)");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear status", "Print MD80 gear motor position and saved R/N/1/2 positions");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear config", "Configure and store MD80 gear PDOs, then start TPDO publishing");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear off", "Disable the MD80 gear motor so it can be moved by hand");

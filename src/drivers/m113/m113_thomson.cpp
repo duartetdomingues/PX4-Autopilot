@@ -21,6 +21,21 @@
 
 #include <px4_platform_common/log.h>
 
+#include <cstdlib>
+#include <cstring>
+
+namespace
+{
+
+bool parse_thomson_value(const char *text, long minimum, long maximum, long &value)
+{
+	char *end = nullptr;
+	value = std::strtol(text, &end, 10);
+	return end != text && *end == '\0' && value >= minimum && value <= maximum;
+}
+
+} // namespace
+
 bool M113::initialize_thomson(uint8_t node_id)
 {
 	if (!send_nmt(0x01, node_id)) {
@@ -56,4 +71,53 @@ bool M113::initialize_thomson(uint8_t node_id)
 
 	PX4_INFO("Thomson %u initialized", node_id);
 	return true;
+}
+
+int M113::handle_thomson_command(int argc, char *argv[])
+{
+	if (argc != 6 || std::strcmp(argv[1], "set") != 0) {
+		return print_usage("usage: m113 thomson set 1|2 position current speed");
+	}
+
+	long actuator = 0;
+	long position = 0;
+	long current = 0;
+	long speed = 0;
+
+	if (!parse_thomson_value(argv[2], 1, THOMSON_ID_2, actuator)
+	    || !parse_thomson_value(argv[3], 0, THOMSON_MAX_POSITION, position)
+	    || !parse_thomson_value(argv[4], 0, THOMSON_MAX_CURRENT, current)
+	    || !parse_thomson_value(argv[5], 0, THOMSON_MAX_SPEED, speed)) {
+		return print_usage("invalid Thomson actuator or setpoint");
+	}
+
+	unsigned index = 0;
+
+	if (actuator == 1 || actuator == THOMSON_ID_1) {
+		index = 0;
+
+	} else if (actuator == 2 || actuator == THOMSON_ID_2) {
+		index = 1;
+
+	} else {
+		return print_usage("Thomson actuator must be 1, 2, 35, or 36");
+	}
+
+	if (!_thomson_initialized[index]) {
+		PX4_ERR("Thomson %u is not initialized", index == 0 ? THOMSON_ID_1 : THOMSON_ID_2);
+		return PX4_ERROR;
+	}
+
+	ThomsonCommand &command = _thomson_command[index];
+	command.current_limit = static_cast<uint16_t>(current);
+	command.target_speed = static_cast<uint8_t>(speed);
+
+	if (!send_thomson_position(index, static_cast<uint16_t>(position))) {
+		PX4_ERR("Thomson %u command send failed", index == 0 ? THOMSON_ID_1 : THOMSON_ID_2);
+		return PX4_ERROR;
+	}
+
+	PX4_INFO("Thomson %u target: position=%ld current=%ld speed=%ld",
+		 index == 0 ? THOMSON_ID_1 : THOMSON_ID_2, position, current, speed);
+	return PX4_OK;
 }

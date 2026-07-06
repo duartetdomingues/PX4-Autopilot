@@ -44,8 +44,8 @@ constexpr uint16_t THOMSON_BRAKE_POSITION_1 = 1000;
 constexpr uint16_t THOMSON_BRAKE_POSITION_2 = 1000;
 constexpr uint16_t THOMSON_DEFAULT_POSITION = 1250;
 constexpr uint16_t THOMSON_MAX_POSITION = 1500;
-constexpr uint16_t THOMSON_MAX_CURRENT = 150;
-constexpr uint8_t THOMSON_MAX_SPEED = 65;
+constexpr uint16_t THOMSON_MAX_CURRENT = 150; // 150 (15.0A)
+constexpr uint8_t THOMSON_MAX_SPEED = 65; // 65
 
 constexpr int32_t MD80_FULL_THROTTLE_POSITION = 16000;
 constexpr int32_t MD80_LOW_THROTTLE_POSITION = 10000;
@@ -94,6 +94,7 @@ public:
 	};
 
 	int handle_gear_command(int argc, char *argv[]);
+	int handle_thomson_command(int argc, char *argv[]);
 
 private:
 	struct ThomsonCommand {
@@ -233,6 +234,10 @@ private:
 	bool _enable_active{false};
 	bool _brake_applied{false};
 	bool _relay_rc_latched{false};
+	bool _control_log_initialized{false};
+	bool _control_log_rc_connected{false};
+	bool _control_log_enable_requested{false};
+	bool _control_log_relay_on{false};
 	uint32_t _frames_tx{0};
 	uint32_t _frames_rx{0};
 	uint32_t _sdo_timeouts{0};
