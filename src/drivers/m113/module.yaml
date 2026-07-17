@@ -11,7 +11,7 @@ parameters:
                     It can be updated from the MAVLink shell with: m113 gear set R.
             type: int32
             reboot_required: false
-            default: 0
+            default: -600
 
         M113_GEAR_N:
             description:
@@ -21,7 +21,7 @@ parameters:
                     It can be updated from the MAVLink shell with: m113 gear set N.
             type: int32
             reboot_required: false
-            default: 1000
+            default: 150
 
         M113_GEAR_1:
             description:
@@ -41,7 +41,7 @@ parameters:
                     It can be updated from the MAVLink shell with: m113 gear set 2.
             type: int32
             reboot_required: false
-            default: 3000
+            default: -590
 
         M113_TH1_BRK:
             description:

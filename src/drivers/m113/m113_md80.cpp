@@ -43,7 +43,16 @@ bool M113::initialize_md80(uint8_t node_id, const char *name)
 
 	// Set Parametros do PID Controller
 	// Default PID parameters for MD80: P=0.35, I=0.5, D=0.0, FF=1.5
-	md80_set_pid_parameters(node_id, 0.8f, 0.5f, 0.0f, 1.5f);
+	if (node_id == MD80_GEAR_ID)
+	{
+		// Keep the gear PID gains loaded from the MD80 non-volatile memory.
+		// They can be changed and stored with `m113 gear pid ...`.
+	}
+	else if(node_id == MD80_ACC_ID){
+		md80_set_pos_pid_parameters(node_id, 20.0f, 0.9f, 0.0f, 10.0f);
+		md80_set_velocity_pid_parameters(node_id, 0.05f, 0.5f, 0.0f, 1.5f);
+	}
+
 
 	// Salvar parâmetros em memória não-volátil
 	const uint32_t save = 0x65766173;
@@ -68,9 +77,9 @@ bool M113::initialize_md80(uint8_t node_id, const char *name)
 
 
 	if (node_id == MD80_ACC_ID) {
-		const int8_t set_zero = -1;
 
-		if (!sdo_write(node_id, 0x2003, 0x05, set_zero)) {
+		const int8_t set_zero1= -1;
+		if (!sdo_write(node_id, 0x2003, 0x05, set_zero1)) {
 			PX4_ERR("MD80 %s zero-position command failed", name);
 			return false;
 		}
@@ -79,10 +88,10 @@ bool M113::initialize_md80(uint8_t node_id, const char *name)
 
 
 
-		int position = -1;
-		sdo_read(node_id, 0x6064, 0x00, position);
+		int position1 = -1;
+		sdo_read(node_id, 0x6064, 0x00, position1);
 
-		PX4_INFO("MD80 %s zero-position set to %d ", name, position);
+		PX4_INFO("MD80 %s zero-position set to %d ", name, position1);
 
 
 		sleep_servicing(1000);
@@ -148,36 +157,42 @@ bool M113::initialize_md80(uint8_t node_id, const char *name)
 
 
 	// set gear position to 0
-	int target_position = 0;
-	if (!send_md80_target_sdo(MD80_GEAR_ID, target_position)) {
-		PX4_ERR("MD80 target position SDO failed");
-	}
-	else {
-		PX4_INFO("MD80 target position SDO sent to %d",target_position);
-	}
-	sleep_servicing(1000);
-
-	// Read the gear position
-	int32_t pos = -1;
-	sdo_read(MD80_GEAR_ID, 0x6064, 0x00, pos);
-	PX4_INFO("MD80 %s gear position: %ld", name, static_cast<long>(pos));
-
-
-	// TEST: set gear position to 20000
-	if (false) {
-		target_position = 20000;
+	if(false)
+	{
+		int target_position = 0;
 		if (!send_md80_target_sdo(MD80_GEAR_ID, target_position)) {
 			PX4_ERR("MD80 target position SDO failed");
 		}
 		else {
 			PX4_INFO("MD80 target position SDO sent to %d",target_position);
 		}
+		sleep_servicing(1000);
+
+
+		// Read the gear position
+		int32_t pos = -1;
+		sdo_read(MD80_GEAR_ID, 0x6064, 0x00, pos);
+		PX4_INFO("MD80 %s gear position: %ld", name, static_cast<long>(pos));
+
+	}
+
+
+	// TEST: set gear position to 20000
+	if (false) {
+
+		int target_position2 = 20000;
+		if (!send_md80_target_sdo(MD80_GEAR_ID, target_position2)) {
+			PX4_ERR("MD80 target position SDO failed");
+		}
+		else {
+			PX4_INFO("MD80 target position SDO sent to %d",target_position2);
+		}
 
 
 		while (!should_exit()) {
-			pos = -1;
-			sdo_read(MD80_GEAR_ID, 0x6064, 0x00, pos);
-				PX4_INFO("MD80 %s gear position: %ld", name, static_cast<long>(pos));
+			int pos1 = -1;
+			sdo_read(MD80_GEAR_ID, 0x6064, 0x00, pos1);
+				PX4_INFO("MD80 %s gear position: %ld", name, static_cast<long>(pos1));
 
 			uint16_t status_word = 0;
 			sdo_read(MD80_GEAR_ID, 0x6041, 0x00, status_word);

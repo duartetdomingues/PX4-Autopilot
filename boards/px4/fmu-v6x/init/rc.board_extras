@@ -4,4 +4,4 @@
 #------------------------------------------------------------------------------
 
 # M113 uses PX4IO for its vehicle relay, so start it after PX4IO is ready.
-#m113 start
+m113 start

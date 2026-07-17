@@ -217,25 +217,56 @@ void M113::md80_read_all_status(uint8_t node_id)
 
 void M113::md80_read_pid_parameters(uint8_t node_id)
 {
-    float_t p = 0.0f;
-    float_t i = 0.0f;
-    float_t d = 0.0f;
-    float_t i_limit = 0.0f;
+	float velocity[4]{};
+	float position[4]{};
 
-    sdo_read(node_id, 0x2001, 0x01, p);
-    sdo_read(node_id, 0x2001, 0x02, i);
-    sdo_read(node_id, 0x2001, 0x03, d);
-    sdo_read(node_id, 0x2001, 0x04, i_limit);
+	if (md80_read_pid_parameters(node_id, 0x2001, velocity)) {
+		PX4_INFO("MD80 %u velocity PID: P=%.6g I=%.6g D=%.6g I_limit=%.6g", node_id,
+			 (double)velocity[0], (double)velocity[1], (double)velocity[2], (double)velocity[3]);
+	}
 
-    PX4_INFO("MD80 %u PID parameters: P=%.3f I=%.3f D=%.3f I_limit=%.3f", node_id, (double)p, (double)i, (double)d, (double)i_limit);
+	if (md80_read_pid_parameters(node_id, 0x2002, position)) {
+		PX4_INFO("MD80 %u position PID: P=%.6g I=%.6g D=%.6g I_limit=%.6g", node_id,
+			 (double)position[0], (double)position[1], (double)position[2], (double)position[3]);
+	}
 }
 
-void M113::md80_set_pid_parameters(uint8_t node_id, float_t p, float_t i, float_t d, float_t i_limit)
+bool M113::md80_read_pid_parameters(uint8_t node_id, uint16_t index, float values[4])
 {
-    sdo_write(node_id, 0x2001, 0x01, p);
-    sdo_write(node_id, 0x2001, 0x02, i);
-    sdo_write(node_id, 0x2001, 0x03, d);
-    sdo_write(node_id, 0x2001, 0x04, i_limit);
+	bool ok = true;
 
-    PX4_INFO("MD80 %u PID parameters set: P=%.3f I=%.3f D=%.3f I_limit=%.3f", node_id, (double)p, (double)i, (double)d, (double)i_limit);
+	for (uint8_t subindex = 1; subindex <= 4; ++subindex) {
+		ok &= sdo_read(node_id, index, subindex, values[subindex - 1]);
+	}
+
+	return ok;
+}
+
+bool M113::md80_set_pid_parameters(uint8_t node_id, uint16_t index, const float values[4])
+{
+	bool ok = true;
+
+	for (uint8_t subindex = 1; subindex <= 4; ++subindex) {
+		ok &= sdo_write(node_id, index, subindex, values[subindex - 1]);
+	}
+
+	return ok;
+}
+
+void M113::md80_set_velocity_pid_parameters(uint8_t node_id, float_t p, float_t i, float_t d, float_t i_limit)
+{
+	const float values[]{p, i, d, i_limit};
+	const bool ok = md80_set_pid_parameters(node_id, 0x2001, values);
+
+	PX4_INFO("MD80 %u velocity PID %s: P=%.3f I=%.3f D=%.3f I_limit=%.3f", node_id, ok ? "set" : "failed",
+		 (double)p, (double)i, (double)d, (double)i_limit);
+}
+
+void M113::md80_set_pos_pid_parameters(uint8_t node_id, float_t p, float_t i, float_t d, float_t i_limit)
+{
+	const float values[]{p, i, d, i_limit};
+	const bool ok = md80_set_pid_parameters(node_id, 0x2002, values);
+
+	PX4_INFO("MD80 %u position PID %s: P=%.3f I=%.3f D=%.3f I_limit=%.3f", node_id, ok ? "set" : "failed",
+		 (double)p, (double)i, (double)d, (double)i_limit);
 }

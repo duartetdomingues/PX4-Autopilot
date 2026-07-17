@@ -344,6 +344,9 @@ The module owns the selected CAN interface and cannot run beside the UAVCAN daem
 	PRINT_MODULE_USAGE_COMMAND_DESCR("thomson pos 1|2 brake|default|max [position]",
 					 "Save a Thomson position, defaulting to current actuator position");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear status", "Print MD80 gear motor position and saved R/N/1/2 positions");
+	PRINT_MODULE_USAGE_COMMAND_DESCR("gear pid", "Read MD80 gear position and velocity PID gains");
+	PRINT_MODULE_USAGE_COMMAND_DESCR("gear pid position|velocity kp ki kd integral_limit",
+					 "Update and store MD80 gear PID gains, then verify them by readback");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear config", "Configure and store MD80 gear PDOs, then start TPDO publishing");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear off", "Disable the MD80 gear motor so it can be moved by hand");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("gear go R|N|1|2", "Move the MD80 gear motor to a saved position");

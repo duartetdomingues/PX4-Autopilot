@@ -196,8 +196,11 @@ private:
 	bool send_md80_shutdown(uint8_t node_id);
 	bool read_md80_motion_status(uint8_t node_id, Md80Status &status);
 	void md80_read_all_status(uint8_t node_id);
+	bool md80_read_pid_parameters(uint8_t node_id, uint16_t index, float values[4]);
+	bool md80_set_pid_parameters(uint8_t node_id, uint16_t index, const float values[4]);
 	void md80_read_pid_parameters(uint8_t node_id);
-	void md80_set_pid_parameters(uint8_t node_id, float_t p, float_t i, float_t d, float_t i_limit);
+	void md80_set_velocity_pid_parameters(uint8_t node_id, float_t p, float_t i, float_t d, float_t i_limit);
+	void md80_set_pos_pid_parameters(uint8_t node_id, float_t p, float_t i, float_t d, float_t i_limit);
 	void apply_enabled_control();
 	void apply_brake();
 	void send_keepalives();

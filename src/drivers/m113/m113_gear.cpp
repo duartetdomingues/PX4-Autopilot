@@ -24,6 +24,8 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <cerrno>
+#include <cmath>
 
 namespace
 {
@@ -243,6 +245,110 @@ int M113::handle_gear_command(int argc, char *argv[])
 	if (strcmp(argv[1], "off") == 0) {
 		_gear_target_active = false;
 		PX4_INFO("MD80 gear motor shutdown requested");
+		return PX4_OK;
+	}
+
+	if (strcmp(argv[1], "pid") == 0) {
+		if (argc == 2) {
+			md80_read_pid_parameters(MD80_GEAR_ID);
+			return PX4_OK;
+		}
+
+		if (argc != 7) {
+			return print_usage("usage: m113 gear pid position|velocity kp ki kd integral_limit");
+		}
+
+		uint16_t index = 0;
+		const char *controller = nullptr;
+
+		if (strcmp(argv[2], "position") == 0 || strcmp(argv[2], "pos") == 0) {
+			index = 0x2002;
+			controller = "position";
+
+		} else if (strcmp(argv[2], "velocity") == 0 || strcmp(argv[2], "vel") == 0) {
+			index = 0x2001;
+			controller = "velocity";
+
+		} else {
+			return print_usage("PID controller must be position or velocity");
+		}
+
+		float values[4]{};
+
+		for (unsigned i = 0; i < 4; ++i) {
+			char *end = nullptr;
+			errno = 0;
+			values[i] = std::strtof(argv[i + 3], &end);
+
+			if (errno != 0 || end == argv[i + 3] || *end != '\0' || !std::isfinite(values[i])) {
+				return print_usage("PID gains must be finite numbers");
+			}
+		}
+
+		// 0x1010 Store Parameters is accepted only in the CiA 402
+		// "switch on disabled" state. Stop periodic gear commands while the
+		// drive is disabled, then restore its operational state afterwards.
+		const bool target_was_active = _gear_target_active;
+		_gear_target_active = false;
+		_gear_shutdown_sent = true;
+		const uint16_t disable_voltage = 0;
+		const auto resume_gear = [&]() {
+			const bool resumed = switch_md80_to_operation_enabled(MD80_GEAR_ID)
+					     && sdo_write(MD80_GEAR_ID, 0x6060, 0x00, MD80_MODE_PROFILE_POSITION);
+			_gear_target_active = target_was_active;
+			_gear_shutdown_sent = false;
+			_gear_last_tx = 0;
+			return resumed;
+		};
+
+		if (!sdo_write(MD80_GEAR_ID, 0x6040, 0x00, disable_voltage)) {
+			PX4_ERR("MD80 gear disable voltage failed");
+			_gear_target_active = target_was_active;
+			_gear_shutdown_sent = false;
+			return PX4_ERROR;
+		}
+
+		sleep_servicing(200);
+		uint16_t status_word = 0;
+
+		if (!sdo_read(MD80_GEAR_ID, 0x6041, 0x00, status_word)
+		    || (status_word & 0x004f) != MD80_SWITCH_ON_DISABLED) {
+			PX4_ERR("MD80 gear did not enter switch on disabled (status=0x%04x)", status_word);
+			(void)resume_gear();
+			return PX4_ERROR;
+		}
+
+		if (!md80_set_pid_parameters(MD80_GEAR_ID, index, values)) {
+			PX4_ERR("MD80 gear %s PID update failed", controller);
+			(void)resume_gear();
+			return PX4_ERROR;
+		}
+
+		const uint32_t save = 0x65766173;
+
+		if (!sdo_write(MD80_GEAR_ID, 0x1010, 0x01, save)) {
+			PX4_ERR("MD80 gear %s PID store failed", controller);
+			(void)resume_gear();
+			return PX4_ERROR;
+		}
+
+		sleep_servicing(3000);
+
+		float readback[4]{};
+
+		if (!md80_read_pid_parameters(MD80_GEAR_ID, index, readback)) {
+			PX4_ERR("MD80 gear %s PID readback failed", controller);
+			(void)resume_gear();
+			return PX4_ERROR;
+		}
+
+		if (!resume_gear()) {
+			PX4_ERR("MD80 gear failed to resume after PID update");
+			return PX4_ERROR;
+		}
+
+		PX4_INFO("MD80 gear %s PID updated and stored: P=%.6g I=%.6g D=%.6g I_limit=%.6g", controller,
+			 (double)readback[0], (double)readback[1], (double)readback[2], (double)readback[3]);
 		return PX4_OK;
 	}
 
